@@ -12,10 +12,12 @@
 
 - **核心教材**：以课件为主，辅以以下参考书目：
 
+  - 数据结构与算法：Python 讲算法，C++ 讲实现，https://gmyhf.github.io/dsa-modernization/
+
   - 《Python数据结构与算法分析（第3版）》 Miller, Ranum, College
 
   - 《算法笔记》 胡凡、曾磊
-
+  
   - 《算法导论（第3版）》 Cormen, Leiserson 等
 
 
