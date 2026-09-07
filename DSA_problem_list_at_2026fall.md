@@ -1,6 +1,6 @@
-## 2026spring 数算（DS Algo）每日选作
+## 2026fall 数算（DS Algo）每日选作
 *Updated 2026-09-07 22:11 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
-https://github.com/GMyhf/2026spring-cs201/blob/main/DSA_problem_list_at_2026spring.md
+https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
 
