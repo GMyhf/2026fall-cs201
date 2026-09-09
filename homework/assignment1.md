@@ -1,6 +1,6 @@
-# DSA Assignment #1: OOP
+# DSA Assignment #1: 概论 & Floyd-Warshall 算法
 
-*Updated: 2026-09-08 19:52 (GMT+8)*  
+*Updated: 2026-09-09 17:49 (GMT+8)*  
 *完成学生：<mark>同学的姓名、院系</mark>*
 
 
@@ -106,9 +106,9 @@ sortings, AI, http://cs101.openjudge.cn/pctbook/M27300/
 
 
 
-### 05443: 兔子与樱花
+### M1536.排布二进制网格的最少交换次数
 
-http://cs101.openjudge.cn/practice/05443/
+greedy, matrix, https://leetcode.cn/problems/minimum-swaps-to-arrange-a-binary-grid/
 
 思路：
 
@@ -128,11 +128,11 @@ http://cs101.openjudge.cn/practice/05443/
 
 
 
-### 231A. Team
+### 05443: 兔子与樱花
 
-bruteforce, greedy, 800, http://codeforces.com/problemset/problem/231/A
+http://cs101.openjudge.cn/practice/05443/
 
-思路：
+> 可以使用 **Dijkstra** 算法（或 Floyd-Warshall 算法）来求两点之间的最短路
 
 
 
