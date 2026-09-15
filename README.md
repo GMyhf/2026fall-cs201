@@ -45,7 +45,7 @@
   - 编辑器/IDE：PyCharm, VS Code
   - 环境配置指南：
     *   [Python 开发环境搭建 (Mac & Windows)](https://github.com/GMyhf/2026fall-cs101/blob/main/Python_Development_Setup_Mac_Windows.md)
-    *   [在 VS Code 中配置 C++ 编程环境](https://github.com/GMyhf/2026fall-cs201/blob/main/Writing_First_C%2B%2B_Program_in_VS-Code.md)
+    *   [在 VS Code 中配置 C++ 编程环境](https://github.com/GMyhf/2026fall-cs101/blob/main/Writing_First_C%2B%2B_Program_in_VS-Code.md)
 - **AI辅助自学平台**：
 
   - **小北智学平台**：登录 [zx.pku.edu.cn](https://zx.pku.edu.cn/)，加入“**数据结构与算法A/B-YHF班**”课程。可利用 **AI 助教** 进行问答式学习。如有疑问，请通过邮件联系：[yanhf@pku.edu.cn](mailto:yanhf@pku.edu.cn)
