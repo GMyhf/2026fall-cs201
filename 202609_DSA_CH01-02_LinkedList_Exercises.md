@@ -686,13 +686,42 @@ class LRUCache:
         if len(self.table) > self.capacity:
             lru = self.tail.prev         # 表尾哨兵之前 = 最久未使用
             self._remove(lru)
-            del self.table[lru.key]      # ★ 别忘了同步删哈希表，否则内存泄漏 + 结果错
+            del self.table[lru.key]      # ★ 别忘了同步删哈希表，否则表只增不减、结果出错
 ```
 
-> **两个细节**
+> **三个细节**
 >
 > 1. **结点里为什么要存 `key`**：逐出时我们是从**链表尾部**拿到结点的，但要删的是**哈希表里的一项**，没有 `key` 就找不到该删谁。这是本题最经典的一个坑。
 > 2. `dict` 的 `del d[k]` / `d.pop(k)` 平均 $O(1)$，符合题目对平均复杂度的要求。
+> 3. **漏删哈希表的后果**：`len(self.table)` 不再下降，此后每次 `put` 都会触发逐出；`get` 到已被逐出的 key 时，还会对一个早已摘下的结点调用 `_remove`，它残留的 `prev` / `next` 会把链表改乱。在 Python 里这是「结果错」，不是 C++ 意义上的内存泄漏（结点仍被字典引用着）。
+
+#### 为什么整段代码里 `self.tail` 从来没被赋值？
+
+读代码时很容易发现：`self.head`、`self.tail` 在 `__init__` 之后再也没有出现在赋值号左边，于是会怀疑「表尾变了，`tail` 却没跟着改」。
+
+**`self.tail` 本来就不该变。** 它是哨兵，永远是表尾那个不存数据的空结点；「最久未使用的是谁」记在 **`self.tail.prev`** 里，而 `tail.prev` 在两个辅助函数里被**间接**修改了：
+
+| 位置 | 代码 | 什么时候就是在改 `tail.prev` |
+| :--- | :--- | :--- |
+| `_add_front` | `self.head.next.prev = node` | 表为空时 `head.next` 就是 `tail`，这句即 `tail.prev = node` |
+| `_remove` | `node.next.prev = node.prev` | 摘最后一个真结点时 `node.next` 就是 `tail`，这句即 `tail.prev = node.prev` |
+
+逐步跟踪一遍（capacity = 2）：
+
+```text
+操作       tail.prev   正向（head→tail）   反向（tail→head）
+init       head        []                  []
+put(1,1)   k1          [k1]                [k1]         ← _add_front 里改的
+put(2,2)   k1          [k2, k1]            [k1, k2]
+get(1)     k2          [k1, k2]            [k2, k1]     ← _remove(k1) 里改的
+put(3,3)   k1          [k3, k1]            [k1, k3]     ← 逐出 k2 时 _remove 里改的
+```
+
+全程 `self.tail` 是**同一个对象**，`tail.prev` 却始终指向正确的最久未使用结点；正向、反向遍历每一步都互为逆序，说明两条链保持一致。
+
+**这正是哨兵的价值。** 如果不设 `tail` 哨兵，而让 `self.tail` 直接指向最后一个真结点，就得到处补分支：插第一个结点时 `if 表空: self.tail = node`，删最后一个结点时 `if node is self.tail: self.tail = node.prev`，删成空表还要置 `None`。用了两个哨兵，每个真结点前后**一定有结点**，`_remove` / `_add_front` 里一个 `if` 都不用写——代价只是「表尾是谁」从 `self.tail` 挪到了 `self.tail.prev`。这和 1.3 节、课件 2.3.1 的头结点是同一个思想，只是换成了双向、首尾各一个。
+
+> C++ 版的 `head_` / `tail_` 同理：构造函数之后也不再赋值，`tail_->prev` 在 `remove` / `addFront` 里被间接更新。
 
 **面试 / 比赛速写版**（用 `OrderedDict`，但**习题课要求先能手写上面那版**）：
 
