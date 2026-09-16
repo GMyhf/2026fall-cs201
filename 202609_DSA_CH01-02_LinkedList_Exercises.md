@@ -539,7 +539,7 @@ public:
     
     void visit(string url) {
         cur++;
-        if (cur < history.size()) {
+        if (cur < static_cast<int>(history.size())) {
             history[cur] = move(url); // 覆盖旧历史，原地复用内存
         } else {
             history.push_back(move(url));
