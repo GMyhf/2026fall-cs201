@@ -1,6 +1,6 @@
 # 2026fall-cs201: DS Algo（数据结构与算法）
 
-*Updated 2026-09-06 19:40 GMT+8*  
+*Updated 2026-09-16 10:30 GMT+8*  
  *Compiled by Hongfei Yan (2026 Fall)*  
 *项目仓库：[GMyhf/2026fall-cs201](https://github.com/GMyhf/2026fall-cs201/)*
 
@@ -19,6 +19,15 @@
   - 《算法笔记》 胡凡、曾磊
   
   - 《算法导论（第3版）》 Cormen, Leiserson 等
+
+
+- **课程讲义**：
+
+  - 章节课件（配套 [dsa-modernization](https://gmyhf.github.io/dsa-modernization/)）：`DSA_CH01_Overview_ADT_Complexity.pdf`、`DSA_CH02_Linear_List.pdf`
+
+  - [Week1 ADT, Floyd, Dijkstra & Complexity](202609_DSA_ADT_Floyd_Complexity.md)（CH01）
+
+  - [习题课：链表 6 题](202609_DSA_CH01-02_LinkedList_Exercises.md)（CH01～CH02）—— E160 相交链表、E206 反转链表、M1472 设计浏览器历史记录、M146 LRU 缓存、E21 合并两个有序链表、E234 回文链表，每题含 Python / C++ 实现与讲解
 
 
 - **AI 拓展**：
