@@ -491,6 +491,8 @@ public:
 
 ### 对照组：顺序表实现（这题其实数组更优！）
 
+**Python 实现**
+
 ```python
 class BrowserHistory:
     def __init__(self, homepage: str):
@@ -514,6 +516,50 @@ class BrowserHistory:
         self.cur = min(self.top, self.cur + steps)
         return self.history[self.cur]
 ```
+
+**C++ 实现**
+
+将 Python 版的思路翻译为 C++ 的 `std::vector<string>`。
+
+利用 top 维护有效历史的右边界，在 visit 时复用已有容量，避免频繁的 vector 缩容/重分配，同时让 back 和 forward 保持 O(1) 的直接计算：
+
+```cpp
+class BrowserHistory {
+private:
+    vector<string> history;
+    int cur = 0;  // 当前访问的下标
+    int top = 0;  // 有效历史的最远下标
+
+public:
+    BrowserHistory(string homepage) {
+        history.push_back(move(homepage));
+        cur = 0;
+        top = 0;
+    }
+    
+    void visit(string url) {
+        cur++;
+        if (cur < history.size()) {
+            history[cur] = move(url); // 覆盖旧历史，原地复用内存
+        } else {
+            history.push_back(move(url));
+        }
+        top = cur; // 截断前进历史
+    }
+    
+    string back(int steps) {
+        cur = max(0, cur - steps); // O(1) 计算跳转
+        return history[cur];
+    }
+    
+    string forward(int steps) {
+        cur = min(top, cur + steps); // O(1) 计算跳转
+        return history[cur];
+    }
+};
+```
+
+
 
 **这是本题最值得讲的一页。** 把两种实现按 CH02 2.4 的表格对照一下：
 
