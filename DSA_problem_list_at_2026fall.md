@@ -18,8 +18,8 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 09 | 1461.检查一个字符串是否包含所有长度为 K 的二进制子串  | bit manipulation   | Medium | https://leetcode.cn/problems/check-if-a-string-contains-all-binary-codes-of-size-k/          |
 | 09 | 3827.统计单比特整数| bit manipulation  | Easy | https://leetcode.cn/problems/count-monobit-integers/          |
 | 09 | 1404.将二进制表示减到 1 的步骤数   | bit manipulation | Medium | https://leetcode.cn/problems/number-of-steps-to-reduce-a-number-in-binary-representation-to-one/    |
-| 0918 | E206.反转链表      | recursion, linked list      | Easy | https://leetcode.cn/problems/reverse-linked-list/          |
-| 0917 | E160.相交链表      | hash table, linked list, two pointers       | Easy | https://leetcode.cn/problems/intersection-of-two-linked-lists/          |
+| 0918 | E206.反转链表      | recursion, linked list      | Easy/Medium | https://leetcode.cn/problems/reverse-linked-list/          |
+| 0917 | E160.相交链表      | hash table, linked list, two pointers  | Easy/Medium | https://leetcode.cn/problems/intersection-of-two-linked-lists/          |
 | 0916 | 868.二进制间距  | bit manipulation | Easy | https://leetcode.cn/problems/binary-gap/          |
 | 0915 | 31202:这也是逆序对? | two pointers      | Medium | http://cs101.openjudge.cn/practice/31202/          |
 | 0914 | 1680.连接连续二进制数字 | bit manipulation | Medium | https://leetcode.cn/problems/concatenation-of-consecutive-binary-numbers/          |
