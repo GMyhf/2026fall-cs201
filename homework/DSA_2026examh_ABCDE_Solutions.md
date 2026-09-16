@@ -1,28 +1,37 @@
-# 2026 数算A（实验班）上机考试 A–E：Python 题解
+# 2026 数算A（实验班）上机考试 A–E：Python / C++ 题解
 
 *Updated: 2026-09-16 15:20 (GMT+8)*  
 *Compiled by Hongfei Yan (2026 Fall)*  
 *题目出处：<http://dsa.openjudge.cn/2026examh/>*
 
-> 五道题都给出**完整可提交的 Python 代码**与推导过程。每题结尾附本机实测耗时（Python 3.12，随机/构造的最大规模数据），供判断 CPython 是否够用。
+> 五道题都给出**完整可提交的 Python 与 C++ 代码**及推导过程。每题结尾附本机实测耗时（最大规模构造数据），供判断 CPython 是否够用。
 >
 > 所有代码都做过验证：小数据与暴力/穷举对拍，大数据跑最大规模构造样例。具体见每题的「验证」小节。
 
 ## 总览
 
-| 题 | 名称 | 考点 | 核心算法 | 复杂度 |
-| :-- | :--- | :--- | :--- | :--- |
-| A | Familiar？ | 堆 | 逆向撤销插入 + 正向模拟校验 | $O(n\log n)$ |
-| B | 环形匹配 | 字符串 | 周期性约简 + KMP on $s+s$ | $O(n+m)$ |
-| C | 中转网络 | 图论 | 拆点建虚拟节点 + 4 层 Dijkstra | $O((n+k+m+S)\log)$ |
-| D | 嵌套窗口 | 树状数组 | 拆式子 + 二维偏序四元前缀和 | $O(n\log R)$ |
-| E | 树上消消乐 | 树 + 贪心 | 奇偶分析 + 边定向 + 堆贪心 | $O(n\log n)$ |
+| 题 | 名称 | 考点 | 核心算法 | 复杂度 | 考场通过 |
+| :-- | :--- | :--- | :--- | :--- | :--- |
+| A | Familiar？ | 堆 | 逆向撤销插入 + 正向模拟校验 | $O(n\log n)$ | 54 / 59 |
+| B | 环形匹配 | 字符串 | 周期性约简 + KMP on $s+s$ | $O(n+m)$ | 52 / 58 |
+| C | 中转网络 | 图论 | 拆点建虚拟节点 + 4 层 Dijkstra | $O((n+k+m+S)\log)$ | 36 / 53 |
+| D | 嵌套窗口 | 树状数组 | 拆式子 + 二维偏序四元前缀和 | $O(n\log R)$ | 51 / 58 |
+| E | 树上消消乐 | 树 + 贪心 | 奇偶分析 + 边定向 + 堆贪心 | $O(n\log n)$ | **17 / 53** |
 
-**通用 I/O 模板**（五题都用它，`input()` 在 $2\times10^5$ 量级会明显拖慢）：
+> 「考场通过」= OpenJudge 上的 通过人数 / 尝试人数。**E 是断崖，C 次之**；A、B、D 属于「想到了就能写出来」的类型。详细的考点拆解见文末 [§ 考点分析](#考点分析)。
+
+**通用 I/O 模板**：
 
 ```python
+# Python：input() 在 2e5 量级会明显拖慢，一次性读入
 import sys
 data = sys.stdin.buffer.read().split()
+```
+
+```cpp
+// C++：关掉与 stdio 的同步，cin 就够快了
+ios::sync_with_stdio(false);
+cin.tie(nullptr);
 ```
 
 ---
@@ -76,7 +85,7 @@ $$x_i = h[i \gg c_i],\qquad h[p_j] \leftarrow h[p_{j-1}]\ \ (j = c_i, c_i-1, \do
 
 > 正向模拟用「空穴法」：不真的 swap，而是把父结点往下挪，最后把 $x$ 落位。这与题面的 swap 语义等价，但少一半赋值。
 
-## 代码
+## Python 代码
 
 ```python
 import sys
@@ -138,10 +147,74 @@ def main():
 main()
 ```
 
+## C++ 代码
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if (!(cin >> n)) return 0;
+    vector<long long> h0(n + 1), h(n + 1);
+    for (int i = 1; i <= n; ++i) cin >> h0[i];
+    vector<int> c(n + 1);
+    for (int i = 1; i <= n; ++i) cin >> c[i];
+
+    h = h0;
+    vector<long long> x(n + 1);
+    bool ok = true;
+
+    // ---- 逆推：倒着撤销第 n, n-1, ..., 1 次插入 ----
+    for (int i = n; i >= 1; --i) {
+        int ci = c[i];
+        if (ci < 0 || ci >= 31 || (i >> ci) < 1) { ok = false; break; }
+        x[i] = h[i >> ci];                   // 这次插入的元素停在 i >> ci
+        for (int j = ci; j >= 1; --j) {      // 祖先链上的值整体上移一层（倒着赋值）
+            h[i >> j] = h[i >> (j - 1)];
+        }
+    }
+
+    // ---- 正推验证：交换次数与最终数组都要对上 ----
+    if (ok) {
+        vector<long long> heap(n + 2, 0);
+        for (int i = 1; i <= n && ok; ++i) {
+            long long v = x[i];
+            int k = i, sw = 0;
+            while (k > 1) {
+                int p = k >> 1;
+                if (heap[p] < v) break;
+                heap[k] = heap[p];           // 空穴法：父结点下移
+                k = p;
+                ++sw;
+            }
+            heap[k] = v;
+            if (sw != c[i]) ok = false;
+        }
+        for (int i = 1; i <= n && ok; ++i) {
+            if (heap[i] != h0[i]) ok = false;
+        }
+    }
+
+    if (!ok) {
+        cout << "NO\n";
+    } else {
+        cout << "YES\n";
+        for (int i = 1; i <= n; ++i) cout << x[i] << " \n"[i == n];
+    }
+    return 0;
+}
+```
+
 ## 复杂度与实测
 
 - 时间 $O\!\left(n + \sum_i c_i\right) = O(n\log n)$，空间 $O(n)$。
-- 最坏数据（按 $n, n-1, \dots, 1$ 递减插入，每次都上浮到根，$\sum c_i \approx 3.14\times10^6$）：**0.53 s**。
+- 最坏数据（按 $n, n-1, \dots, 1$ 递减插入，每次都上浮到根，$\sum c_i \approx 3.14\times10^6$）：Python **0.53 s** / C++ **0.04 s**。
 
 ## 验证
 
@@ -189,7 +262,7 @@ $$r_i = t \iff t[0{:}n] = r_i[0{:}n] = (\text{$s$ 从 $i$ 开始的长度 $n$ �
 
 由于结果按起点递增产生，一旦 $\textit{pos}\ge n$ 就可以直接 `break`。
 
-## 代码
+## Python 代码
 
 ```python
 import sys
@@ -246,10 +319,68 @@ def main():
 main()
 ```
 
+## C++ 代码
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    long long n, m;
+    if (!(cin >> n >> m)) return 0;
+    string s, t;
+    cin >> s >> t;
+
+    string pat;
+    if (m > n) {
+        // 绕环多周 => t 必须以 n 为周期，否则无解
+        if (t.compare(n, m - n, t, 0, m - n) != 0) {
+            cout << "0\n";
+            return 0;
+        }
+        pat = t.substr(0, n);
+    } else {
+        pat = t;
+    }
+
+    const string text = s + s;                 // 破环成链
+    const size_t M = pat.size();
+
+    vector<int> fail(M, 0);                    // 失配函数
+    for (size_t i = 1, k = 0; i < M; ++i) {
+        while (k && pat[k] != pat[i]) k = fail[k - 1];
+        if (pat[k] == pat[i]) ++k;
+        fail[i] = static_cast<int>(k);
+    }
+
+    vector<long long> res;
+    for (size_t i = 0, k = 0; i < text.size(); ++i) {
+        while (k && pat[k] != text[i]) k = fail[k - 1];
+        if (pat[k] == text[i]) ++k;
+        if (k == M) {
+            long long st = static_cast<long long>(i) - static_cast<long long>(M) + 1;
+            if (st >= n) break;                // 起点递增，越界即可停
+            res.push_back(st + 1);
+            k = fail[k - 1];                   // 允许重叠匹配
+        }
+    }
+
+    cout << res.size() << '\n';
+    for (size_t i = 0; i < res.size(); ++i) cout << res[i] << " \n"[i + 1 == res.size()];
+    return 0;
+}
+```
+
 ## 复杂度与实测
 
 - 时间 $O(n+m)$，空间 $O(n+m)$。周期判断 `t[n:] == t[:m-n]` 是 C 层面的整段比较，$O(m)$ 但常数极小。
-- $n=m=5\times10^5$：全 `a`（50 万个匹配位置）**0.29 s**；随机 `ab` 串（0 个匹配，KMP 跑满 $10^6$ 字符）**0.15 s**。
+- $n=m=5\times10^5$，全 `a`（50 万个匹配位置）：Python **0.29 s** / C++ **0.03 s**。随机 `ab` 串（0 个匹配，KMP 跑满 $10^6$ 字符）：Python **0.15 s**。
 
 > **一个偷懒但危险的写法**：用 `u.find(p, start)` 循环找下一个。在「$s$ 全是 `a`」这类高度周期的数据上，每次 `find` 都要做一次长度为 $m$ 的比较，退化成 $O(nm)$。KMP 没有这个问题。
 
@@ -329,7 +460,7 @@ $$\text{答案} \;=\; \min_{\text{路线}}\ \min_{p,q\ \text{经过}}\ \bigl(\te
 
 答案是 $\textit{dist}[(n,1,1)]$——**必须两个都用掉**才是合法的费用表达式。
 
-## 代码
+## Python 代码
 
 ```python
 import sys
@@ -406,10 +537,97 @@ def main():
 main()
 ```
 
+## C++ 代码
+
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m, k;
+    if (!(cin >> n >> m >> k)) return 0;
+
+    const int N = n + k;                        // 1..n 真实节点，n+1..n+k 中转组虚拟节点
+    vector<long long> a(N + 1, 0);
+    for (int v = 1; v <= n; ++v) cin >> a[v];
+
+    // 链式前向星
+    vector<int> head(N + 1, -1), nxt, to;
+    vector<long long> wt;
+    auto addEdge = [&](int u, int v, long long w) {
+        to.push_back(v); wt.push_back(w);
+        nxt.push_back(head[u]); head[u] = static_cast<int>(to.size()) - 1;
+    };
+
+    for (int i = 0; i < m; ++i) {
+        int u, v; long long w;
+        cin >> u >> v >> w;
+        addEdge(u, v, w); addEdge(v, u, w);
+    }
+    for (int g = 1; g <= k; ++g) {
+        int sz; cin >> sz;
+        int gid = n + g;
+        for (int i = 0; i < sz; ++i) {
+            int v; cin >> v;
+            addEdge(v, gid, 0); addEdge(gid, v, 0);
+        }
+    }
+
+    // 状态 = node*4 + (i*2 + j)，i=已用折扣（某次到达免费），j=已用附加（某次到达双倍）
+    const long long INF = (1LL << 62);
+    vector<long long> dist(static_cast<size_t>(N + 1) * 4, INF);
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>,
+                   greater<pair<long long, int>>> pq;
+
+    const long long a1 = a[1];
+    const pair<long long, int> starts[4] = {{a1, 0}, {0, 2}, {2 * a1, 1}, {a1, 3}};
+    for (const auto& st : starts) {
+        int s0 = 1 * 4 + st.second;
+        if (st.first < dist[s0]) { dist[s0] = st.first; pq.push({st.first, s0}); }
+    }
+
+    const int target = n * 4 + 3;               // 折扣和附加都必须用掉
+    while (!pq.empty()) {
+        auto [d, st] = pq.top(); pq.pop();
+        if (d > dist[st]) continue;
+        if (st == target) break;
+        int u = st >> 2, flag = st & 3;
+        int i = flag >> 1, j = flag & 1;
+        for (int e = head[u]; e != -1; e = nxt[e]) {
+            int y = to[e];
+            long long w = wt[e];
+            if (y > n) {                        // 虚拟节点：不收节点费，也不能在此用折扣/附加
+                int ns = y * 4 + flag;
+                long long nd = d + w;
+                if (nd < dist[ns]) { dist[ns] = nd; pq.push({nd, ns}); }
+            } else {
+                long long ay = a[y];
+                for (int di = 0; di < 2 - i; ++di) {
+                    for (int dj = 0; dj < 2 - j; ++dj) {
+                        long long nd = d + w + ay * (1 - di + dj);
+                        int ns = y * 4 + ((i + di) * 2 + (j + dj));
+                        if (nd < dist[ns]) { dist[ns] = nd; pq.push({nd, ns}); }
+                    }
+                }
+            }
+        }
+    }
+
+    cout << dist[target] << '\n';
+    return 0;
+}
+```
+
 ## 复杂度与实测
 
 - 状态数 $4(n+k)$，每条有向边最多派生 9 种层间转移，时间 $O\bigl((m+S)\log(n+k)\bigr)$ 级别。
-- $n=m=2\times10^5,\ k=2000,\ S=2\times10^5$（权值随机）：**2.6 ~ 2.9 s**，峰值内存约 200 MB。
+- $n=m=2\times10^5,\ k=2000,\ S=2\times10^5$（权值随机）：Python **2.6 ~ 2.9 s**（峰值内存约 200 MB）/ C++ **0.27 s**（37 MB）。
 
 > **这是五题里 CPython 压力最大的一道**，超了 1.5 s 的单点限制。能进一步压常数的方向：把 `heappush` 的元组换成 `d * 4(N+1) + st` 的单个整数（减少元组分配）、把 `dist` 换成 `array('q')`。要稳过还是得 C++。算法本身是对的，先保证 Subtask 1/2/3 的分。
 
@@ -464,7 +682,7 @@ $$r_i S_1 \;-\; S_3 \;-\; l_i r_i S_0 \;+\; l_i S_2$$
 
 四个量各开一棵树状数组（或者说一棵树状数组存四元组），下标用 $r+1$（因为 $r$ 可以取 0），规模 $R=40001$。
 
-## 代码
+## Python 代码
 
 ```python
 import sys
@@ -518,10 +736,66 @@ def main():
 main()
 ```
 
+## C++ 代码
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <numeric>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if (!(cin >> n)) return 0;
+    vector<int> L(n), R(n);
+    for (int i = 0; i < n; ++i) cin >> L[i] >> R[i];
+
+    const int SZ = 40002;                       // r 取值 [0, 40000]，下标用 r+1
+    vector<long long> c0(SZ + 1, 0), c1(SZ + 1, 0), c2(SZ + 1, 0), c3(SZ + 1, 0);
+
+    vector<int> order(n);
+    iota(order.begin(), order.end(), 0);
+    sort(order.begin(), order.end(), [&](int x, int y) { return L[x] > L[y]; });
+
+    long long ans = 0;
+    int p = 0;
+    while (p < n) {
+        int q = p, cur = L[order[p]];
+        while (q < n && L[order[q]] == cur) ++q;        // l 相同的一批一起处理
+
+        for (int t = p; t < q; ++t) {                   // 先查询：表中只有 l_j > cur
+            int i = order[t];
+            long long li = L[i], ri = R[i];
+            long long s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+            for (int x = R[i]; x > 0; x -= x & -x) {    // 前缀：r_j <= ri - 1
+                s0 += c0[x]; s1 += c1[x]; s2 += c2[x]; s3 += c3[x];
+            }
+            ans += ri * s1 - s3 - li * ri * s0 + li * s2;
+        }
+        for (int t = p; t < q; ++t) {                   // 再插入这一批
+            int i = order[t];
+            long long li = L[i], ri = R[i], lr = li * ri;
+            for (int x = R[i] + 1; x <= SZ; x += x & -x) {
+                c0[x] += 1; c1[x] += li; c2[x] += ri; c3[x] += lr;
+            }
+        }
+        p = q;
+    }
+
+    cout << ans << '\n';
+    return 0;
+}
+```
+
 ## 复杂度与实测
 
 - 时间 $O(n\log R)$，$R=4\times10^4$，空间 $O(n+R)$。
-- $n=2\times10^5$ 随机数据：**1.1 ~ 1.4 s**（限时 2 s，够用）。
+- $n=2\times10^5$ 随机数据：Python **1.1 ~ 1.4 s**（限时 2 s，够用）/ C++ **0.06 s**。
 
 > **数值范围**：答案可以达到 $4\times10^{18}$ 量级（构造：$10^5$ 个 $[0,40000]$ 加 $10^5$ 个 $[20000,20001]$），逼近 `long long` 上限 $9.2\times10^{18}$。C++ 必须用 `long long`（`int` 会炸）；**Python 的大整数在这里是白送的优势**。
 >
@@ -625,7 +899,7 @@ $$\text{偶点 } v:\ \mathrm{cnt}(v)\ \text{为奇}\qquad\qquad \text{奇点 } v
 
 > `cnt[u]` 从 2 降到 1 时要给它「唯一剩下的奇邻居」加 `block`；找这个邻居用一个**只前进不回退的游标**（奇邻居只会消失不会复活），总代价 $O(\deg u)$ 摊还。
 
-## 代码
+## Python 代码
 
 ```python
 import sys
@@ -770,10 +1044,154 @@ def main():
 main()
 ```
 
+## C++ 代码
+
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    if (!(cin >> n)) return 0;
+    vector<int> b(n + 1);
+    for (int v = 1; v <= n; ++v) {
+        long long a; cin >> a;
+        b[v] = static_cast<int>(a & 1);          // 只关心奇偶
+    }
+
+    // ---- CSR 邻接表 ----
+    const int m = n - 1;
+    vector<int> us(m), vs(m), deg(n + 2, 0), start(n + 2, 0);
+    for (int e = 0; e < m; ++e) {
+        cin >> us[e] >> vs[e];
+        ++deg[us[e]]; ++deg[vs[e]];
+    }
+    for (int v = 1; v <= n; ++v) start[v + 1] = start[v] + deg[v];
+    vector<int> fill_(start), adj(2 * m);
+    for (int e = 0; e < m; ++e) {
+        adj[fill_[us[e]]++] = vs[e];
+        adj[fill_[vs[e]]++] = us[e];
+    }
+
+    // ---- 偶点：统计奇邻居个数 ----
+    vector<int> cnt(n + 1, 0);
+    for (int u = 1; u <= n; ++u) {
+        if (b[u]) continue;
+        int c = 0;
+        for (int t = start[u]; t < start[u + 1]; ++t) c += b[adj[t]];
+        if (c == 0) { cout << "NO\n"; return 0; }   // 永远凑不出奇数 -> 无解
+        cnt[u] = c;
+    }
+
+    // ---- 奇点森林 F：分量大小必须为奇数，并给每条边定向 ----
+    vector<int> pending(n + 1, 0), parent(n + 1, 0), sz(n + 1, 0), comp, stk;
+    vector<char> visited(n + 1, 0);
+    for (int root = 1; root <= n; ++root) {
+        if (!b[root] || visited[root]) continue;
+        comp.clear();
+        visited[root] = 1; parent[root] = 0;
+        stk.assign(1, root);
+        while (!stk.empty()) {                      // 迭代 DFS，n 大不能用递归
+            int v = stk.back(); stk.pop_back();
+            comp.push_back(v);
+            for (int t = start[v]; t < start[v + 1]; ++t) {
+                int w = adj[t];
+                if (b[w] && !visited[w]) { visited[w] = 1; parent[w] = v; stk.push_back(w); }
+            }
+        }
+        if (comp.size() % 2 == 0) { cout << "NO\n"; return 0; }  // 偶数分量删不空
+        for (int v : comp) sz[v] = 1;
+        for (size_t idx = comp.size(); idx-- > 0; ) {            // 先序逆序 = 自底向上
+            int v = comp[idx], p = parent[v];
+            if (p) sz[p] += sz[v];
+        }
+        for (int v : comp) {
+            int p = parent[v];
+            if (!p) continue;
+            // 边 (p, v)：v 侧大小为 sz[v]，指向「自己这侧为偶数」的端点
+            if (sz[v] & 1) ++pending[v];            // 边指向 p，即背离 v
+            else           ++pending[p];            // 边指向 v，即背离 p
+        }
+    }
+
+    // ---- block[v]：卡住奇点 v 的偶邻居个数（这些偶邻居只剩 v 一个奇邻居）----
+    vector<int> block(n + 1, 0), ptr(start);        // ptr：只前进的游标
+    vector<char> deleted(n + 1, 0);
+
+    auto uniqueLiveOdd = [&](int u) -> int {        // cnt[u]==1 时返回唯一尚存的奇邻居
+        int i = ptr[u], end = start[u + 1];
+        while (i < end) {
+            int w = adj[i];
+            if (b[w] && !deleted[w]) { ptr[u] = i; return w; }
+            ++i;
+        }
+        ptr[u] = i;
+        return 0;
+    };
+    for (int u = 1; u <= n; ++u) {
+        if (!b[u] && cnt[u] == 1) ++block[uniqueLiveOdd(u)];
+    }
+
+    auto avail = [&](int v) -> bool {
+        if (deleted[v]) return false;
+        if (!b[v]) return (cnt[v] & 1) != 0;
+        return pending[v] == 0 && block[v] == 0;
+    };
+
+    priority_queue<int, vector<int>, greater<int>> heap;
+    for (int v = 1; v <= n; ++v) if (avail(v)) heap.push(v);
+
+    vector<int> res;
+    res.reserve(n);
+    while (!heap.empty()) {
+        int v = heap.top(); heap.pop();
+        if (!avail(v)) continue;                    // 懒删除
+        deleted[v] = 1;
+        res.push_back(v);
+        if (!b[v]) {
+            if (cnt[v] == 1) {                      // 它原先卡着唯一的奇邻居
+                int z = uniqueLiveOdd(v);
+                if (z) { --block[z]; if (avail(z)) heap.push(z); }
+            }
+        } else {
+            for (int t = start[v]; t < start[v + 1]; ++t) {
+                int w = adj[t];
+                if (deleted[w]) continue;
+                if (b[w]) {
+                    --pending[w];                   // 汇点的边都背离 w
+                    if (avail(w)) heap.push(w);
+                } else {
+                    --cnt[w];
+                    if (cnt[w] == 1) {
+                        int z = uniqueLiveOdd(w);
+                        if (z) ++block[z];
+                    }
+                    if (avail(w)) heap.push(w);
+                }
+            }
+        }
+    }
+
+    if (static_cast<int>(res.size()) == n) {
+        cout << "YES\n";
+        for (int i = 0; i < n; ++i) cout << res[i] << " \n"[i + 1 == n];
+    } else {
+        cout << "NO\n";
+    }
+    return 0;
+}
+```
+
 ## 复杂度与实测
 
 - 时间 $O(n\log n)$（堆），其余都是 $O(n)$ 摊还；空间 $O(n)$。
-- $n=2\times10^5+1$ 随机树、$a$ 全奇（最坏情况：$F$ 就是整棵树）：**0.99 s**。贴着 1 s 限制，建议把 `avail` 内联掉再压一压。
+- $n=2\times10^5+1$ 随机树、$a$ 全奇（最坏情况：$F$ 就是整棵树）：Python **0.99 s** / C++ **0.08 s**。Python 贴着 1 s 限制，建议把 `avail` 内联掉再压一压。
 
 ## 验证
 
@@ -781,16 +1199,99 @@ main()
 
 ---
 
+# 考点分析
+
+## 一张表看完
+
+| 题 | 数据结构 | 算法 | 真正卡人的地方 | 课程对应材料 |
+| :-- | :--- | :--- | :--- | :--- |
+| A | 二叉堆（数组式完全二叉树） | 上浮 SiftUp、逆向模拟 | 意识到「撤销一次插入」是确定性的 | 堆 / 优先队列 |
+| B | 字符串 | KMP、破环成链 | $m>n$ 的周期性约简 | [W03 KMP](../2026spring-cs201/202603_DSA_W03_KMP_InvertedIndex_BitOpt.md) |
+| C | 堆、邻接表 | Dijkstra、分层图 | 消 max/min、消负权、消团边（三消） | [W09-12 图](../2026spring-cs201/202604_DSA_W09-12_Graph.md) |
+| D | 树状数组 | 离线二维偏序 | 把乘积拆成 4 个可维护的和 | [W02 BIT](../2026spring-cs201/202603_DSA_W02_BIT_Fenwick.md) |
+| E | 树/森林、堆、CSR | 迭代 DFS、贪心 | 奇偶归约 → 边定向 → 定向不变性 | [W06-08 树](../2026spring-cs201/202604_DSA_W06-08_Tree.md) |
+
+**一句话总结这套卷子**：A、B、D 考的是「**你有没有学过这个工具**」（堆的插入过程、KMP、树状数组）；C、E 考的是「**你能不能把题目改写成你学过的工具能吃的形状**」。后者才是分水岭——C 通过率 68%、E 只有 32%。
+
+## 逐题拆解
+
+### A. Familiar？ —— 堆，但是反着考
+
+- **数据结构**：二叉堆的**数组表示**。下标从 1 开始时，父节点是 `i >> 1`，往上走 $c$ 层就是 `i >> c`——这道题几乎全靠这个位运算。
+- **算法**：SiftUp（上浮）、逆向模拟（reverse simulation / 时光倒流）。
+- **思维关键**：大多数人学堆只学「怎么用」，这题问「**插入过程本身留下了什么痕迹**」。想通「第 $i$ 次插入的元素必定停在 `i >> c_i`」，整道题就塌了。
+- **通用套路**：**构造题 = 倒推出唯一候选 + 正向验证**。倒推往往是确定性的（因此候选唯一），但倒推不负责检查合法性，所以一定要正着再跑一遍。这个套路在「还原操作序列」类题目里反复出现。
+- **实现细节**：祖先链赋值要**倒着做**（先写深处再写浅处），否则覆盖掉还没读的值；正向模拟用空穴法少一半赋值。
+
+### B. 环形匹配 —— KMP + 两次约简
+
+- **数据结构**：字符串（没有额外结构）。
+- **算法**：**KMP**（失配函数 `fail` / `next` 数组）。匹配成功后 `k = fail[k-1]` 回退，才能找到**重叠**出现（样例 3 的 `ababab` / `abab`）。
+- **思维关键**：两次「把问题变小」——
+  1. **$m>n$ 的约简**：$r_i$ 天然满足 $r_i[j]=r_i[j+n]$，所以 $t$ 必须以 $n$ 为周期，这个条件**与 $i$ 无关**，可以一次性判掉；判过之后模式串截到 $t[0{:}n]$，长度立刻 $\le n$。这一步用到**字符串周期性**（border 理论的推论）。
+  2. **破环成链**：模式长度 $\le n$ 后最多绕一圈，在 $s+s$ 上做普通匹配即可。
+- **常见错法**：不做第 1 步，直接把 $s$ 复制 $\lceil (m+n)/n\rceil$ 份——$m=5\times10^5,\ n=1$ 时文本长度爆炸。
+- **反面教材**：用 `text.find(pat, start)` 循环。在「全是 `a`」这种高周期数据上退化成 $O(nm)$。KMP 的线性保证不是摆设。
+
+### C. 中转网络 —— 「三消」建图
+
+这题是**建模题**，Dijkstra 本身只是最后一步。要连消三个障碍：
+
+1. **消团边**：中转组内 $s$ 个点两两可达，直接连边是 $O(s^2)$，$S=2\times10^5$ 时会炸。**加一个虚拟节点**，组内每点与它连 0 权双向边，降到 $O(s)$。这是「超级源点/汇点」思想的推广，也是**拆点建图**的典型手法。
+2. **消 max/min**：$\max/\min$ 依赖整条路线，非马尔可夫。但因为是**求最小值**，可以松弛成「任选两个经过点 $p,q$，算 $\text{base}-a_p+a_q$」——挑错只会算大，最小值不受影响。**「求 min 时可以把 max/min 换成任选」是一个很通用的技巧**，值得记住。
+3. **消负权**：折扣写成「状态转移 $-a_v$」会产生负权边，Dijkstra 直接失效。改写成「**这一次到达免费**」（系数 $0$）而不是「先付再退」，系数只剩 $0/1/2$，全非负。**点权转边权**（把 $a_v$ 摊到「到达 $v$」上）是这一步的载体。
+- **数据结构**：优先队列（堆）、链式前向星。
+- **算法**：**分层图最短路**（状态 = 节点 × 2 bit），状态数 $4(n+k)$。
+- **易错点**：状态编码的位序写反（本文档就踩过，样例输出 10 而非 17）。分层最短路一定要把编码写进注释。
+
+### D. 嵌套窗口 —— 二维偏序的标准件
+
+- **数据结构**：**树状数组（Fenwick Tree）**，这里要开 4 棵（或一棵存四元组）。
+- **算法**：**离线二维偏序** = 排序消掉一维 + 树状数组处理另一维。
+- **思维关键**：两步数学化简——
+  1. 条件化简：$l_i<l_j<r_j<r_i$ 中 $l_j<r_j$ 是题目白送的，**条件退化为二维偏序** $l_i<l_j \wedge r_j<r_i$。没看出这一点的会去想三维偏序（CDQ 分治），复杂度和代码量都翻倍。
+  2. 权重拆项：$(l_j-l_i)(r_i-r_j)=l_jr_i-l_jr_j-l_ir_i+l_ir_j$，于是只要维护 $\sum 1,\ \sum l_j,\ \sum r_j,\ \sum l_jr_j$ 四个前缀和。**把带权求和拆成若干个「可加」的量**，是树状数组类题目的核心动作。
+- **易错点**：
+  - $l$ 相同的一批必须**先整批查询、再整批插入**，否则 $l_i=l_j$ 会被算进去（要的是严格小于）。
+  - **溢出**：答案可达 $4\times10^{18}$ 量级，C++ 必须 `long long`（`int` 必炸）。Python 的大整数在这题白送。
+
+### E. 树上消消乐 —— 本场的分水岭
+
+通过率 17/53。它难不在代码（代码量和 D 差不多），难在**要连做五层推理**：
+
+1. **奇偶归约**：$a_v$ 只以 $\bmod\ 2$ 参与判定，先把点分成奇点/偶点。**看到 $\bmod 2$ 就该想「只留奇偶」**。
+2. **结构分解**：偶点删除时不影响任何人（$b_v=0$），只有奇点之间的边有耦合。于是把奇点抽出来得到**导出森林 $F$**，问题变成「$F$ 上删度数为偶的点」+「偶点搭便车」。**把强耦合部分剥离出来单独研究**是图论题的常规动作。
+3. **可行性刻画（不变量）**：一次删除移走偶数条边 $\Rightarrow$ 分量边数奇偶是不变量 $\Rightarrow$ **每个分量点数必须是奇数**。再加上「每个存活偶点至少剩一个奇邻居」，两条合起来充要。**找不变量是判无解的标准武器**。
+4. **合法点的刻画 → 边定向**：「度数为偶」不够（$p=5$ 的链上删中点会劈出两个偶分量）。正确条件是「$F-v$ 的每个分量都是奇数」。因为 $|C|$ 为奇，**每条边恰有一侧是偶数**，把边指向「自己这侧为偶」的端点，则 $v$ 合法 $\iff$ **$v$ 是汇点**。汇点存在性用「沿着不指向自己的边走，树上无环故必然停下」证明。
+5. **不变性引理**：删汇点时各分支都是奇数、度数为偶，算一下就知道**所有边的两侧奇偶都不变** $\Rightarrow$ **定向算一次就够**，维护退化成「删点时给邻居的计数器减一」，$O(1)$。**没有这一步就只能每次重算，$O(n^2)$。**
+
+- **数据结构**：树/森林、CSR 邻接表、优先队列（小根堆）。
+- **算法**：迭代 DFS 求子树大小（$n=2\times10^5$ **不能递归**，会爆栈）、堆贪心。
+- **为什么贪心对**：因为「可删」已经定义成「删了之后仍然可行」，而可行性保证还能删光，所以每步取最小编号就是字典序最小。**字典序最小 = 每步取最小的「安全」选择**，前提是你能 $O(1)$ 判断安全。
+- **摊还技巧**：偶点找「唯一剩下的奇邻居」用**只前进不回退的游标**，总代价 $O(\deg)$。
+
+## 如果只想带走五句话
+
+1. **构造题**：倒推出唯一候选，再正向验证一遍。（A）
+2. **环形问题**：破环成链；周期性可以先把规模砍下来。（B）
+3. **建图题**：团边用虚拟点、点权转边权、状态进分层图；Dijkstra 要求非负权，就把「退钱」改写成「不收钱」。（C）
+4. **带权二维偏序**：把权重拆成几个可加的量，每个量一棵树状数组。（D）
+5. **看到 $\bmod 2$**：先归约奇偶，再找不变量判无解，最后找「安全选择」做贪心。（E）
+
+---
+
 # 附：本机实测汇总
 
-Python 3.12.3 / Linux，最大规模构造数据：
+Python 3.12.3 / g++ 13.3 `-O2` / Linux，最大规模构造数据：
 
-| 题 | 限时 | 实测 | 结论 |
-| :-- | :-- | :-- | :-- |
-| A | 1000 ms | 0.53 s | 够用 |
-| B | 1000 ms | 0.29 s | 够用 |
-| C | 1500 ms | 2.6 ~ 2.9 s | **超**，需压常数或改 C++ |
-| D | 2000 ms | 1.1 ~ 1.4 s | 够用 |
-| E | 1000 ms | 0.99 s | 贴线，需压常数 |
+| 题 | 限时 | Python | C++ | 结论 |
+| :-- | :-- | :-- | :-- | :-- |
+| A | 1000 ms | 0.53 s | 0.04 s | 两者都够用 |
+| B | 1000 ms | 0.29 s | 0.03 s | 两者都够用 |
+| C | 1500 ms | 2.6 ~ 2.9 s | 0.27 s | **Python 超时**，需压常数或改 C++ |
+| D | 2000 ms | 1.1 ~ 1.4 s | 0.06 s | 两者都够用 |
+| E | 1000 ms | 0.99 s | 0.08 s | Python 贴线，C++ 从容 |
 
-> 机器与 OJ 评测机性能不同，以上只作参考。五题的**算法复杂度都已到位**，C、E 的问题纯粹是 CPython 的常数。
+> 机器与 OJ 评测机性能不同，以上只作参考。五题的**算法复杂度都已到位**，Python 在 C、E 上的问题纯粹是解释器常数——C++ 版在同一数据上有 10~30 倍余量。
+>
+> **C++ 代码的验证**：五份代码都在 `-Wall -Wextra -Werror -O2` 下编译无警告，并在 ASan/UBSan 下跑过中等规模数据（无越界、无未定义行为）；此外与上面已对拍过暴力的 Python 版做了随机交叉对拍（A/B/D/E 各 1200 组，C 800 组连通图），输出完全一致，最大规模数据上的输出也逐字节相同。
