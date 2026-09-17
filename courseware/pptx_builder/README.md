@@ -51,7 +51,7 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 | `table(slide, rows, x, y, w, colW, {fontSize, rowH, tight})` | 表格；首行为表头；单元格可写 `{t, mono, bold, color, fill, align}` |
 | `image(slide, name, x, y, maxW, maxH)` | 按宽高比缩放进框内并居中 |
 | `card` / `pill` / `numCircle` / `cells` / `arrowLabel` | 圆角卡片、胶囊标签、编号圆点、数组格子、带箭头的指针标签，用来画示意图 |
-| `save(out)` | 写文件（含下面的 pPr 修正） |
+| `save(out)` | 写文件（含下面的 pPr 修正与母版主题修正） |
 
 配色 `C`：`dark` 深绿（标题/深色页）、`green`、`gold` / `goldText`、`cream`（提示卡）、`mint`、`code`（代码底色）、`ok` 绿、`bad` 红、`muted` 灰。字体：正文 Microsoft YaHei，代码 Courier New。
 
@@ -65,6 +65,12 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 
 ## 踩过的坑（改库前先看）
 
+0. **Mac 版 PowerPoint 打开提示「修复」（标题带 `[Repaired]`）**：根因是 pptxgenjs 让讲义母版（notesMaster）和幻灯片母版共用 `ppt/theme/theme1.xml`。schema 校验、LibreOffice 都发现不了。
+   `save()` 会给讲义母版单独写一份 `theme2.xml`，与 dsa-modernization 的 T-077（commit `e30646c`，在 PowerPoint 上逐项二分确认）是同一个修法；
+   同时按 PowerPoint 实测干净的包的形状打包：`[Content_Types].xml` 为第一个条目，不写目录条目。
+   - 检查：`node lib.js check ../*.pptx`（有共用主题就返回非 0）
+   - 修一个已有的 pptxgenjs 产物（不用重新生成）：`node lib.js fix in.pptx out.pptx`
+   - 真正的判据仍是在 PowerPoint 里打开，看标题有没有 `[Repaired]`。
 1. **pptxgenjs 4.x 多 run 段落丢项目符号**：一个段落里只要有第二个 run（比如带 `**粗体**`），它会在该 run 前再写一个 `<a:pPr><a:buNone/>`，符号消失且 XML 非法。`save()` 里用正则删掉段中多余的 `pPr`。**不要**改成给每个 run 都设 `bullet`——那会让每个 run 自成一段。
 2. **表格 margin 的单位随数值变**：`margin[0] >= 1` 按「磅」，`< 1` 按「英寸」。`[0, 4, 0, 4]` 会被当成 4 英寸边距把表格撑爆；紧凑表格用 `[0.01, 0.05, 0.01, 0.05]`。
 3. **模板字符串里的代码不要随手缩进**：deck 文件的幻灯片代码块写在顶层，就是为了保证代码块里的缩进原样进入幻灯片。

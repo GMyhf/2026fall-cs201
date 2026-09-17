@@ -268,8 +268,9 @@ async function save(out) {
     const outXml = xml.replace(/(<\/a:r>)(?:<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>(?:(?!<\/a:pPr>).)*<\/a:pPr>)/g, (m, r) => { fixed++; return r; });
     zip.file(name, outXml);
   }
+  await giveEachMasterItsOwnTheme(zip);
   fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
-  fs.writeFileSync(out, await zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" }));
+  fs.writeFileSync(out, await pack(zip));
   console.log(`wrote ${out}  (${pres.slides.length} slides, stripped ${fixed} stray pPr)`);
 }
 
@@ -282,4 +283,70 @@ return {
 };
 }
 
-module.exports = { createDeck, C, FONT, MONO };
+// pptxgenjs 让讲义母版（notesMaster）与幻灯片母版共用 ppt/theme/theme1.xml。
+// schema 不违规、LibreOffice 照开，但 Mac 上的原生 PowerPoint 每次打开都要「修复」（标题带 [Repaired]）。
+// 与 dsa-modernization 的 T-077（commit e30646c）同一根因：在 PowerPoint 上逐项二分，
+// 只有「讲义母版改用自己的主题部件」这一处改动能消除修复。
+async function giveEachMasterItsOwnTheme(zip) {
+  const ctPath = "[Content_Types].xml";
+  let ct = await zip.file(ctPath).async("string");
+  const theme1 = await zip.file("ppt/theme/theme1.xml").async("string");
+  const notesRels = Object.keys(zip.files).filter((n) => /^ppt\/notesMasters\/_rels\/notesMaster\d+\.xml\.rels$/.test(n));
+  let next = Object.keys(zip.files).filter((n) => /^ppt\/theme\/theme\d+\.xml$/.test(n)).length + 1;
+  for (const relsPath of notesRels) {
+    const rels = await zip.file(relsPath).async("string");
+    if (!rels.includes("../theme/theme1.xml")) continue;
+    const name = `theme${next++}.xml`;
+    zip.file(`ppt/theme/${name}`, theme1);
+    zip.file(relsPath, rels.replace("../theme/theme1.xml", `../theme/${name}`));
+    ct = ct.replace("</Types>", `<Override PartName="/ppt/theme/${name}" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/></Types>`);
+  }
+  zip.file(ctPath, ct);
+}
+
+// 按 PowerPoint 实测无修复的包的形状重新打包：[Content_Types].xml 为第一个条目，不写目录条目。
+async function pack(zip) {
+  const names = Object.keys(zip.files).filter((n) => !zip.files[n].dir);
+  const ordered = ["[Content_Types].xml", ...names.filter((n) => n !== "[Content_Types].xml")];
+  const out = new JSZip();
+  for (const n of ordered) out.file(n, await zip.file(n).async("nodebuffer"), { createFolders: false });
+  return out.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+}
+
+// 静态判据：每个母版（幻灯片/讲义/备注）引用的主题部件互不相同。返回违规描述列表。
+async function checkMastersOwnThemes(file) {
+  const zip = await JSZip.loadAsync(fs.readFileSync(file));
+  const owners = {};
+  for (const n of Object.keys(zip.files).filter((f) => /^ppt\/(slideMasters|notesMasters|handoutMasters)\/_rels\/.*\.rels$/.test(f))) {
+    const m = (await zip.file(n).async("string")).match(/Target="\.\.\/theme\/(theme\d+\.xml)"/);
+    if (m) (owners[m[1]] = owners[m[1]] || []).push(n);
+  }
+  return Object.entries(owners).filter(([, v]) => v.length > 1).map(([t, v]) => `${t} 被共用: ${v.join(", ")}`);
+}
+
+module.exports = { createDeck, giveEachMasterItsOwnTheme, checkMastersOwnThemes, C, FONT, MONO };
+
+// 命令行：node lib.js check a.pptx [b.pptx ...]   检查母版主题是否共用
+//         node lib.js fix in.pptx out.pptx        修正一个已有的 pptxgenjs 产物
+if (require.main === module) {
+  const [cmd, ...args] = process.argv.slice(2);
+  (async () => {
+    if (cmd === "check") {
+      let bad = 0;
+      for (const f of args) {
+        const problems = await checkMastersOwnThemes(f);
+        console.log(problems.length ? `✗ ${f}\n  ${problems.join("\n  ")}` : `✓ ${f}`);
+        bad += problems.length;
+      }
+      process.exit(bad ? 1 : 0);
+    } else if (cmd === "fix") {
+      const zip = await JSZip.loadAsync(fs.readFileSync(args[0]));
+      await giveEachMasterItsOwnTheme(zip);
+      fs.writeFileSync(args[1], await pack(zip));
+      console.log("wrote", args[1]);
+    } else {
+      console.log("usage: node lib.js check a.pptx ... | node lib.js fix in.pptx out.pptx");
+      process.exit(2);
+    }
+  })().catch((e) => { console.error(e); process.exit(1); });
+}
