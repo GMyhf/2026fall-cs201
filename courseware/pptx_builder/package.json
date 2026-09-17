@@ -1,0 +1,12 @@
+{
+  "name": "dsa-pptx-builder",
+  "private": true,
+  "description": "把 DSA 讲义 Markdown 整理成讲课 PPTX（pptxgenjs）",
+  "scripts": {
+    "ch03": "node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx"
+  },
+  "dependencies": {
+    "jszip": "3.10.2",
+    "pptxgenjs": "4.0.1"
+  }
+}
