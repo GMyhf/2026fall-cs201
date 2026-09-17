@@ -1,4 +1,4 @@
-# DSA 习题课：链表 6 题（对应 CH01～CH02）
+# DSA 线性表
 
 *Updated 2026-09-16 GMT+8*  
 *Compiled by Hongfei Yan (2026 Fall)*  
