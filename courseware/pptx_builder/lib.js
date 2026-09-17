@@ -29,6 +29,13 @@ function imageSize(file) {
   throw new Error("无法读取图片尺寸（仅支持 PNG/JPEG）: " + file);
 }
 
+function normalizeBox(o) {
+  const b = { ...o };
+  if (typeof b.w === "number" && b.w < 0) { b.x = (b.x || 0) + b.w; b.w = -b.w; b.flipH = !b.flipH; }
+  if (typeof b.h === "number" && b.h < 0) { b.y = (b.y || 0) + b.h; b.h = -b.h; b.flipV = !b.flipV; }
+  return b;
+}
+
 function createDeck({ title = "", author = "Hongfei Yan", imgDir = path.join(__dirname, ".cache") } = {}) {
 const pres = new pptxgen();
 pres.layout = "LAYOUT_16x9"; // 10 x 5.625 英寸——所有坐标都按这个画布
@@ -36,6 +43,17 @@ pres.title = title;
 pres.author = author;
 let pageNo = 0;
 const imageFiles = {};
+
+// 负宽/负高的形状（例如从左下画到右上的线：h < 0）会被 pptxgenjs 原样写成 <a:ext cy="-…">。
+// 尺寸必须非负（ST_PositiveSize2D）；LibreOffice 照画，但 PowerPoint 打开即要「修复」。
+// 这里统一换算成正尺寸 + flipH/flipV，画出来的线段方向不变。
+const addSlide = pres.addSlide.bind(pres);
+pres.addSlide = (...args) => {
+  const slide = addSlide(...args);
+  const addShape = slide.addShape.bind(slide);
+  slide.addShape = (type, o = {}) => addShape(type, normalizeBox(o));
+  return slide;
+};
 
 
 
@@ -313,7 +331,7 @@ async function pack(zip) {
   return out.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-// 静态判据：每个母版（幻灯片/讲义/备注）引用的主题部件互不相同。返回违规描述列表。
+// 静态判据：① 每个母版（幻灯片/讲义/备注）引用的主题部件互不相同；② 幻灯片里没有负尺寸形状。返回违规描述列表。
 async function checkMastersOwnThemes(file) {
   const zip = await JSZip.loadAsync(fs.readFileSync(file));
   const owners = {};
@@ -321,7 +339,12 @@ async function checkMastersOwnThemes(file) {
     const m = (await zip.file(n).async("string")).match(/Target="\.\.\/theme\/(theme\d+\.xml)"/);
     if (m) (owners[m[1]] = owners[m[1]] || []).push(n);
   }
-  return Object.entries(owners).filter(([, v]) => v.length > 1).map(([t, v]) => `${t} 被共用: ${v.join(", ")}`);
+  const problems = Object.entries(owners).filter(([, v]) => v.length > 1).map(([t, v]) => `${t} 被共用: ${v.join(", ")}`);
+  for (const n of Object.keys(zip.files).filter((f) => /^ppt\/slides\/slide\d+\.xml$/.test(f))) {
+    const neg = (await zip.file(n).async("string")).match(/<a:ext cx="-?\d+" cy="-?\d+"\/>/g)?.filter((e) => e.includes("-")) || [];
+    if (neg.length) problems.push(`${n} 有负尺寸形状: ${neg.join(" ")}`);
+  }
+  return problems;
 }
 
 module.exports = { createDeck, giveEachMasterItsOwnTheme, checkMastersOwnThemes, C, FONT, MONO };

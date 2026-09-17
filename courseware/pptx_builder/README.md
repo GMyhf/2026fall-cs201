@@ -65,12 +65,16 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 
 ## 踩过的坑（改库前先看）
 
-0. **Mac 版 PowerPoint 打开提示「修复」（标题带 `[Repaired]`）**：根因是 pptxgenjs 让讲义母版（notesMaster）和幻灯片母版共用 `ppt/theme/theme1.xml`。schema 校验、LibreOffice 都发现不了。
-   `save()` 会给讲义母版单独写一份 `theme2.xml`，与 dsa-modernization 的 T-077（commit `e30646c`，在 PowerPoint 上逐项二分确认）是同一个修法；
-   同时按 PowerPoint 实测干净的包的形状打包：`[Content_Types].xml` 为第一个条目，不写目录条目。
-   - 检查：`node lib.js check ../*.pptx`（有共用主题就返回非 0）
-   - 修一个已有的 pptxgenjs 产物（不用重新生成）：`node lib.js fix in.pptx out.pptx`
-   - 真正的判据仍是在 PowerPoint 里打开，看标题有没有 `[Repaired]`。
+0. **Mac 版 PowerPoint 打开弹窗要「修复」（标题带 `Repaired`）**：
+   - **根因（2026-09-17 在 mac-mini-2 上用 PowerPoint 实测二分）**：形状写成了负尺寸。画从左下到右上的线时传 `h: -0.45`，pptxgenjs 原样写出 `<a:ext cy="-411480"/>`；
+     尺寸必须非负，LibreOffice 照画、`validate.py` 也不报，但 PowerPoint 打开就要修复。58 页里只有带这种线的第 12、16 页各自单独就会触发。
+   - **修复**：`createDeck` 包装了 `slide.addShape`，负的 `w`/`h` 自动换算成正尺寸 + `flipH`/`flipV`，线的方向不变。deck 里照常写负值即可。
+   - 讲义母版单独用 `theme2.xml`、`[Content_Types].xml` 排第一，是照 dsa-modernization T-077（`e30646c`，它自己的 Python 生成器）加的。
+     **对 pptxgenjs 产物实测不是触发点**（共用主题的版本同样干净），留着无害。
+   - **检查**：`node lib.js check ../*.pptx`（负尺寸形状、母版共用主题，有问题返回非 0）；`node lib.js fix in.pptx out.pptx` 只修主题，不修负尺寸——负尺寸要重新生成。
+   - **最终判据只有 PowerPoint**。自动判据：`osascript` 让 PowerPoint `open` 文件，**等 10 秒**再读 `name of active presentation`，带 `Repaired` 即坏；
+     每个文件之间要退出 PowerPoint（关掉一份被修复的演示文稿后紧接着再 open 会报 -9074）；等 3 秒不够，大文件会误判为干净。
+     先用一份已知干净、一份已知坏的文件定标，再二分：按页范围生成子集（给 `pres.addSlide` 挂个只保留指定页的包装）→ 单页 → 看该页 XML。
 1. **pptxgenjs 4.x 多 run 段落丢项目符号**：一个段落里只要有第二个 run（比如带 `**粗体**`），它会在该 run 前再写一个 `<a:pPr><a:buNone/>`，符号消失且 XML 非法。`save()` 里用正则删掉段中多余的 `pPr`。**不要**改成给每个 run 都设 `bullet`——那会让每个 run 自成一段。
 2. **表格 margin 的单位随数值变**：`margin[0] >= 1` 按「磅」，`< 1` 按「英寸」。`[0, 4, 0, 4]` 会被当成 4 英寸边距把表格撑爆；紧凑表格用 `[0.01, 0.05, 0.01, 0.05]`。
 3. **模板字符串里的代码不要随手缩进**：deck 文件的幻灯片代码块写在顶层，就是为了保证代码块里的缩进原样进入幻灯片。
