@@ -1,11 +1,13 @@
 # pptx_builder：讲义 Markdown → 讲课 PPTX
 
-把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。第三章 `202609_DSA_03_Stack_Queue.pptx`（58 页）就是这样生成的。
+把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。已有三章：第一章 62 页、第二章 73 页、第三章 58 页。
 
 ```
 pptx_builder/
 ├── lib.js                     # 通用库：配色、版式、代码块、表格、图片、保存（含 bug 修正）
-├── decks/ch03_stack_queue.js  # 第三章的全部幻灯片内容（新章节照它新建一个文件）
+├── decks/ch01_adt_floyd_complexity.js   # 第一章
+├── decks/ch02_linear_list.js            # 第二章（含附录 A 六道链表题）
+├── decks/ch03_stack_queue.js            # 第三章（做新章节照它新建一个文件）
 ├── qa.sh                      # 渲染成图片 + 2x2 网格，逐页目检
 └── package.json               # pptxgenjs 4.0.1 + jszip 3.10.2
 ```
@@ -65,16 +67,18 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 
 ## 踩过的坑（改库前先看）
 
-0. **Mac 版 PowerPoint 打开弹窗要「修复」（标题带 `Repaired`）**：
-   - **根因（2026-09-17 在 mac-mini-2 上用 PowerPoint 实测二分）**：形状写成了负尺寸。画从左下到右上的线时传 `h: -0.45`，pptxgenjs 原样写出 `<a:ext cy="-411480"/>`；
-     尺寸必须非负，LibreOffice 照画、`validate.py` 也不报，但 PowerPoint 打开就要修复。58 页里只有带这种线的第 12、16 页各自单独就会触发。
-   - **修复**：`createDeck` 包装了 `slide.addShape`，负的 `w`/`h` 自动换算成正尺寸 + `flipH`/`flipV`，线的方向不变。deck 里照常写负值即可。
+0. **Mac 版 PowerPoint 打开弹窗要「修复」（标题带 `Repaired`）**：已实测出**两个**根因，都是形状几何非法，LibreOffice 照画、`validate.py` 也不报。
+   - **根因 1（负尺寸）**：画从左下到右上的线时传 `h: -0.45`，pptxgenjs 原样写出 `<a:ext cy="-411480"/>`。第三章 58 页里只有带这种线的第 12、16 页各自单独就会触发。
+   - **根因 2（`rectRadius` 碰上 0 宽/高）**：`card(..., h: 0)` 这类退化矩形，pptxgenjs 按 `min(w,h)` 折算圆角，写出 `<a:gd name="adj" fmla="val Infinity"/>`。第一章第 20 页就是这么一张多余的零高白卡片。
+   - **修复**：`createDeck` 包装了 `slide.addShape`：负的 `w`/`h` 换算成正尺寸 + `flipH`/`flipV`（线的方向不变），`w` 或 `h` 为 0 时丢掉 `rectRadius`。deck 里照常写即可。
    - 讲义母版单独用 `theme2.xml`、`[Content_Types].xml` 排第一，是照 dsa-modernization T-077（`e30646c`，它自己的 Python 生成器）加的。
      **对 pptxgenjs 产物实测不是触发点**（共用主题的版本同样干净），留着无害。
-   - **检查**：`node lib.js check ../*.pptx`（负尺寸形状、母版共用主题，有问题返回非 0）；`node lib.js fix in.pptx out.pptx` 只修主题，不修负尺寸——负尺寸要重新生成。
-   - **最终判据只有 PowerPoint**。自动判据：`osascript` 让 PowerPoint `open` 文件，**等 10 秒**再读 `name of active presentation`，带 `Repaired` 即坏；
-     每个文件之间要退出 PowerPoint（关掉一份被修复的演示文稿后紧接着再 open 会报 -9074）；等 3 秒不够，大文件会误判为干净。
-     先用一份已知干净、一份已知坏的文件定标，再二分：按页范围生成子集（给 `pres.addSlide` 挂个只保留指定页的包装）→ 单页 → 看该页 XML。
+   - **检查**：`node lib.js check ../*.pptx` —— 负尺寸形状、`Infinity`/`NaN` 几何参数、母版共用主题，有问题返回非 0。
+     （`node lib.js fix in.pptx out.pptx` 只修主题；几何问题要改 deck 重新生成。）
+   - **最终判据只有 PowerPoint**，而且**读名字要轮询**：`osascript` `open` 之后每 2 秒读一次 `name of active presentation`，最多 30 次，
+     任何一次带 `Repaired` 即坏，全程没有才算干净。**只等固定 10 秒会漏判**（62 页的第一章曾被读成干净，轮询才稳定复现）。
+     每个文件之间 `pkill -x "Microsoft PowerPoint"`，否则下一次 open 会报 -9074 或读到上一份的名字。
+     先用一份已知干净、一份已知坏的文件定标，再二分：按页范围生成子集（给 `pres.addSlide` 挂个只保留 `ONLY` 指定页的包装）→ 单页 → 看该页 XML 的 `<a:ext>` 与 `<a:gd>`。
 1. **pptxgenjs 4.x 多 run 段落丢项目符号**：一个段落里只要有第二个 run（比如带 `**粗体**`），它会在该 run 前再写一个 `<a:pPr><a:buNone/>`，符号消失且 XML 非法。`save()` 里用正则删掉段中多余的 `pPr`。**不要**改成给每个 run 都设 `bullet`——那会让每个 run 自成一段。
 2. **表格 margin 的单位随数值变**：`margin[0] >= 1` 按「磅」，`< 1` 按「英寸」。`[0, 4, 0, 4]` 会被当成 4 英寸边距把表格撑爆；紧凑表格用 `[0.01, 0.05, 0.01, 0.05]`。
 3. **模板字符串里的代码不要随手缩进**：deck 文件的幻灯片代码块写在顶层，就是为了保证代码块里的缩进原样进入幻灯片。

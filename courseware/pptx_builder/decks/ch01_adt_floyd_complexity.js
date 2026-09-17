@@ -481,7 +481,6 @@ public:
     text(s, it[0], 1.45, y + 0.12, 7.8, 0.35, { fontSize: 14.5, bold: true, color: C.dark, margin: 0 });
     text(s, it[1], 1.45, y + 0.5, 7.9, 0.6, { fontSize: 11.5, margin: 0 });
   });
-  card(s, 0.5, 5.0, 9.0, 0.0, C.white);
   text(s, "最小生成树的 Prim 与 Kruskal、最短路的 Dijkstra 都是贪心；Floyd 是比较典型的动态规划；最佳二叉搜索树也是动态规划。", 0.5, 4.95, 9.0, 0.3, { fontSize: 10.5, color: C.goldText, bold: true });
 }
 

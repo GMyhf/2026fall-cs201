@@ -4,6 +4,7 @@
   "description": "把 DSA 讲义 Markdown 整理成讲课 PPTX（pptxgenjs）",
   "scripts": {
     "ch01": "node decks/ch01_adt_floyd_complexity.js ../202609_DSA_01_ADT_Floyd_Complexity.pptx",
+    "ch02": "node decks/ch02_linear_list.js ../202609_DSA_02_Linear_List.pptx",
     "ch03": "node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx"
   },
   "dependencies": {

@@ -33,6 +33,9 @@ function normalizeBox(o) {
   const b = { ...o };
   if (typeof b.w === "number" && b.w < 0) { b.x = (b.x || 0) + b.w; b.w = -b.w; b.flipH = !b.flipH; }
   if (typeof b.h === "number" && b.h < 0) { b.y = (b.y || 0) + b.h; b.h = -b.h; b.flipV = !b.flipV; }
+  // rectRadius 是按 min(w, h) 折算成 adj 的：w 或 h 为 0 时 pptxgenjs 会写出
+  // <a:gd name="adj" fmla="val Infinity"/>，PowerPoint 打开即要「修复」（2026-09-17 实测）。
+  if (b.rectRadius && (!b.w || !b.h)) delete b.rectRadius;
   return b;
 }
 
@@ -331,7 +334,7 @@ async function pack(zip) {
   return out.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }
 
-// 静态判据：① 每个母版（幻灯片/讲义/备注）引用的主题部件互不相同；② 幻灯片里没有负尺寸形状。返回违规描述列表。
+// 静态判据：① 每个母版引用的主题部件互不相同；② 没有负尺寸形状；③ 没有 Infinity/NaN 几何参数。返回违规描述列表。
 async function checkMastersOwnThemes(file) {
   const zip = await JSZip.loadAsync(fs.readFileSync(file));
   const owners = {};
@@ -341,8 +344,11 @@ async function checkMastersOwnThemes(file) {
   }
   const problems = Object.entries(owners).filter(([, v]) => v.length > 1).map(([t, v]) => `${t} 被共用: ${v.join(", ")}`);
   for (const n of Object.keys(zip.files).filter((f) => /^ppt\/slides\/slide\d+\.xml$/.test(f))) {
-    const neg = (await zip.file(n).async("string")).match(/<a:ext cx="-?\d+" cy="-?\d+"\/>/g)?.filter((e) => e.includes("-")) || [];
+    const xml = await zip.file(n).async("string");
+    const neg = xml.match(/<a:ext cx="-?\d+" cy="-?\d+"\/>/g)?.filter((e) => e.includes("-")) || [];
     if (neg.length) problems.push(`${n} 有负尺寸形状: ${neg.join(" ")}`);
+    const bad = xml.match(/fmla="val (?:Infinity|-Infinity|NaN)"/g) || [];
+    if (bad.length) problems.push(`${n} 有非法几何参数（多半是 rectRadius 碰上 0 宽/高）: ${[...new Set(bad)].join(" ")}`);
   }
   return problems;
 }
