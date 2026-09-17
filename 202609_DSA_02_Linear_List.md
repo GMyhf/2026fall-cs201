@@ -1909,7 +1909,7 @@ while pA is not pB:
 
 LeetCode 上只能提交 `Solution` 类，本地想跑起来需要自己造链表。建议把下面两段存成文件，以后所有链表题直接复用。
 
-### A.1 Python
+### Python
 
 ```python
 import sys
@@ -1971,7 +1971,7 @@ if __name__ == "__main__":
     print(Solution().getIntersectionNode(ha, hb) is want)            # True
 ```
 
-### A.2 C++
+### C++
 
 ```cpp
 #include <iostream>
@@ -2038,7 +2038,7 @@ g++ -std=c++17 -O2 main.cpp -o main && ./main
 
 ---
 
-### 附录 B 参考资料
+# 附录 B 参考资料
 
 - 往期讲义：`2026spring-cs201/202603_DSA_W04-5.5_Complexity_LinearStructures.md`（第 3 节「链表」，含循环链表与更多示例）
 - 上学期同类题解：`homework/DSA_MOOC_solution.md`
