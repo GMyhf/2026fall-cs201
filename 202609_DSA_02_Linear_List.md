@@ -1,28 +1,621 @@
-# DSA 线性表
+# DSA 线性表：顺序表、链表
 
 *Updated 2026-09-16 GMT+8*  
 *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/
 
-> **教材对应**：[GMyhf/dsa-modernization](https://gmyhf.github.io/dsa-modernization/) 第 1 章（概论：ADT、渐进分析）、第 2 章（线性表：顺序表、单链表、双链表、循环链表）。
+**知识点**：线性表的定义 $(K, r)$ 与结构特点；抽象数据类型与运算的五个类别；
+顺序表的类定义、检索、插入、删除与翻倍扩容；**三法则**与二次释放；
+单链表的结点、头结点、尾指针与循链定位；双链表；循环链表；两种实现的代价对比与取舍。
+
+> 本章要回答三个问题
 >
-> **课堂定位**：CH02 讲的是「如何自己造一个链表类」；本讲义练的是「拿到别人造好的链表，怎么在上面写算法」。两者合起来才是完整的第 2 章。
+> 1. **一串同类型元素排成唯一的先后次序，怎么存？** 顺序表、链表（单链表、双链表、循环链表）。
+> 2. **为什么同一个操作，在两种结构上代价差一个数量级？** 关键是分清「按位置找元素」和「已知结点后改链接」这两类操作。
+> 3. **自己管着 `new` 出来的内存，最少要写哪几个函数？** 三法则。
 >
-> **课前准备**：6 道题请先各自尝试 20 分钟再看题解。做不出来不要紧，但要能说清楚「卡在哪一步」。
+> 一句话概括：**顺序表按下标读是 $O(1)$，插删要搬 $O(n)$ 个元素；链表已知前驱后插删是 $O(1)$，但找到那个前驱仍是 $O(n)$。**
+>
+> 
+>
+> 编程实践：讲的是「如何自己造一个链表类」；练的是「拿到别人造好的链表，怎么在上面写算法」。两者合起来才是完整的。
+>
+> 课前准备：6 道题请先各自尝试 20 分钟再看题解。做不出来不要紧，但要能说清楚「卡在哪一步」。
+
+
+
+# 1 线性表的概念
+
+**线性表**（linear list）是由称为**元素**（element）的数据项组成的一种有限且有序的序列。用二元组 $B = (K, R)$ 写出来就是
+
+$$K = \{k_0, k_1, \cdots, k_{n-1}\}, \quad R = \{r\}, \quad r = \{\langle k_i, k_{i+1} \rangle,\ 0 \le i \le n-2\}$$
+
+- 元素个数 $n$ 称为线性表的**长度**：$n = 0$ 时称空表；
+- $k_0$ 称开始结点或**表首**，$k_{n-1}$ 称终止结点或**表尾**；
+- 线性关系 $r$ 刻画前驱、后继关系，**具有反对称性和传递性**；
+- 逻辑特征：**$K$ 中每个结点在关系 $r$ 上最多只有一个前驱和一个后继。**
+
+线性结构有两个结构特点：
+
+- **均匀性** —— 同一线性表中的各数据元素必定具有相同的数据类型和长度；
+- **有序性** —— 各元素在表中都有自己的位置，元素之间的相对位置是线性的。
+
+> 概念上并不反对元素类型不同（例如广义表），但那属于高级线性结构。
+
+同一种线性结构在不同场合有不同称谓：**顺序表、链表、串、栈、顺序文件**；其中的元素相应地叫表目、结点或记录。
+
+在线性表上可以实施的运算依赖于具体应用，但一般不外乎两大类：一类是**对整个表**的操作——创建或置空一个线性表、合并两个线性表、判断表是否为空或为满；另一类是**对表中元素**的操作——查找满足一定条件的元素、在表中插入或删除指定的元素。
+
+按照特性，线性表的运算还可以细分为 5 类：① 创建线性表的一个实例；② 析构，消除实例并释放所占空间；③ 获取当前线性表的信息（由内容寻找位置、由位置读取元素内容），不改变表的内容；④ 访问并改变表的内容或结构，例如更新指定元素、添加元素、删除元素、清空线性表；⑤ 辅助管理操作，例如求表的当前长度。
+
+把这组运算定义在 `ArrayList<T>` 上，要定下来的是**这张表**：
+
+| 运算                             | 含义                             | 时间代价    |
+| -------------------------------- | -------------------------------- | ----------- |
+| `at(i)` / `set(i, x)`            | 按下标取值、改值                 | $O(1)$      |
+| `find(x)`                        | 按内容查位置；找不到返回「没有」 | $O(n)$      |
+| `insert(i, x)`                   | 在位置 i 插入                    | $O(n)$      |
+| `append(x)`                      | 在表尾追加                       | 摊还 $O(1)$ |
+| `remove(i)`                      | 删除位置 i 上的元素并把它带回来  | $O(n)$      |
+| `size()` / `empty()` / `clear()` | 长度、判空、置空                 | $O(1)$      |
+
+
+
+### 两类存储结构
+
+线性表运算的具体实现与它在计算机中的物理存储结构密切相关，效率也与存储结构相关。线性表的存储结构本质上是**逻辑结构到存储空间的映射**：不仅要为结点集合到存储器单元建立一个映射，同时还要为元素之间的线性关系到相应存储单元地址间的关系建立映射。主要有两类：
+
+1. **定长的顺序存储结构**，简称顺序表。程序中通过创建数组来建立，为线性表分配一块连续的存储空间，元素顺序地存储在这些地址连续的空间中，以「物理位置相邻」来表示元素之间的关系。定长存储结构的不足之处是限制了线性表的长度变化。
+2. **变长的线性存储结构**，也称链接式存储结构，简称链表。它使用指针来表示元素之间的线性关系，利用前驱和后继关系将各个元素用指针链接起来；对表长不加限制，需要加入新元素时可以方便地申请空间并链接到合适的位置上。
+
+
+
+### 先跑一遍
+
+```cpp file=code/ch02/array_list/demo.cpp
+// 「先跑一遍」：用教学版 ArrayList 走一遍 append / insert / find / remove。
+// 编译运行：
+//   g++ -std=c++17 -I code/ch02/array_list code/ch02/array_list/demo.cpp -o demo && ./demo
+#include "teaching.hpp"
+
+#include <iostream>
+
+int main() {
+    ArrayList<int> values;
+    values.append(10);
+    values.append(30);
+    values.insert(1, 20);
+
+    std::cout << "顺序表:";
+    for (int value : values) {   // 有 begin()/end()，range-for 直接可用
+        std::cout << ' ' << value;
+    }
+
+    // find 返回 optional：有值才解引用
+    if (auto pos = values.find(20)) {
+        std::cout << "\n查找 20 的下标: " << *pos << '\n';
+    }
+
+    std::cout << "删除位置 1 得到 " << values.remove(1) << "，剩余:";
+    for (int value : values) {
+        std::cout << ' ' << value;
+    }
+    std::cout << '\n';
+}
+```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Werror -Icode/ch02/array_list \
+    code/ch02/array_list/demo.cpp -o /tmp/list-demo
+/tmp/list-demo
+```
+
+```console
+顺序表: 10 20 30
+查找 20 的下标: 1
+删除位置 1 得到 20，剩余: 10 30
+```
+
+`insert(1, 20)` 要把后面的元素右移一位，这是顺序表的固有代价。链表同一组操作只改两条链接，但按位置找前驱仍是 O(n)：
+
+```cpp file=code/ch02/linked_list/demo.cpp
+// 「先跑一遍」：用教学版 LinkedList 走一遍 append / insert / remove。
+// 编译运行：
+//   g++ -std=c++17 -I code/ch02/linked_list code/ch02/linked_list/demo.cpp -o demo && ./demo
+#include "teaching.hpp"
+
+#include <iostream>
+
+int main() {
+    LinkedList<int> values;
+    values.append(10);
+    values.append(30);
+    values.insert(1, 20);
+
+    std::cout << "链表:";
+    for (int value : values) {
+        std::cout << ' ' << value;
+    }
+    std::cout << "\n删除位置 0 得到 " << values.remove(0) << "，剩余:";
+    for (int value : values) {
+        std::cout << ' ' << value;
+    }
+    std::cout << "\nappend 之后尾元素是 " << values.at(values.size() - 1) << '\n';
+}
+```
+
+```bash
+c++ -std=c++17 -Wall -Wextra -Werror -Icode/ch02/linked_list \
+    code/ch02/linked_list/demo.cpp -o /tmp/link-demo
+/tmp/link-demo
+```
+
+```console
+链表: 10 20 30
+删除位置 0 得到 10，剩余: 20 30
+append 之后尾元素是 30
+```
+
+`append` 经尾指针 O(1) 接链，不必再从头走到尾。
+
+
+
+# 2 顺序表
+
+### 为什么这一节没有 Python 版
+
+这里故意只给 C++。顺序表的重点不是“把几个值放进一个序列”，而是容量、对象生命周期和扩容失败时旧数组是否仍然有效。若直接写成 Python `list`，扩容、元素搬迁和析构都由解释器隐藏；得到的是一个可用的容器，却看不到三法则、移动语义和强异常保证为何存在。算法侧可以把同一思想用 Python 重讲，存储侧若也用 `list`，反而会把本节要教的课删掉。
+
+按顺序方式存储的线性表称为顺序表(array-based list)，又称向量(vector)，通过数组建立。
+
+假设每个元素占用 L 个存储单元，顺序表的开始结点 k₀ 的存储位置记为
+b = loc(k₀)，称为首地址；则下标为 i 的元素 kᵢ 的存储位置为
+
+$$\mathrm{loc}(k_i) = b + i \times L$$
+
+每个元素的存储位置都与起始位置相差一个与位序成正比的常数。只要确定了基地址，
+表中任一元素的地址都能直接算出——**顺序表因此是一种随机存取的存储结构**，
+按下标取值的时间代价为 O(1)。物理相邻表示了逻辑相邻。
+
+**(a) 线性表的逻辑结构**
+
+| 数据元素 | k₀   | k₁   | …    | kᵢ   | …    | kₙ₋₁ | …    |           |
+| -------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | --------- |
+| 逻辑地址 | 0    | 1    | …    | i    | …    | n−1  | …    | maxSize−1 |
+
+**(b) 线性表的顺序存储结构**
+
+| 数据元素 | k₀   | k₁   | …    | kᵢ    | …    | kₙ₋₁      | …    |
+| -------- | ---- | ---- | ---- | ----- | ---- | --------- | ---- |
+| 存储地址 | b    | b+L  | …    | b+i·L | …    | b+(n−1)·L | …    |
+
+图 顺序表的示意图
+
+
+
+### 2.2.1 顺序表的类定义
+
+缓冲区是**裸指针**。于是这个类自己管着资源，就必须遵守**三法则**：一个类只要写了**析构函数、拷贝构造、拷贝赋值**中的任意一个，通常这三个都得写。理由很直白——你之所以要写析构函数，是因为你在管资源；既然在管资源，编译器那份「逐成员照抄」的拷贝就一定是错的：照抄一个指针成员的结果是**两个对象指向同一块内存**，各自析构时各释放一次，同一块内存被释放两次。
+
+```cpp
+template <typename T>
+class ArrayList {
+public:
+    explicit ArrayList(size_type initial_capacity = 8)
+        : data_(new T[initial_capacity]), capacity_(initial_capacity), size_(0) {}
+
+    ~ArrayList() { delete[] data_; }
+    // ... 三法则的另外两个见下文
+
+private:
+    T* data_;             // 指向底层数组      —— 原书 T* aList
+    size_type capacity_;  // 数组能放多少个    —— 原书 int maxSize
+    size_type size_;      // 现在放了几个      —— 原书 int curLen
+};
+```
+
+
+
+#### 为什么用裸指针而不是 `unique_ptr`
+
+缓冲区是**裸指针**，于是这个类自己管着资源，就必须遵守三法则。这里不用 `std::unique_ptr<T[]>`，是因为**顺序表的存储管理正是本节的教学内容**：用智能指针时这几个函数编译器生成的就够用，看不到它们为什么必须存在。
+
+
+
+### 2.2.2 顺序表的运算实现
+
+#### 顺序表的检索
+
+顺序表上的检索分按位置和按内容两类。按位置的检索直接由地址公式算出，O(1)——就是上面 `at()` 和 `set()` 那几行：先查下标合不合法，然后直接 `data_[index]`，没有循环。
+
+按内容的检索是把待查值与表中元素依次比较，O(n)。这里要专门讲一下**「没找到」怎么告诉调用方**——这是反复出现的一个问题，第一次遇到值得说透。
+
+一次调用要带回两件事：**找没找到**，和**在第几个位置**
+
+std::optional<size_type>` 可以理解成一个「可能装着下标的盒子」：找到了，盒子里是下标；没找到，盒子是空的（`std::nullopt`）。关键在于**取值必须先开盒**，而开盒这一步绕不过去：
+
+```cpp
+// find 返回 optional：有值才解引用
+if (auto pos = values.find(20)) {   // 先问盒子空不空
+    std::cout << *pos << '\n';			// 确认非空后才取值
+}
+```
+
+对空盒子直接 `*` 取值是未定义行为，用 `.value()` 取则会抛 `std::bad_optional_access`。
+
+
+
+##### 按位置的检索：$O(1)$
+
+```cpp
+const T& at(size_type index) const {
+    if (index >= size_) {
+        throw std::out_of_range("ArrayList::at: 下标越界");
+    }
+    return data_[index];        // 直接算地址，没有循环
+}
+
+void set(size_type index, const T& value) {
+    if (index >= size_) {
+        throw std::out_of_range("ArrayList::set: 下标越界");
+    }
+    data_[index] = value;
+}
+```
+
+
+
+##### 按内容的检索：$O(n)$，而且要说清「没找到」
+
+检索的时间代价体现在比较次数上。最好情况是第 1 个元素即为所求，比较 1 次；最差情况是表中没有该元素，比较 n 次。等概率假设下平均比较次数为
+
+$$\sum_{i=1}^{n} p \times i = \frac{1}{n}(1 + 2 + \cdots + n) = \frac{n+1}{2}$$
+
+即平均需要检查表中一半的元素，时间开销为 O(n)。
+
+```cpp
+std::optional<size_type> find(const T& value) const {
+    for (size_type i = 0; i < size_; ++i) {
+        if (data_[i] == value) {
+            return i;
+        }
+    }
+    return std::nullopt;
+}
+```
+
+
+
+#### 顺序表的插入：搬 $O(n)$ 个元素
+
+```cpp
+void insert(size_type pos, const T& value) {
+    if (pos > size_) {                       // pos == size() 就是追加到表尾
+        throw std::out_of_range("ArrayList::insert: 插入位置非法");
+    }
+    if (size_ == capacity_) {
+        grow();
+    }
+    for (size_type i = size_; i > pos; --i) {
+        data_[i] = data_[i - 1];             // 从后往前搬，否则会自己覆盖自己
+    }
+    data_[pos] = value;
+    ++size_;
+}
+
+void append(const T& value) { insert(size_, value); }
+```
+
+> ⚠️ **「从后往前搬」不是风格问题。** 反过来写（从 `pos` 开始往后覆盖），第一步就把后面的数据抹掉了，整段变成 `pos` 处那一个值的复制。
+
+#### 顺序表的删除与扩容
+
+```cpp
+T remove(size_type pos) {
+    if (pos >= size_) { throw std::out_of_range("ArrayList::remove: 下标越界"); }
+    T removed = data_[pos];
+    for (size_type i = pos; i + 1 < size_; ++i) {
+        data_[i] = data_[i + 1];             // 后面的元素左移一位
+    }
+    --size_;
+    return removed;
+}
+
+void grow() {                                // 私有
+    size_type next = (capacity_ == 0) ? 1 : capacity_ * 2;
+    T* fresh = new T[next];
+    for (size_type i = 0; i < size_; ++i) { fresh[i] = data_[i]; }
+    delete[] data_;      // 先搬完再释放旧的，顺序反了就会读到已释放的内存
+    data_ = fresh;
+    capacity_ = next;
+}
+```
+
+**翻倍而不是加一**，才能让 `append` 的摊还代价保持 $O(1)$：
+从 0 增长到 $n$ 一共搬 $1 + 2 + 4 + \cdots + n < 2n$ 个元素，平摊到 $n$ 次追加上是常数。若每次只加一，总搬运量是 $O(n^2)$。
+
+### 三法则
+
+> **三法则（Rule of Three）**：一个类只要写了**析构函数、拷贝构造、拷贝赋值**中的任意一个，通常这三个都得写。
+
+理由很直白：
+
+- 你之所以要写**析构函数**，是因为你在**管资源**；
+- 既然在管资源，编译器那份「逐成员照抄」的拷贝就**一定是错的**；
+- 照抄一个指针成员的结果是**两个对象指向同一块内存**，
+  各自析构时各释放一次 —— **同一块内存被释放两次**。
+
+
+
+```cpp
+ArrayList(const ArrayList& other)
+    : data_(new T[other.capacity_]), capacity_(other.capacity_), size_(other.size_) {
+    for (size_type i = 0; i < size_; ++i) {
+        data_[i] = other.data_[i];              // 深拷贝：各自一块内存
+    }
+}
+
+ArrayList& operator=(const ArrayList& other) {
+    if (this == &other) { return *this; }       // 自赋值：a = a
+    T* fresh = new T[other.capacity_];          // 先申请新的
+    for (size_type i = 0; i < other.size_; ++i) { fresh[i] = other.data_[i]; }
+    delete[] data_;                             // 成功了再释放旧的
+    data_ = fresh;
+    capacity_ = other.capacity_;
+    size_ = other.size_;
+    return *this;
+}
+```
+
+> ⚠️ 注意赋值的**顺序**：先申请、拷完、再释放旧的。
+> 倒过来写（先 `delete[]` 再 `new`），`new` 抛异常就把原对象也毁掉了。
+
+
+
+教学版的 `clear()` 只有一行：`void clear() { size_ = 0; }`。
+
+
+
+# 3 链表
+
+顺序表用**物理相邻**表示逻辑相邻，所以按下标读取是 $O(1)$，但中间插入和删除需要搬动后续元素。链表把逻辑相邻写进结点的**链接域**：
+结点可以散落在内存中；**给定一个前驱结点后，插入或删除只改常数条指针。**
+
+代价也必须如实保留：**要按位置找到那个前驱，仍须从表头循链**，所以按位置访问、查找、插入和删除的总时间仍是 $O(n)$。
+
+![图 2.4 单链表示例](https://raw.githubusercontent.com/GMyhf/img1/main/fig-2-4.png)
+
+图 单链表示例。结点分成两部分：`data` 域存真正的数据，`next` 域存后继结点的地址。
+终止结点没有后继，`next` 是空指针，图里用「\」表示。
+
+从这张图能读出三件事：
+
+- 访问**只能从表头开始顺着 `next` 走**：`head->next->data` 是 8，`head->next->next->data` 是 50；
+- **结点在内存中不必两两相邻** —— 这正是链表能以常数条指针完成插入删除的原因；
+- **表越长，这条链越长**。
+
+为了让「在表尾追加」不必每次走到底，另设一个指向尾结点的变量 `tail`，`append()` 因此是 $O(1)$。
+
+![图2.5 具有头、尾两指针的单链表](/Users/hfyan/git/dsa-modernization/book/assets/scan/fig-2-5.png)
+
+图 具有头、尾两指针的单链表。
+
+
+
+### 先跑一遍
+
+```cpp
+    LinkedList<int> values;
+    values.append(10);
+    values.append(30);        // 经尾指针 O(1) 接链，不必从头走到尾
+    values.insert(1, 20);     // 只改两条链接，但要先循链找到前驱
+
+    std::cout << "链表:";
+    for (int value : values) {
+        std::cout << ' ' << value;
+    }
+    std::cout << "\n删除位置 0 得到 " << values.remove(0) << "，剩余:";
+    // ...
+    std::cout << "\nappend 之后尾元素是 " << values.at(values.size() - 1) << '\n';
+```
+
+```console
+链表: 10 20 30
+删除位置 0 得到 10，剩余: 20 30
+append 之后尾元素是 30
+```
+
+### 2.3.1 单链表
+
+#### 结点与头结点
+
+```cpp
+template <typename T>
+class LinkedList {
+private:
+    struct Node {          // 原书【代码2.6】：一个数据域 + 一根指向后继的链接
+        T value;
+        Node* next;
+    };                     // 放在 private：调用方拿不到指针，就改不坏链
+
+public:
+    LinkedList() : head_(new Node), tail_(head_), size_(0) {
+        head_->next = nullptr;
+    }
+    // ...
+private:
+    Node* head_;           // 头结点：不存放数据的哨兵，等价于原书「第 -1 个结点」
+    Node* tail_;           // 尾指针：空表时回指头结点
+    size_type size_;
+};
+```
+
+![图 2.6 引入头结点的单链表](https://raw.githubusercontent.com/GMyhf/img1/main/fig-2-6.png)
+
+图 2.6　引入头结点的单链表：(a) 带头结点的空表，(b) 一个典型的带头结点的单链表。
+带阴影的那个结点就是头结点，它的数据域不算表中元素。
+
+**头结点**（head node）是一个不存放数据的哨兵，永远排在第一个真元素前面。有了它，表头插入和删除都变成「修改某个前驱的 `next`」，空表也不必另写一套分支。
+
+#### 循链定位
+
+```cpp
+Node* predecessor_at(size_type pos) const {
+    if (pos > size_) {
+        throw std::out_of_range("LinkedList: 下标越界");
+    }
+    Node* predecessor = head_;          // pos == 0 时前驱就是头结点
+    for (size_type i = 0; i < pos; ++i) {
+        predecessor = predecessor->next;
+    }
+    return predecessor;
+}
+```
+
+**头结点的意义就在 `Node* predecessor = head_;` 这一行。**没有它，就要为 `pos == 0` 单写一套分支，插入、删除各写一次。
+
+#### 插入与删除
+
+```cpp
+void insert(size_type pos, const T& value) {
+    Node* predecessor = predecessor_at(pos);      // ① 循链找前驱，O(n)
+    Node* fresh = new Node;
+    fresh->value = value;
+    fresh->next = predecessor->next;              // ② 改两条链接，O(1)
+    predecessor->next = fresh;
+    if (predecessor == tail_) { tail_ = fresh; }  // 插在表尾，尾指针要跟上
+    ++size_;
+}
+
+T remove(size_type pos) {
+    if (pos >= size_) { throw std::out_of_range("LinkedList::remove: 下标越界"); }
+    Node* predecessor = predecessor_at(pos);
+    Node* dying = predecessor->next;
+    T value = dying->value;
+    predecessor->next = dying->next;              // 只改一条链接
+    if (dying == tail_) { tail_ = predecessor; }  // 删的是最后一个
+    delete dying;
+    --size_;
+    return value;
+}
+```
+
+**链表的插入不搬元素，但定位要走。** 这就是链表与顺序表的全部分工。
+
+#### 析构必须循环，不能递归
+
+```cpp
+void clear() {
+    Node* current = head_->next;
+    while (current != nullptr) {        // 沿 next 逐个释放
+        Node* dying = current;
+        current = current->next;        // 先记下后继，再 delete
+        delete dying;
+    }
+    head_->next = nullptr;
+    tail_ = head_;                      // 表空了，尾指针退回头结点
+    size_ = 0;
+}
+
+~LinkedList() { clear(); delete head_; }
+```
+
+> ⚠️ 链长十万级时**递归释放会耗尽运行栈** 。
+> 另外注意 `current = current->next;` 必须写在 `delete dying;` 之前，否则就是从已释放的内存里读指针。
+
+
+
+### 2.3.2 双链表
+
+![图 2.10 双链表的结点](https://raw.githubusercontent.com/GMyhf/img1/main/fig-2-10.png)
+
+<center>图 双链表的结点：一个数据域，两根指针 —— `prev` 指前驱，`next` 指后继</center>
+
+双链结点比单链结点多一根 `prev`。多出来的那个指针（64 位机上 8 字节）
+只买到一件事，但这件事很值：**已知一个结点时，删除它是 $O(1)$**。
+
+单链表要做同一件事，得先从头走到它的前驱，$O(n)$ ——因为**单链表从一个结点走不回前一个**。
+
+
+
+### 2.3.3 循环链表
+
+循环链表把尾结点的 `next` 接回首结点，因而**没有 `nullptr` 作为终点**。它适合轮转调度、循环缓冲区等「处理完最后一个又回到第一个」的场景。
+
+例子是**进程轮转**：多个进程串成一个环，用一个 `current` 指针指向下一个要激活的进程，指针往前走一步就轮到下一个。
+
+只要把单链表最后一个结点的 `next` 指回表首，就得到循环链表；**不多花任何存储**，却让「从任一结点都能访问到其余全部结点」成为可能。
+
+只保存 `tail` 就够了：取首结点是 `tail->next`，尾插只需改两根链接，均为 $O(1)$。
+
+> ⚠️ **代价是边界更容易写错**：空表、单结点表和多结点表的链接规则不同。
+>
+> - 遍历时必须保存起点，并在再次遇到起点时停止，**不能写成「走到 `nullptr` 为止」**；
+> - 删除最后一个结点后要把 `tail` 清空；删除首结点则把 `tail->next` 跳过被删结点；
+> - **测试至少应覆盖三种长度**，并验证从每个结点出发恰好走一整圈。
+
+把双链表的首尾也接起来，就是循环双链表，反向遍历同样闭合。
 
 ---
 
+# 4 线性表实现方法的比较
+
+| 运算                      | 顺序表               | 链表                      |
+| ------------------------- | -------------------- | ------------------------- |
+| 按下标读写 `at(i)`        | **$O(1)$** 随机访问  | $O(n)$ 只能循链数过去     |
+| 按内容查找 `find(x)`      | $O(n)$               | $O(n)$                    |
+| **已知前驱**后插入 / 删除 | $O(n)$ 要搬后续元素  | **$O(1)$** 只改常数条链接 |
+| 按位置插入 / 删除         | $O(n)$               | $O(n)$ 定位是瓶颈         |
+| 表尾追加 `append(x)`      | 摊还 $O(1)$          | **$O(1)$** 靠尾指针       |
+| 额外空间                  | 几乎没有（紧凑存储） | 每个结点一根指针          |
+
+> 注意第三、第四行的差别 —— **链表的 $O(1)$ 前提是已经拿到了前驱结点**。
+> 只给位置 `i` 的话，两种结构都是 $O(n)$，只是瓶颈不同：顺序表是搬，链表是走。
+
+### 取舍时的两个因素
+
+**1. 不要使用顺序表的场合。** 经常插入 / 删除**内部**元素时不宜使用顺序表 ——
+平均情况下需要移动表中一半的元素。此外，无法确定线性表长度的最大值时也不宜采用。
+
+**2. 不要使用链表的场合。** 经常按位置访问、而且按位读比插删频繁时不宜使用链表 ——
+顺链扫描比按下标读元素费时。此外，**指针本身的存储开销也要考虑**：
+如果与结点内容所占空间相比，指针所占比例较大（超过 1:1），应该慎重选择。
+
+### 线性表在后面各章的位置
+
+- **存储管理**本质上就是利用线性表管理可利用空间（第 12 章）；
+- **散列方法**是把顺序表和链表结合起来的一种数据结构（第 10 章）；
+- **栈、队列、串**都是限制了存取点的线性表（第 3、4 章）；
+- 顺序表提供随机访问，因此适合**二分检索**（第 10 章）与**快速排序**（第 8 章）。
+
+---
+
+# 本章小结
+
+- **线性结构是最简单且最常用的一种数据结构**，元素之间满足线性关系。
+- 线性表通常有**顺序**和**链式**两种存储方式，各运算的实现效率各有千秋。
+- **顺序表**是组织数据的最简单方法：易用、空间开销较小、支持随机访问，
+  是存储**静态数据**的理想选择。
+- **链表**不仅适用于频繁增删结点的应用，还适用于处理事先无法确定长度的线性表。
+- **三法则**：写了析构函数，就得写拷贝构造和拷贝赋值 —— 否则是二次释放。
+  原书 `arrList` 与 `arrStack` 都栽在这里。
+- **头结点**是消特例的工具：表头插删不再需要单写一套分支。
+
+
+
+
+
+# 附录A 编程练习
+
 ## 0 为什么是这 6 道题
 
-第 2 章最后一节（2.4 线性表实现方法的比较）给出了一张代价表，其中最关键的一行是：
+线性表的几个关键运算：
 
 | 运算 | 顺序表 | 链表 |
 | :--- | :--- | :--- |
 | 按下标读写 `at(i)` | $O(1)$ 随机访问 | $O(n)$ 只能循链数过去 |
 | **已知前驱后插入 / 删除** | $O(n)$ 要搬后续元素 | $O(1)$ 只改常数条链接 |
 | 按位置插入 / 删除 | $O(n)$ 搬 | $O(n)$ 定位是瓶颈 |
-
-课件里那句话要背下来：
 
 > **链表的 $O(1)$ 前提是「已经拿到了前驱结点」。只给位置 $i$ 的话两种结构都是 $O(n)$，只是瓶颈不同：顺序表是搬，链表是走。**
 
@@ -37,7 +630,7 @@ https://github.com/GMyhf/2026fall-cs201/
 | 核心技巧 | E21 合并两个有序链表 | 头结点（哨兵）为什么能省掉分支 | 2.3.1 |
 | 核心技巧 | E234 回文链表 | 快慢指针找中点 + 反转的综合 | 2.3.1 |
 
-**M146 是这一组的收官题**：它是「散列方法是把顺序表和链表结合起来的一种数据结构」（CH02 结尾预告的第 10 章）在工程里最常见的一次落地。
+**M146 是这一组的收官题**：它是「散列方法是把顺序表和链表结合起来的一种数据结构」在工程里最常见的一次落地。
 
 ---
 
@@ -45,7 +638,7 @@ https://github.com/GMyhf/2026fall-cs201/
 
 ### 1.1 结点定义
 
-LeetCode 给定的结点定义（与课件 2.3.1 的 `struct Node` 是同一个东西，只是把 `value/next` 改名成了 `val/next`，并且去掉了头结点）：
+LeetCode 给定的结点定义（与 2.3.1 的 `struct Node` 是同一个东西，只是把 `value/next` 改名成了 `val/next`，并且去掉了头结点）：
 
 ```python
 # Python
@@ -105,9 +698,9 @@ return dummy.next;
 
 ---
 
-# 2 单向链表
+## 2 单向链表
 
-## 2.1 E160. 相交链表
+### 2.1 E160. 相交链表
 
 > hash table, linked list, two pointers, https://leetcode.cn/problems/intersection-of-two-linked-lists/
 
@@ -230,7 +823,7 @@ public:
 
 ---
 
-## 2.2 E206. 反转链表
+### 2.2 E206. 反转链表
 
 > recursion, linked list, https://leetcode.cn/problems/reverse-linked-list/
 
@@ -238,7 +831,7 @@ public:
 
 ### 解法一：迭代（三指针）
 
-反转的本质是：**把每个结点的 `next` 从「指向后继」改成「指向前驱」**。单链表从一个结点走不回前一个（CH02 2.3.2 讲双链表时的原话），所以必须自己拿一个 `prev` 变量把前驱背在身上。
+反转的本质是：**把每个结点的 `next` 从「指向后继」改成「指向前驱」**。单链表从一个结点走不回前一个，所以必须自己拿一个 `prev` 变量把前驱背在身上。
 
 ```
 初始:   None    1 → 2 → 3 → 4 → 5 → None
@@ -342,7 +935,7 @@ public:
 
 ---
 
-# 3 双向链表
+### 3 双向链表
 
 课件 2.3.2 用一句话概括了双链表的全部价值：
 
@@ -362,7 +955,7 @@ class DNode:
 
 ---
 
-## 3.1 M1472. 设计浏览器历史记录
+#### 3.1 M1472. 设计浏览器历史记录
 
 > doubly-linked list, design, https://leetcode.cn/problems/design-browser-history/
 
@@ -426,7 +1019,7 @@ class BrowserHistory:
 
 ### C++ 实现
 
-C++ 没有 GC，丢弃的那一段必须**自己 `delete`**——这正是 CH02 反复强调的「自己管着 `new` 出来的内存，最少要写哪几个函数」（三法则）。
+C++ 没有 GC，丢弃的那一段必须**自己 `delete`**——「自己管着 `new` 出来的内存，最少要写哪几个函数」（三法则）。
 
 ```cpp
 class BrowserHistory {
@@ -561,7 +1154,7 @@ public:
 
 
 
-**这是本题最值得讲的一页。** 把两种实现按 CH02 2.4 的表格对照一下：
+**这是本题最值得讲的一页。** 把两种实现对照一下：
 
 | 运算 | 双链表 | 顺序表（动态数组） |
 | :--- | :--- | :--- |
@@ -572,7 +1165,7 @@ public:
 
 **结论**：`back(steps)` 是「按位置跳转」，顺序表的随机访问在这里完胜。真实浏览器用双链表，是因为每条历史记录还要挂标题、截图、表单数据等一大坨东西，且需要在中间删除单条记录；但就 LeetCode 这道题而言，**数组版又短又快**。
 
-> 这恰好印证了课件 2.4 的取舍原则：「**经常按位置访问、而且按位读比插删频繁时不宜使用链表**」。做题时把双链表版写出来是为了练手，工程选型要看真实负载。
+> 取舍原则：「**经常按位置访问、而且按位读比插删频繁时不宜使用链表**」。做题时把双链表版写出来是为了练手，工程选型要看真实负载。
 
 ### 易错点
 
@@ -583,7 +1176,7 @@ public:
 
 ---
 
-## 3.2 M146. LRU 缓存
+#### 3.2 M146. LRU 缓存
 
 > hash table, doubly-linked list, design, https://leetcode.cn/problems/lru-cache/
 
@@ -619,13 +1212,13 @@ public:
 
 ### 为什么要用两个哨兵
 
-用 `head` 和 `tail` 两个不存数据的哨兵结点（课件 2.3.1 的头结点思想，双向版），可以让：
+用 `head` 和 `tail` 两个不存数据的哨兵结点（头结点思想，双向版），可以让：
 
 - 「插到表头」= 插在 `head` 之后；
 - 「删除表尾」= 删除 `tail` 之前的那个；
 - **空表、单结点表、多结点表用同一套代码**，一个 `if` 都不用写。
 
-<img src="https://pic.leetcode.cn/1696039105-PSyHej-146-3-c.png" alt="LRU 图示" style="zoom: 25%;" />
+<img src="https://raw.githubusercontent.com/GMyhf/img1/main/1696039105-PSyHej-146-3-c.png" alt="LRU 图示" style="zoom: 25%;" />
 
 ### Python 实现（手写双链表）
 
@@ -719,7 +1312,7 @@ put(3,3)   k1          [k3, k1]            [k1, k3]     ← 逐出 k2 时 _remov
 
 全程 `self.tail` 是**同一个对象**，`tail.prev` 却始终指向正确的最久未使用结点；正向、反向遍历每一步都互为逆序，说明两条链保持一致。
 
-**这正是哨兵的价值。** 如果不设 `tail` 哨兵，而让 `self.tail` 直接指向最后一个真结点，就得到处补分支：插第一个结点时 `if 表空: self.tail = node`，删最后一个结点时 `if node is self.tail: self.tail = node.prev`，删成空表还要置 `None`。用了两个哨兵，每个真结点前后**一定有结点**，`_remove` / `_add_front` 里一个 `if` 都不用写——代价只是「表尾是谁」从 `self.tail` 挪到了 `self.tail.prev`。这和 1.3 节、课件 2.3.1 的头结点是同一个思想，只是换成了双向、首尾各一个。
+**这正是哨兵的价值。** 如果不设 `tail` 哨兵，而让 `self.tail` 直接指向最后一个真结点，就得到处补分支：插第一个结点时 `if 表空: self.tail = node`，删最后一个结点时 `if node is self.tail: self.tail = node.prev`，删成空表还要置 `None`。用了两个哨兵，每个真结点前后**一定有结点**，`_remove` / `_add_front` 里一个 `if` 都不用写——代价只是「表尾是谁」从 `self.tail` 挪到了 `self.tail.prev`。与头结点是同一个思想，只是换成了双向、首尾各一个。
 
 > C++ 版的 `head_` / `tail_` 同理：构造函数之后也不再赋值，`tail_->prev` 在 `remove` / `addFront` 里被间接更新。
 
@@ -878,9 +1471,9 @@ public:
 
 ---
 
-# 4 核心技巧拓展
+### 4 核心技巧拓展
 
-## 4.1 E21. 合并两个有序链表
+#### 4.1 E21. 合并两个有序链表
 
 > linked list, recursion, https://leetcode.cn/problems/merge-two-sorted-lists/
 
@@ -998,7 +1591,7 @@ public:
 
 ---
 
-## 4.2 E234. 回文链表
+#### 4.2 E234. 回文链表
 
 > linked list, two pointers, https://leetcode.cn/problems/palindrome-linked-list/
 
@@ -1220,9 +1813,9 @@ class Solution:
 
 ---
 
-# 5 小结
+### 5 小结
 
-## 5.1 六道题的复杂度总表
+#### 5.1 六道题的复杂度总表
 
 | 题号 | 最优解法 | 时间 | 额外空间 | 一句话技巧 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -1233,7 +1826,7 @@ class Solution:
 | E21 合并有序链表 | 哨兵 + 归并 | $O(m+n)$ | $O(1)$ | 剩余段整体挂上，$O(1)$ |
 | E234 回文链表 | 快慢指针 + 反转 | $O(n)$ | $O(1)$ | 中点定义要靠手推确认 |
 
-## 5.2 五个必须形成肌肉记忆的模板
+#### 5.2 五个必须形成肌肉记忆的模板
 
 ```python
 # 1. 哨兵（虚拟头结点）—— 表头可能变化时一律用它
@@ -1262,7 +1855,7 @@ while pA is not pB:
     pB = pB.next if pB else headA
 ```
 
-## 5.3 回到 CH02 的那张表
+#### 5.3 回到 CH02 的那张表
 
 做完这 6 题，再读一遍课件 2.4 的取舍原则，应该有不一样的体会：
 
@@ -1288,7 +1881,7 @@ while pA is not pB:
 
 ---
 
-# 6 课后拓展（自选，不计入作业）
+### 6 课后拓展（自选）
 
 按难度递增，都是同一批模板的变体：
 
@@ -1306,17 +1899,17 @@ while pA is not pB:
 | M92 | [反转链表 II](https://leetcode.cn/problems/reverse-linked-list-ii/) | 模板 1 + 模板 2 |
 | M430 | [扁平化多级双向链表](https://leetcode.cn/problems/flatten-a-multilevel-doubly-linked-list/) | 双链表 + 栈 |
 | T25 | [K 个一组翻转链表](https://leetcode.cn/problems/reverse-nodes-in-k-group/) | 模板 1 + 模板 2，链表题的集大成者 |
-| T23 | [合并 K 个升序链表](https://leetcode.cn/problems/merge-k-sorted-lists/) | E21 + 堆 / 分治（第 6 章预告） |
+| T23 | [合并 K 个升序链表](https://leetcode.cn/problems/merge-k-sorted-lists/) | E21 + 堆 / 分治 |
 
 > **M142 环形链表 II** 特别推荐：它的证明和 E160 的双指针证明是**同一类**（都是「两个指针走过的路程列方程」），做完这两题，后面遇到的绝大多数双指针证明都能自己推出来。
 
 ---
 
-# 附录 A 本地调试脚手架
+## 附录 A.1 本地调试脚手架
 
 LeetCode 上只能提交 `Solution` 类，本地想跑起来需要自己造链表。建议把下面两段存成文件，以后所有链表题直接复用。
 
-## A.1 Python
+### A.1 Python
 
 ```python
 import sys
@@ -1378,7 +1971,7 @@ if __name__ == "__main__":
     print(Solution().getIntersectionNode(ha, hb) is want)            # True
 ```
 
-## A.2 C++
+### A.2 C++
 
 ```cpp
 #include <iostream>
@@ -1445,12 +2038,10 @@ g++ -std=c++17 -O2 main.cpp -o main && ./main
 
 ---
 
-# 附录 B 参考资料
+### 附录 B 参考资料
 
-- 教材：[GMyhf/dsa-modernization](https://gmyhf.github.io/dsa-modernization/) 第 1 章（概论：ADT、渐进分析）、第 2 章（线性表）
-- 本仓库：`DSA_CH01_Overview_ADT_Complexity.pdf`、`DSA_CH02_Linear_List.pdf`
 - 往期讲义：`2026spring-cs201/202603_DSA_W04-5.5_Complexity_LinearStructures.md`（第 3 节「链表」，含循环链表与更多示例）
-- 上学期同类题解：`ref/DSA_MOOC_solution.md`
+- 上学期同类题解：`homework/DSA_MOOC_solution.md`
 - 刷题方法论：`book/LeetCode 101 - A Grinding Guide.pdf`
 - 题解站：https://fuynaloft.github.io/sol101/
 - 每日选作：`DSA_problem_list_at_2026fall.md`
