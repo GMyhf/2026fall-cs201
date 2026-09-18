@@ -18,8 +18,9 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 09 | 1461.检查一个字符串是否包含所有长度为 K 的二进制子串  | bit manipulation   | Medium | https://leetcode.cn/problems/check-if-a-string-contains-all-binary-codes-of-size-k/          |
 | 09 | 3827.统计单比特整数| bit manipulation  | Easy | https://leetcode.cn/problems/count-monobit-integers/          |
 | 09 | 1404.将二进制表示减到 1 的步骤数   | bit manipulation | Medium | https://leetcode.cn/problems/number-of-steps-to-reduce-a-number-in-binary-representation-to-one/    |
-| 0920 | M07207:神奇的幻方  | implementation  | Medium | http://cs101.openjudge.cn/pctbook/M07207/          |
-| 0919 | 283. 移动零        | two pointers      | Easy | https://leetcode.cn/problems/move-zeroes/          |
+| 0921 | M07207:神奇的幻方  | implementation  | Medium | http://cs101.openjudge.cn/pctbook/M07207/          |
+| 0920 | 146.LRU缓存      | hash table, doubly-linked list   | Medium | https://leetcode.cn/problems/lru-cache/          |
+| 0919 | 283.移动零        | two pointers      | Easy | https://leetcode.cn/problems/move-zeroes/          |
 | 0918 | E206.反转链表      | recursion, linked list      | Easy/Medium | https://leetcode.cn/problems/reverse-linked-list/          |
 | 0917 | E160.相交链表      | hash table, linked list, two pointers  | Easy/Medium | https://leetcode.cn/problems/intersection-of-two-linked-lists/          |
 | 0916 | 868.二进制间距  | bit manipulation | Easy | https://leetcode.cn/problems/binary-gap/          |
