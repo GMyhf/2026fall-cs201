@@ -1523,14 +1523,14 @@ private:
             delete lru;                        // ★ C++ 还要真正释放
         }
     }
-};`, 0.5, 1.05, 6.2, 3.55, { fontSize: 8.5, hl: [21, 22] });
+};`, 0.5, 1.05, 6.2, 3.8, { fontSize: 8.5, hl: [21, 22] });
   callout(s, "逐出那三行是考点", [
     "`tail_->prev` 就是最久未使用的结点；",
     "`table_.erase(lru->key)` 靠结点里存的 `key` 反查哈希表；",
     "`delete lru` —— C++ 还要**真正释放**。",
   ], 6.9, 1.05, 2.6, 2.3, { fontSize: 9.5, gap: 4 });
   callout(s, "判超容量用 > 不是 >=", "先插入、再判断 `table_.size() > capacity_`，所以是严格大于。", 6.9, 3.5, 2.6, 1.1, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
-  text(s, "`get` / `put` 都是「哈希表定位 O(1) + 改常数条链接 O(1)」。", 0.5, 4.7, 6.2, 0.4, { fontSize: 10, color: C.muted });
+  text(s, "`get` / `put` 都是「哈希表定位 O(1) + 改常数条链接 O(1)」。", 0.5, 4.9, 6.2, 0.3, { fontSize: 10, color: C.muted });
 }
 
 {
@@ -1591,7 +1591,7 @@ void put(int key, int value) {
     text(s, c[1], x + 1.2, 1.05, 3.05, 0.8, { fontSize: 11, valign: "middle", margin: 0 });
   });
   callout(s, "易错点", [
-    "❌ 结点里**不存 **`key`，逐出时删不掉哈希表项。",
+    "❌ 结点里**不存 `key`**，逐出时删不掉哈希表项。",
     "❌ 逐出时**只摘链表不删哈希表**（表越撑越大，后续 `get` 返回已作废的结点）。",
     "❌ `put` 一个**已存在**的 key 时，又插了一个新结点（同一个 key 在链表里出现两次）。",
     "❌ 判断超容量用 `>=` 而不是 `>`。",

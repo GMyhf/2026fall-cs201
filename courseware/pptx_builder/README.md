@@ -1,6 +1,6 @@
 # pptx_builder：讲义 Markdown → 讲课 PPTX
 
-把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。已有三章：第一章 62 页、第二章 73 页、第三章 58 页。
+把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。已有第 1–12 章（`npm run ch01` … `npm run ch12`）。第 1–3 章由讲义 `202609_DSA_0X_*.md` 生成；第 4–12 章讲义尚未单独整理，直接取自 dsa-modernization 的 `book/chNN-*.md`，图片引用其 `book/assets/scan/*.png`（本地路径，默认找与本仓库同级的 `dsa-modernization/`，可用环境变量 `DSA_BOOK=<.../dsa-modernization/book>` 覆盖）。
 
 ```
 pptx_builder/
@@ -8,6 +8,7 @@ pptx_builder/
 ├── decks/ch01_adt_floyd_complexity.js   # 第一章
 ├── decks/ch02_linear_list.js            # 第二章（含附录 A 六道链表题）
 ├── decks/ch03_stack_queue.js            # 第三章（做新章节照它新建一个文件）
+├── decks/ch04_string.js … ch12_advanced.js  # 第 4–12 章（取材 dsa-modernization/book）
 ├── qa.sh                      # 渲染成图片 + 2x2 网格，逐页目检
 └── package.json               # pptxgenjs 4.0.1 + jszip 3.10.2
 ```
@@ -45,7 +46,7 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 | `sectionSlide(label, title, sub)` | 深色分节页 |
 | `content(badge, kicker, title)` → `slide` | 白底内容页：左上圆形徽标（如 `"1.3"`）、小字面包屑、标题、右下页码 |
 | `summarySlide(heading, [[标签, 说明], ...])` | 深色小结页（≤ 5 条） |
-| `text(slide, str, x, y, w, h, opts)` | 文本；`str` 支持 `**粗体**` 与 `` `代码` `` |
+| `text(slide, str, x, y, w, h, opts)` | 文本；`str` 支持 `**粗体**`、`` `代码` ``（可嵌在粗体里）与 `\n` 换行 |
 | `bullets(slide, items, x, y, w, h, {fontSize, gap})` | 项目符号列表；item 可为 `{t, plain:true}` 表示不加符号 |
 | `callout(slide, title, body, x, y, w, h, {fill, tcolor, fontSize})` | 带标题的提示卡；`body` 为字符串或 bullet 数组。默认奶油色，`fill: C.mint` 绿，`fill: "FDF0EE", tcolor: C.bad` 红 |
 | `codeBlock(slide, code, x, y, w, h, {fontSize, lang, hl})` | 代码块，注释自动变灰；`lang: "py"`/`"cpp"`/`"text"`；`hl: [行号]` 高亮行 |
@@ -85,4 +86,5 @@ node decks/ch03_stack_queue.js ../202609_DSA_03_Stack_Queue.pptx   # 或 npm run
 4. 颜色写 `"1E3D34"`，不能带 `#`、不能 8 位；option 对象会被 pptxgenjs 原地修改，不要在两次 `add*` 之间共用。
 5. 图片默认把本地绝对路径写进 alt text，`image()` 已改为用 `name`。
 6. LibreOffice 预览里代码中的中文注释用替代字体，宽度与 PowerPoint 略有出入；代码行尾的注释留点余量。
-7. 常见需要修的问题：长代码溢出卡片底部、表格超出页面、callout 文字压到下沿、标题过长折行。先看网格图找这些。
+7. **富文本已修（2026-09-21）**：`runs()` 支持 `**粗体里嵌 `代码`**`；字符串里的 `\n` 会拆成「行末 run + `breakLine`」——以前原样交给 pptxgenjs，`\n` 后面的粗体/代码 run 会被挤成新的一段。`text()` 认 `opts.fontFace`（但 Courier New 缺 ⌈⌉⌊⌋、上下标、⋯，含这些字形的串自动退回正文字体——公式别指望等宽）；表格空单元格自动补一个空格（空段按默认 18pt 撑高行）。
+8. 常见需要修的问题：长代码溢出卡片底部、表格超出页面、callout 文字压到下沿、标题过长折行。先看网格图找这些。

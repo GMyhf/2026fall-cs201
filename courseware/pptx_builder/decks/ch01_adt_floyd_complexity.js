@@ -252,7 +252,7 @@ sectionSlide("Part 1", "数据结构与算法", "DSA = Data Structures and Algor
   const tline = (x1, y1, x2, y2) => s.addShape(pres.shapes.LINE, { x: Math.min(x1, x2), y: y1, w: Math.abs(x2 - x1), h: y2 - y1, flipH: x2 < x1, line: { color: C.green, width: 1 } });
   tline(7.81, 1.97, 7.16, 2.2); tline(7.81, 1.97, 8.46, 2.2);
   tline(7.16, 2.62, 6.76, 2.85); tline(7.16, 2.62, 7.56, 2.85);
-  text(s, "左孩子 = 2i + 1　　右孩子 = 2i + 2", 6.25, 3.4, 3.1, 0.3, { fontSize: 11.5, bold: true, fontFace: MONO, color: C.goldText, margin: 0 });
+  text(s, "左孩子 = 2i+1   右孩子 = 2i+2", 6.25, 3.4, 3.1, 0.3, { fontSize: 11.5, bold: true, fontFace: MONO, color: C.goldText, margin: 0 });
   cells(s, 6.35, 3.8, [0, 1, 2, 3, 4, ""], { cw: 0.47, ch: 0.4, fs: 11, idx: true });
   text(s, "结点直接按编号放进数组，指针一个都不用存", 6.25, 4.5, 3.1, 0.5, { fontSize: 9.5, color: C.muted, margin: 0 });
 }
@@ -329,28 +329,28 @@ sectionSlide("Part 1", "数据结构与算法", "DSA = Data Structures and Algor
 // 13. 索引的代价 + 散列方法
 {
   const s = content("1.1.2", "1 数据结构与算法 · 存储方法 3–4", "索引的代价，以及散列方法");
-  card(s, 0.5, 1.05, 4.35, 2.0, C.code);
+  card(s, 0.5, 1.05, 4.35, 1.8, C.code);
   text(s, "索引：主要作用是提高检索效率", 0.7, 1.13, 4, 0.3, { fontSize: 12.5, bold: true, color: C.dark, margin: 0 });
   bullets(s, [
     "数据量很大时检索会涉及**大量磁盘读写**；先用索引确定存储地址再读写，可以大幅降低读写的数据量。",
     "索引函数一般**不是**数组那样的简单线性函数——结点长度不等时它就不可能是线性的。",
-  ], 0.7, 1.5, 4.0, 1.45, { fontSize: 11, gap: 6 });
-  callout(s, "代价：索引表本身的空间", "这正是 **3.3 节的时空折衷**：多花一张表的空间，换来检索时间从「逐块扫描」降到「二分 + 一次读」。", 0.5, 3.15, 4.35, 1.1, { fontSize: 11 });
-  card(s, 5.15, 1.05, 4.35, 2.0, C.code);
+  ], 0.7, 1.5, 4.0, 1.35, { fontSize: 11, gap: 6 });
+  callout(s, "代价：索引表本身的空间", "这正是 **3.3 节的时空折衷**：多花一张表的空间，换来检索时间从「逐块扫描」降到「二分 + 一次读」。", 0.5, 2.95, 4.35, 1.1, { fontSize: 11 });
+  card(s, 5.15, 1.05, 4.35, 1.8, C.code);
   text(s, "4  散列方法：不查表，直接算", 5.35, 1.13, 4, 0.3, { fontSize: 12.5, bold: true, color: C.dark, margin: 0 });
   bullets(s, [
     "索引法的延伸：用**散列函数**把关键码的值直接**算**成存储地址。",
     "散列函数应尽可能把地址**均匀分布**在散列表的地址空间上，同时**计算要简单**以便提速。",
     "冲突怎么处理、装载因子多高会退化——第 10 章展开。",
-  ], 5.35, 1.5, 4.0, 1.45, { fontSize: 11, gap: 5 });
+  ], 5.35, 1.5, 4.0, 1.35, { fontSize: 11, gap: 5 });
   // 散列示意
-  card(s, 5.15, 3.15, 4.35, 1.1, C.dark);
-  pill(s, "关键码 52", 5.35, 3.45, 1.35, 0.4, C.gold, C.dark, 11);
-  text(s, "h(52)", 6.85, 3.47, 0.8, 0.36, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
-  s.addShape(pres.shapes.LINE, { x: 6.75, y: 3.65, w: 0.95, h: 0, line: { color: C.gold, width: 2, endArrowType: "triangle" } });
-  pill(s, "地址 3", 7.8, 3.45, 1.35, 0.4, C.mint, C.dark, 11);
-  text(s, "一次计算，不比较、不查表", 5.35, 3.9, 4.0, 0.3, { fontSize: 10, color: C.mint, margin: 0 });
-  callout(s, "实际应用往往是几种方法的组合", "例如树形结构的「子结点表」表示法就是**顺序 + 链接**。选存储方法时还要综合考虑定义在其上的运算：**要不要随机访问、会不会频繁插入、数据在内存还是外存。**", 0.5, 4.35, 9.0, 0.75, { fontSize: 11.5, fill: C.mint, tcolor: C.dark });
+  card(s, 5.15, 2.95, 4.35, 1.1, C.dark);
+  pill(s, "关键码 52", 5.35, 3.25, 1.35, 0.4, C.gold, C.dark, 11);
+  text(s, "h(52)", 6.85, 3.27, 0.8, 0.36, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
+  s.addShape(pres.shapes.LINE, { x: 6.75, y: 3.45, w: 0.95, h: 0, line: { color: C.gold, width: 2, endArrowType: "triangle" } });
+  pill(s, "地址 3", 7.8, 3.25, 1.35, 0.4, C.mint, C.dark, 11);
+  text(s, "一次计算，不比较、不查表", 5.35, 3.7, 4.0, 0.3, { fontSize: 10, color: C.mint, margin: 0 });
+  callout(s, "实际应用往往是几种方法的组合", "例如树形结构的「子结点表」表示法就是**顺序 + 链接**。选存储方法时还要综合考虑定义在其上的运算：**要不要随机访问、会不会频繁插入、数据在内存还是外存。**", 0.5, 4.15, 9.0, 1.0, { fontSize: 11.5, fill: C.mint, tcolor: C.dark });
 }
 
 // 14. 1.1.3 ADT
