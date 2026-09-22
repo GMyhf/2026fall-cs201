@@ -982,6 +982,33 @@ sectionSlide("12.3", "Trie 结构和 Patricia 树", "换一种「分解」：按
   ], 6.65, 2.85, 2.85, 2.25, { fontSize: 10, gap: 4 });
 }
 
+// 12.3 longest prefix + space
+{
+  const s = content("12.3", "12.3 Trie 结构 · code/ch12/trie", "最长前缀匹配：一路往下走，随手记住最近的词尾");
+  codeBlock(s, `/// 最长前缀匹配：走到走不动为止，回退到最近的词尾。IP 路由查表就是这个动作。
+[[nodiscard]] std::string longest_prefix_of(std::string_view text) const {
+    const Node* node = &root_;
+    std::size_t best = 0;
+    for (std::size_t i = 0; i < text.size(); ++i) {
+        if (!is_letter(text[i])) {
+            break;
+        }
+        const Node* next = node->children[index_of(text[i])].get();
+        if (next == nullptr) {
+            break;
+        }
+        node = next;
+        if (node->terminal) {
+            best = i + 1;
+        }
+    }
+    return std::string(text.substr(0, best));
+}`, 0.5, 1.05, 6.0, 3.3, { fontSize: 8.5 });
+  text(s, "`dozen`：d → o（词尾，best = 2）→ z 无分支，停 → 返回 `do`。", 0.5, 4.45, 6.0, 0.5, { fontSize: 11.5 });
+  figBox(s, "fig-12-18", 6.75, 1.05, 2.75, 1.95, "图 12.18  对 Trie 树的改进", 9);
+  callout(s, "空间是 Trie 的主要代价", "字母 Trie 每个内部结点原则上留 **26 条分支**，大部分是空的。改进：只保存实际用到的分支，代价是查一层要在表里**找一次**，不再是直接下标。", 6.75, 3.15, 2.75, 1.95, { fontSize: 10 });
+}
+
 // 12.3 Patricia concept
 {
   const s = content("12.3", "12.3 Patricia 树", "Patricia：把「只有一个孩子」的结点压缩掉");

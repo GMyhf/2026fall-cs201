@@ -852,6 +852,23 @@ inline void merge_sort_optimized(std::vector<int>& values) {
   callout(s, "② 两段本来就接得上 → 跳过归并", "`values[middle-1] <= values[middle]` 时整趟不归并：有序输入的搬移从 Θ(n log n) 压到接近 Θ(n)；随机输入几乎不命中。", 3.65, 4.2, 5.85, 0.93, { fontSize: 10, tsize: 11, fill: C.mint, tcolor: C.dark });
 }
 
+// Sedgewick & more
+{
+  const s = content("8.5", "8.5 归并排序", "归并还能怎么改进；什么时候选它");
+  card(s, 0.5, 1.1, 4.35, 2.4, C.code);
+  text(s, "Sedgewick 的监视哨技巧", 0.7, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.dark, margin: 0 });
+  text(s, "复制到临时数组时，**把第二个子数组颠倒过来**。两个子数组从两端向中间推进，彼此成为对方的「监视哨」，循环里不再反复检查子序列是否已经结束。", 0.7, 1.65, 4.0, 1.8, { fontSize: 11, lsm: 1.15 });
+  card(s, 5.15, 1.1, 4.35, 2.4, C.code);
+  text(s, "与优化快排同一个思路", 5.35, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.dark, margin: 0 });
+  text(s, "子数组小于某个长度（原书取 28）时不再递归，最后对整个序列做一次插入排序：各块内部无序，但**整块看是一块块有序的**，整体已基本有序。", 5.35, 1.65, 4.0, 1.8, { fontSize: 11, lsm: 1.15 });
+  table(s, [
+    ["归并排序", "结论"],
+    ["时间", "最大、最小、平均都是 **Θ(n log n)**——对初始排列不敏感，速度稳定"],
+    ["空间", "辅助 **Θ(n)**，是简单排序和堆排序没有的代价"],
+    ["稳定", "**稳定**；`std::stable_sort` 采用的就是归并排序"],
+  ], 0.5, 3.7, 9.0, [1.3, 7.7], { fontSize: 11, rowH: 0.35 });
+}
+
 // inversion concept
 {
   const s = content("8.5", "8.5 归并排序 · 副产品", "逆序对计数：在合并里多写一句");
