@@ -13,6 +13,22 @@ pptx_builder/
 └── package.json               # pptxgenjs 4.0.1 + jszip 3.10.2
 ```
 
+## MOOC 课堂提问（quiz.js）
+
+`homework/DSA_MOOC_solution.md` 的习题做成课堂提问 deck（13.33 × 7.5，与 `202609_DSA_MOOC_Quiz_CH01-02.pptx` 同一版式）：
+封面 → 每章一张分节页 → 每题一页（左边题面，右边答案卡）。放映时单击一次，答案卡和正确选项的绿框一起淡入。
+
+```bash
+node quiz.js ../202609_DSA_MOOC_Quiz_CH03-04.pptx ch03 ch04   # 或 npm run quiz0304；npm run quiz 生成全部
+```
+
+- 题目数据在 `quiz_data/chNN.js`，每个文件导出 chapter 数组（「上 / 下」两半各算一个 chapter，题号各自从 Q1 起）。
+- 一道题：`{ kind, title, stem, code?, table?, image?: {url, h}, options?, correct?: ["A"], after?, answer, notes?: [str | {code}] }`。
+  文本支持 `**粗体**`、`` `代码` ``、`^{上标}`、`_{下标}`、`\n`。选项都短时自动排成格子（`grid: false` 可关掉），否则一行一个。
+- 版面自动缩放：左栏整体按比例缩小直到放得下，解析按字号 17→11 逐级缩；仍放不下会打印 `! 溢出`，要删减文字。
+- 单击淡入：名字以 `ANS_` 开头的形状，保存时注入 `<p:timing>`（pptxgenjs 本身不支持动画）。
+- 图片（原题配图）按 URL 下载到 `.cache/quiz/`。
+
 ## 快速开始
 
 ```bash

@@ -310,12 +310,7 @@ async function fetchImages(map) {
 async function save(out) {
   const buf = await pres.write({ outputType: "nodebuffer" });
   const zip = await JSZip.loadAsync(buf);
-  let fixed = 0;
-  for (const name of Object.keys(zip.files).filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))) {
-    const xml = await zip.file(name).async("string");
-    const outXml = xml.replace(/(<\/a:r>)(?:<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>(?:(?!<\/a:pPr>).)*<\/a:pPr>)/g, (m, r) => { fixed++; return r; });
-    zip.file(name, outXml);
-  }
+  const fixed = await stripStrayPPr(zip);
   await giveEachMasterItsOwnTheme(zip);
   fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
   fs.writeFileSync(out, await pack(zip));
@@ -329,6 +324,16 @@ return {
   darkBg, titleSlide, sectionSlide, content, summarySlide,
   fetchImages, save,
 };
+}
+
+async function stripStrayPPr(zip) {
+  let fixed = 0;
+  for (const name of Object.keys(zip.files).filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))) {
+    const xml = await zip.file(name).async("string");
+    const outXml = xml.replace(/(<\/a:r>)(?:<a:pPr\b[^>]*\/>|<a:pPr\b[^>]*>(?:(?!<\/a:pPr>).)*<\/a:pPr>)/g, (m, r) => { fixed++; return r; });
+    zip.file(name, outXml);
+  }
+  return fixed;
 }
 
 // pptxgenjs 让讲义母版（notesMaster）与幻灯片母版共用 ppt/theme/theme1.xml。
@@ -380,7 +385,7 @@ async function checkMastersOwnThemes(file) {
   return problems;
 }
 
-module.exports = { createDeck, giveEachMasterItsOwnTheme, checkMastersOwnThemes, C, FONT, MONO };
+module.exports = { createDeck, giveEachMasterItsOwnTheme, checkMastersOwnThemes, stripStrayPPr, pack, normalizeBox, imageSize, C, FONT, MONO };
 
 // 命令行：node lib.js check a.pptx [b.pptx ...]   检查母版主题是否共用
 //         node lib.js fix in.pptx out.pptx        修正一个已有的 pptxgenjs 产物
