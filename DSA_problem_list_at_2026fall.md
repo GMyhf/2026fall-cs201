@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-09-25 09:58 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-09-27 19:08 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -14,8 +14,8 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 09 | 155.最小栈 | OOP, 辅助栈 | Medium | https://leetcode.cn/problems/min-stack/ |
-| 09 | 1461.检查一个字符串是否包含所有长度为 K 的二进制子串  | bit manipulation   | Medium | https://leetcode.cn/problems/check-if-a-string-contains-all-binary-codes-of-size-k/          |
+| 0928 | 155.最小栈 | OOP, 辅助栈 | Medium | https://leetcode.cn/problems/min-stack/ |
+| 0927 | 1461.检查一个字符串是否包含所有长度为 K 的二进制子串  | bit manipulation   | Medium | https://leetcode.cn/problems/check-if-a-string-contains-all-binary-codes-of-size-k/          |
 | 0926 | 394.字符串解码     | stack  | Medium | https://leetcode.cn/problems/decode-string/          |
 | 0925 | 1096.花括号展开 II | stack  | Tough | https://leetcode.cn/problems/brace-expansion-ii/          |
 | 0924 | 1658.将 x 减到 0 的最小操作数      | sliding window       | Medium | https://leetcode.cn/problems/minimum-operations-to-reduce-x-to-zero/          |
