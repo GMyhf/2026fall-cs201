@@ -1,7 +1,7 @@
 {
   "name": "dsa-pptx-builder",
   "private": true,
-  "description": "把 DSA 讲义 Markdown 整理成讲课 PPTX（pptxgenjs）",
+  "description": "\u628a DSA \u8bb2\u4e49 Markdown \u6574\u7406\u6210\u8bb2\u8bfe PPTX\uff08pptxgenjs\uff09",
   "scripts": {
     "ch01": "node decks/ch01_adt_floyd_complexity.js ../202609_DSA_01_ADT_Floyd_Complexity.pptx",
     "ch02": "node decks/ch02_linear_list.js ../202609_DSA_02_Linear_List.pptx",
@@ -25,5 +25,10 @@
   "dependencies": {
     "jszip": "3.10.2",
     "pptxgenjs": "4.0.1"
+  },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.3"
+    }
   }
 }
