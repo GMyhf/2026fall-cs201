@@ -92,7 +92,9 @@ KMP, http://cs101.openjudge.cn/practice/01961/
 
 
 
-### P
+### M02774: 木材加工	
+
+binary search, http://cs101.openjudge.cn/practice/02774/
 
 思路：
 
@@ -116,7 +118,9 @@ KMP, http://cs101.openjudge.cn/practice/01961/
 
 
 
-### M
+### M04077: 出栈序列统计
+
+dp, dfs, math, http://cs101.openjudge.cn/practice/04077/
 
 思路：
 
@@ -140,7 +144,9 @@ KMP, http://cs101.openjudge.cn/practice/01961/
 
 
 
-### M
+### T30201: 旅行售货商问题
+
+bitmask dp, http://cs101.openjudge.cn/practice/30201/
 
 思路：
 
