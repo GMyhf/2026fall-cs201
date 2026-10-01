@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-09-29 14:11 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-10-01 08:36 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -14,6 +14,9 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
+| 10 |       |       | Medium |          |
+| 1002 | T30201: 旅行售货商问题 | bitmask dp  | Toughm | http://cs101.openjudge.cn/practice/30201/          |
+| 1001 | 01961: 前缀中的周期  | KMP      | Medium | http://cs101.openjudge.cn/practice/01961/          |
 | 0930 | 239.滑动窗口最大值   | sliding window, monotonic queue   | Tough | https://leetcode.cn/problems/sliding-window-maximum/          |
 | 0929 | 2840.判断通过操作能否让字符串相等 II   | string, sorting  | Medium |  https://leetcode.cn/problems/check-if-strings-can-be-made-equal-with-operations-ii/        |
 | 0928 | 155.最小栈 | OOP, 辅助栈 | Medium | https://leetcode.cn/problems/min-stack/ |
