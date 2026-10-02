@@ -16,9 +16,18 @@
 
 1. $\sum_{i=1}^{n} \frac{1}{i} = \Theta(\log n)$。
 
-   直观：把每一项 $\frac1i$ 看成宽为 1、高为 $\frac1i$ 的小矩形，这些矩形拼起来的面积与曲线 $y = \frac1x$ 下的面积 $\int_1^n \frac{dx}{x} = \ln n$ 只差一个常数。严格地，由积分估计：
+   直观：把每一项 $\frac1i$ 看成宽为 1、高为 $\frac1i$ 的小矩形，这些矩形拼起来的面积与曲线 $y = \frac1x$ 下的面积 $\int_1^n \frac{dx}{x} = \ln n$ 只差一个常数。严格地，记 $H_n = \sum_{i=1}^n \frac1i$，由积分估计：
 
-   $$\ln(n+1) = \int_1^{n+1}\frac{dx}{x} \le \sum_{i=1}^{n}\frac1i \le 1 + \int_1^{n}\frac{dx}{x} = 1 + \ln n .$$
+   $$\ln(n+1) = \int_1^{n+1}\frac{dx}{x} \le H_n \le 1 + \int_1^{n}\frac{dx}{x} = 1 + \ln n .$$
+
+   ![调和级数的积分估计（n = 5）](images/ch01_harmonic_integral.svg)
+
+   两边都只用到一个事实：$\frac1x$ 单调递减，所以矩形放在区间的哪一端，决定了它在曲线上方还是下方。
+
+   - **下界（左图）**：把 $\frac1i$ 对应的矩形放在 $[i,\ i+1]$ 上。区间内 $x \ge i$，故 $\frac1x \le \frac1i$，曲线在矩形下方：$\int_i^{i+1}\frac{dx}{x} \le \frac1i$。对 $i = 1, \dots, n$ 求和，各段积分拼成 $[1, n+1]$，得 $\ln(n+1) \le H_n$。
+   - **上界（右图）**：把 $\frac1i$ 对应的矩形放在 $[i-1,\ i]$ 上。当 $i \ge 2$ 时，区间内 $x \le i$，故 $\frac1x \ge \frac1i$，矩形在曲线下方：$\frac1i \le \int_{i-1}^{i}\frac{dx}{x}$。对 $i = 2, \dots, n$ 求和得 $H_n - 1 \le \int_1^n \frac{dx}{x} = \ln n$。第一项 $\frac11$ 不能这样估计（$\int_0^1 \frac{dx}{x}$ 发散），单独加上，得 $H_n \le 1 + \ln n$。
+
+   上下界都是 $\ln n$ 量级，故 $H_n = \Theta(\log n)$。验证 $n = 3$：$\ln 4 \approx 1.386 \le H_3 \approx 1.833 \le 1 + \ln 3 \approx 2.099$。
 
 2. $\log(n!) = \Theta(n \log n)$。
 
