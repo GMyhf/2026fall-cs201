@@ -34,7 +34,7 @@
    $\log(n!) = \log 1 + \log 2 + \cdots + \log n$，共 $n$ 项，分别找"天花板"和"地板"：
 
    - 上界（每项都放大成最大的 $\log n$）：$\log(n!) = \sum_{i=1}^n \log i \le n\log n$。
-   - 下界（扔掉前一半，只留后一半，后一半每项都 $\ge \log\frac n2$）：$\log(n!) \ge \sum_{i=\lceil n/2\rceil}^{n}\log i \ge \frac n2 \log\frac n2 = \Omega(n\log n)$。
+   - 下界（扔掉前一半，只留后一半，后一半至少 $\frac n2$ 项、每项都 $\ge \log\frac n2$）：$\log(n!) \ge \sum_{i=\lceil n/2\rceil}^{n}\log i \ge \frac n2 \log\frac n2$。当 $n \ge 4$ 时 $\frac n2 \ge \sqrt n$，故 $\log\frac n2 \ge \frac12\log n$，从而 $\log(n!) \ge \frac n4\log n = \Omega(n\log n)$。
 
    上下界同为 $n\log n$ 量级，故为 $\Theta(n\log n)$。（更精确的结果见文末附录 B 的 Stirling 公式：$\ln(n!) = n\ln n - n + O(\log n)$。）
 
@@ -77,7 +77,7 @@ $$
 
 > 注意：说"外层 $n$ 次、内层 $O(\log n)$ 次，所以 $O(n\log n)$"并不算错，但只是一个松的上界，题目要的是推导出紧的结果。
 >
-> 另一种算法：$\sum_{i=1}^n \log\frac ni = n\log n - \log(n!) = n\log n - (n\log n - n\log e + O(\log n)) = O(n)$（Stirling 公式，见附录 B）。
+> 另一种估算：$\text{cnt} = \sum_{i=1}^n t(i) \le \sum_{i=1}^n \left(\log_2\frac ni + 1\right) = n + n\log_2 n - \log_2(n!) = n + n\log_2 e + O(\log n) = O(n)$（Stirling 公式，见附录 B）。
 
 ## 3
 
@@ -149,7 +149,11 @@ $$
 
 由数学归纳法（强归纳），对所有 $n \ge 2$ 有 $T(n) \le 2n\log_2 n$，即 $T(n) = O(n\log n)$。 ∎
 
-> 补充：同样可证 $T(n) \ge n\log_2 n$ 的量级下界（每层合并代价 $n$，共约 $\log_2 n$ 层），因此实际上 $T(n) = \Theta(n\log n)$。
+> 补充：下界也成立，因此实际上 $T(n) = \Theta(n\log n)$。注意因为下取整，**不能**直接说 $T(n) \ge n\log_2 n$（例如 $T(7) = 2T(3) + 7 = 17 < 7\log_2 7 \approx 19.65$），但相差只是常数倍。记 $K = \lfloor\log_2 n\rfloor$，利用 $\lfloor\lfloor n/2^k\rfloor/2\rfloor = \lfloor n/2^{k+1}\rfloor$ 把递推式展开 $K$ 次，并注意 $\lfloor n/2^K\rfloor = 1 = T(1)$，得
+>
+> $$T(n) = \sum_{k=0}^{K} 2^k\left\lfloor\frac{n}{2^k}\right\rfloor .$$
+>
+> 由 $x \ge 1$ 时 $\lfloor x\rfloor \ge \frac x2$，每一项 $\ge \frac n2$，共 $K + 1 \ge \log_2 n$ 项，故 $T(n) \ge \frac12 n\log_2 n = \Omega(n\log n)$。
 
 ---
 
