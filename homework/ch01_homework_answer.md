@@ -73,7 +73,7 @@ $$
 \text{cnt} = \sum_{i=1}^{n}\sum_{k \ge 0}[\,2^k i \le n\,] = \sum_{k \ge 0} \left\lfloor \frac{n}{2^k} \right\rfloor \le n\left(1 + \frac12 + \frac14 + \cdots\right) < 2n .
 $$
 
-又 $k=0$ 一项就等于 $n$，所以 $n \le \text{cnt} < 2n$，外层循环本身执行 $n$ 次，故时间复杂度为 $\Theta(n)$，即 $O(n)$。
+另一方面，和式中 $k=0$ 的一项为 $\lfloor n/2^0 \rfloor = n$（对应每个 $i$ 都至少执行一次内层循环），其余各项均非负，故 $\text{cnt} \ge n$。于是 $n \le \text{cnt} < 2n$，外层循环本身执行 $n$ 次，故时间复杂度为 $\Theta(n)$，即 $O(n)$。
 
 > 注意：说"外层 $n$ 次、内层 $O(\log n)$ 次，所以 $O(n\log n)$"并不算错，但只是一个松的上界，题目要的是推导出紧的结果。
 >
