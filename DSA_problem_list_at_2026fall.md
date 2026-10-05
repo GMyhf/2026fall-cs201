@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-10-03 12:30 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-10-05 19:47 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -15,6 +15,10 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 10 |       |       | Medium |          |
+| 1008 | 78.子集      | backtracking      | Medium | https://leetcode.cn/problems/subsets/         |
+| 1007 | 46.全排列    | backtracking      | Medium | https://leetcode.cn/problems/permutations/          |
+| 1006 | 20018:蚂蚁王国的越野跑  | <mark>merge sort</mark>, <mark>binary indexed tree</mark> | Medium2  | http://cs101.openjudge.cn/practice/20018/          |
+| 1005 | 08210: 河中跳房子  | binary search, greedy  | Medium  | http://cs101.openjudge.cn/pctbook/M08210                         |
 | 1004 | T32.最长有效括号  | stack, greedy      | Tough | https://leetcode.cn/problems/longest-valid-parentheses/         |
 | 1003 | M22.括号生成      | backtracking       | Medium | https://leetcode.cn/problems/generate-parentheses/          |
 | 1002 | T30201: 旅行售货商问题 | bitmask dp  | Toughm | http://cs101.openjudge.cn/practice/30201/          |
