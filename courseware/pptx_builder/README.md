@@ -1,6 +1,6 @@
 # pptx_builder：讲义 Markdown → 讲课 PPTX
 
-把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。已有第 1–12 章（`npm run ch01` … `npm run ch12`）。第 1–3 章由讲义 `202609_DSA_0X_*.md` 生成；第 4–12 章讲义尚未单独整理，直接取自 dsa-modernization 的 `book/chNN-*.md`，图片引用其 `book/assets/scan/*.png`（本地路径，默认找与本仓库同级的 `dsa-modernization/`，可用环境变量 `DSA_BOOK=<.../dsa-modernization/book>` 覆盖）。
+把 `202609_DSA_XX_*.md` 讲义整理成课堂用的 `.pptx`。已有第 1–12 章（`npm run ch01` … `npm run ch12`）。第 1–3 章由讲义 `202609_DSA_0X_*.md` 生成；第 4–12 章讲义尚未单独整理，直接取自 dsa-modernization 的 `book/chNN-*.md`，图片引用其 `book/assets/scan/*.png`（本地路径，默认找与本仓库同级的 `dsa-modernization/`，可用环境变量 `DSA_BOOK=<.../dsa-modernization/book>` 覆盖）。第 4 章幻灯片上的代码用 `code(file, from, until)` 逐字取自讲义：按代码块的 `file=…#锚点` 找块、按首行文字定范围，不用行号，讲义正文增删不影响；定位文字在块内不是恰好一行就当场报错。
 
 ```
 pptx_builder/

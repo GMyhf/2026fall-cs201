@@ -21,13 +21,46 @@ const IMAGES = {
 };
 
 // 幻灯片上的代码逐字取自讲义（讲义里的代码又由 check_doc.py R3 与 code/ch04/ 逐字核对）。
-// src(a, b)：讲义第 a..b 行（1 起始，含两端）；pre/post 用于拆页时补 "// ..."。
+// 按内容定位，不用行号——讲义正文增删几段，这里不受影响。
+//
+// code(file, from, until, {pre, post})
+//   file  ：讲义代码块信息串里 file= 的值，如 "code/ch04/pattern_matching/modern.hpp#naive"；
+//           没有 file= 的块（```text 输出）写 null。
+//   from  ：首行所含的文字，省略 = 从块首起；until：下一段首行所含的文字（不含该行，
+//           去掉尾部空行），省略 = 到块尾。两者在块内都必须**恰好命中一行**，否则当场报错——
+//           讲义改了代码，生成就失败，而不是悄悄截错。
+//   pre/post：拆页时补 "// ..."。
 const BOOK = path.join((process.env.DSA_BOOK || path.join(__dirname, "..", "..", "..", "..", "dsa-modernization", "book")), "ch04-string.md");
-const BOOK_LINES = fs.readFileSync(BOOK, "utf8").split("\n");
-function src(a, b, { pre = "", post = "" } = {}) {
-  const lines = BOOK_LINES.slice(a - 1, b);
-  if (lines.some((l) => l.startsWith("```"))) throw new Error(`src(${a}, ${b}) 越过了代码块边界`);
-  return (pre ? pre + "\n" : "") + lines.join("\n") + (post ? "\n" + post : "");
+const BOOK_BLOCKS = (() => {
+  const lines = fs.readFileSync(BOOK, "utf8").split("\n");
+  const blocks = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].startsWith("```")) continue;
+    let j = i + 1;
+    while (j < lines.length && !lines[j].startsWith("```")) j++;
+    const m = /\bfile=(\S+)/.exec(lines[i]);
+    blocks.push({ file: m ? m[1] : null, body: lines.slice(i + 1, j) });
+    i = j;
+  }
+  return blocks;
+})();
+function code(file, from, until, { pre = "", post = "" } = {}) {
+  const what = `code(${JSON.stringify(file)}, ${JSON.stringify(from)}, ${JSON.stringify(until)})`;
+  const hits = (body, t) => body.reduce((a, l, k) => (l.includes(t) ? a.concat(k) : a), []);
+  let cands = BOOK_BLOCKS.filter((b) => b.file === file);
+  if (from !== undefined) cands = cands.filter((b) => hits(b.body, from).length > 0);
+  if (cands.length !== 1) throw new Error(`${what}：讲义里匹配的代码块有 ${cands.length} 个，应当恰好 1 个`);
+  const body = cands[0].body;
+  const one = (t) => {
+    const h = hits(body, t);
+    if (h.length !== 1) throw new Error(`${what}：「${t}」在块内命中 ${h.length} 行，应当恰好 1 行`);
+    return h[0];
+  };
+  const a = from === undefined ? 0 : one(from);
+  let b = until === undefined ? body.length : one(until);
+  if (b <= a) throw new Error(`${what}：until 在 from 之前`);
+  while (b > a && body[b - 1].trim() === "") b--;
+  return (pre ? pre + "\n" : "") + body.slice(a, b).join("\n") + (post ? "\n" + post : "");
 }
 
 (async () => {
@@ -89,7 +122,7 @@ titleSlide({
 // 先跑一遍：String
 {
   const s = content("▶", "先跑一遍", "用教学版 String 走一遍 append / substr / find");
-  codeBlock(s, src(19, 38), 0.5, 1.1, 6.45, 4.0, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/string_class/demo.cpp", "#include \"teaching.hpp\""), 0.5, 1.1, 6.45, 4.0, { fontSize: 8.5 });
   consoleBlock(s, "拼接后: Hello C++\n子串: C++\n首次出现 C 的下标: 6", 7.1, 1.1, 2.4, 1.15, 9.5);
   text(s, "c++ -std=c++17 -Wall -Wextra -Werror \\\n  -Icode/ch04/string_class \\\n  code/ch04/string_class/demo.cpp", 7.1, 2.35, 2.4, 0.65, { fontSize: 7.5, color: C.muted });
   callout(s, "看到了什么", [
@@ -103,7 +136,7 @@ titleSlide({
 // 先跑一遍：pattern matching
 {
   const s = content("▶", "先跑一遍", "图 4.12 那对串：正确起始下标是 10，原书返回 11");
-  codeBlock(s, src(58, 71), 0.5, 1.1, 6.6, 3.0, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/pattern_matching/demo.cpp"), 0.5, 1.1, 6.6, 3.0, { fontSize: 8.5 });
   consoleBlock(s, "图4.12 的串，正确起始下标是 10\n朴素: 10\nKMP:  10\n原书返回 11，一律差 1", 7.3, 1.1, 2.2, 1.5, 8.5);
   callout(s, "不是写法问题", "是**算法结果错**：原书两个匹配算法返回的位置**都差 1**。4.3.1 节末专门讲。", 7.3, 2.75, 2.2, 1.35, { fontSize: 9.5, fill: RED, tcolor: C.bad });
   card(s, 0.5, 4.25, 9.0, 0.85, C.code);
@@ -267,7 +300,7 @@ sectionSlide("Part 1 · 4.1", "字符串的基本概念", "串、长度、子串
 // C++ 坑：字面量比较地址
 {
   const s = content("4.1.2", "4.1 基本概念 · C++ 特有的坑", "两个字符串字面量之间写 <，比的是地址");
-  consoleBlock(s, src(188, 194), 0.5, 1.1, 9.0, 2.1, 9);
+  consoleBlock(s, code(null, "$ g++ -std=c++17 -Wall -Wextra litcmp.cpp"), 0.5, 1.1, 9.0, 2.1, 9);
   card(s, 0.5, 3.4, 4.35, 1.7, "EAF4EF");
   text(s, "✓  有一边是 std::string", 0.7, 3.5, 4, 0.35, { fontSize: 14, bold: true, color: C.ok, margin: 0 });
   text(s, "比的是**内容**：`\"123\" < std::string(\"1234\")` 为 true，`std::string(\"1234\") < \"23\"` 为 true。", 0.7, 3.95, 4.0, 1.05, { fontSize: 11.5, margin: 0 });
@@ -372,7 +405,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 教学版代码 1：构造
 {
   const s = content("4.2.2", "4.2 String 类 · 教学版 teaching.hpp（1/5）", "空串也占 1 个字节；从 C 字符串构造");
-  codeBlock(s, src(319, 343), 0.5, 1.05, 6.3, 4.05, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "class String {", "// 三法则"), 0.5, 1.05, 6.3, 4.05, { fontSize: 8.5 });
   card(s, 7.0, 1.05, 2.5, 1.55, C.code);
   text(s, "两个数据成员", 7.15, 1.12, 2.3, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
   s.addText([
@@ -410,7 +443,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 教学版代码 2：三法则
 {
   const s = content("4.2.2", "4.2 String 类 · 教学版 teaching.hpp（2/5）", "三法则：拷贝构造与拷贝赋值");
-  codeBlock(s, src(345, 362), 0.5, 1.05, 9.0, 2.95, { fontSize: 8.5, hl: [12, 14] });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 三法则", "size_type size() const"), 0.5, 1.05, 9.0, 2.95, { fontSize: 8.5, hl: [12, 14] });
   const steps = [["备好新的", "new + memcpy", C.green], ["释放旧的", "delete[] data_", C.bad], ["接管", "data_ = fresh", C.green]];
   card(s, 0.5, 4.12, 4.6, 0.98, C.code);
   text(s, "拷贝赋值的三步顺序", 0.62, 4.15, 3, 0.26, { fontSize: 10.5, bold: true, color: C.dark, margin: 0 });
@@ -440,7 +473,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 教学版代码 3：访问器
 {
   const s = content("4.2.2", "4.2 String 类 · 教学版 teaching.hpp（3/5）", "访问器、clear 与 at：越界抛异常");
-  codeBlock(s, src(364, 383), 0.5, 1.05, 5.8, 3.4, { fontSize: 9 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "size_type size() const", "// 在串尾添加一个字符"), 0.5, 1.05, 5.8, 3.4, { fontSize: 9 });
   callout(s, "size() 与 length()", "两个名字同一个值：字符个数，**不含**结尾的 `'\\0'`。", 6.55, 1.05, 2.95, 1.05, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   callout(s, "clear() 也守不变式", "不是把 `data_` 置空，而是换成一块只装 `'\\0'` 的 1 字节缓冲区——`c_str()` 仍然合法。同样**先备新、再释放**。", 6.55, 2.25, 2.95, 1.5, { fontSize: 10.5 });
   callout(s, "at(index)", "越界抛 `std::out_of_range`，**不是返回一个随便什么值**。", 6.55, 3.9, 2.95, 1.2, { fontSize: 10.5, fill: RED, tcolor: C.bad });
@@ -450,7 +483,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 4.2.3 append
 {
   const s = content("4.2.3", "4.2 字符串运算 · 教学版 teaching.hpp（4/5）", "追加一个字符：为什么是 O(n)");
-  codeBlock(s, src(385, 401), 0.5, 1.05, 5.9, 3.0, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 在串尾添加一个字符", "// 把 s 接在本串后面"), 0.5, 1.05, 5.9, 3.0, { fontSize: 8.5 });
   text(s, "append('!') 的三步", 6.65, 1.05, 2.85, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
   const rows = [["① 申请", ["", "", "", "", "", "", ""], null], ["② 拷贝", ["H", "e", "l", "l", "o", "!", "\\0"], [null, null, null, null, null, "CDEBD9", C.cream]], ["③ 释放旧块", ["H", "e", "l", "l", "o", "\\0"], ["DDDDDD", "DDDDDD", "DDDDDD", "DDDDDD", "DDDDDD", "DDDDDD"]]];
   rows.forEach((r, i) => {
@@ -465,7 +498,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // concatenate
 {
   const s = content("4.2.3", "4.2 字符串运算 · 追加与拼接", "concatenate：同样是「重新申请、拷两段、释放旧的」");
-  codeBlock(s, src(403, 416), 0.5, 1.05, 5.9, 2.7, { fontSize: 9 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 把 s 接在本串后面", "// 【算法4.5】"), 0.5, 1.05, 5.9, 2.7, { fontSize: 9 });
   text(s, "拷两段", 6.65, 1.05, 2.85, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
   cells(s, 6.65, 1.5, ["H", "i", ",", "C", "+", "+", "\\0"], { cw: 0.38, ch: 0.38, fs: 10, fills: [C.mint, C.mint, C.mint, C.cream, C.cream, C.cream, C.cream] });
   text(s, "memcpy(fresh, data_, size_)", 6.65, 1.95, 2.85, 0.25, { fontSize: 8.5, fontFace: MONO, color: C.green, margin: 0 });
@@ -482,7 +515,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // substr
 {
   const s = content("4.2.3", "4.2 字符串运算 · 教学版 teaching.hpp（5/5 上）", "抽取子串【算法4.5】：越界就抛");
-  codeBlock(s, src(418, 438), 0.5, 1.05, 9.0, 3.35, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 【算法4.5】", "// 【算法4.4】"), 0.5, 1.05, 9.0, 3.35, { fontSize: 8.5 });
   const rules = [["pos > size()", "抛 std::out_of_range", C.bad], ["pos == size()", "合法，得到空串", C.ok], ["len 超出剩余长度", "截断，不报错", C.green]];
   rules.forEach((r, i) => {
     const x = 0.5 + i * 3.05;
@@ -495,7 +528,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // substr: 原书 return NULL
 {
   const s = content("4.2.3", "4.2 字符串运算 · 抽取子串", "原书在起始位置越界时 return NULL：能编译，崩在运行期");
-  consoleBlock(s, src(532, 536), 0.5, 1.05, 9.0, 1.2, 9);
+  consoleBlock(s, code(null, "$ ./s7"), 0.5, 1.05, 9.0, 1.2, 9);
   const chain = [["return NULL;", "返回类型是 String"], ["NULL → char*", "不是「空串」"], ["String(char*)", "走构造函数"], ["strlen(nullptr)", "段错误"]];
   chain.forEach((c, i) => {
     const x = 0.5 + i * 2.3;
@@ -513,7 +546,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // find
 {
   const s = content("4.2.3", "4.2 字符串运算 · 查找与比较", "find【算法4.4】：optional 取代 -1");
-  codeBlock(s, src(440, 449), 0.5, 1.05, 9.0, 1.7, { fontSize: 9.5 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 【算法4.4】", "// 【算法4.3】"), 0.5, 1.05, 9.0, 1.7, { fontSize: 9.5 });
   card(s, 0.5, 2.95, 4.35, 2.15, RED);
   text(s, "✗  原书：int，-1 表示没找到", 0.7, 3.05, 4, 0.35, { fontSize: 13, bold: true, color: C.bad, margin: 0 });
   codeBlock(s, "int k = s.find('x', 0);\nprint(s.at(k));   // 忘了判 -1", 0.7, 3.5, 3.95, 0.65, { fontSize: 9.5 });
@@ -527,7 +560,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // compare
 {
   const s = content("4.2.3", "4.2 字符串运算 · 教学版 teaching.hpp（5/5 下）", "compare【算法4.3】：只该看符号");
-  codeBlock(s, src(451, 467), 0.5, 1.05, 9.0, 2.75, { fontSize: 8.8 });
+  codeBlock(s, code("code/ch04/string_class/teaching.hpp", "// 【算法4.3】"), 0.5, 1.05, 9.0, 2.75, { fontSize: 8.8 });
   callout(s, "原书的 strcmp", "自己实现了一个，固定返回 −1/0/1，并说「这与 C/C++ 通常的大小比较习惯不一致」——其实**不一致的是原书自己**：标准 `strcmp` 返回的就是差值的符号，调用方只该看符号。", 0.5, 3.95, 4.35, 1.15, { fontSize: 10, fill: RED, tcolor: C.bad });
   callout(s, "本书", "保持标准语义，并据此提供关系运算符 `==` `!=` `<`。另：原书那个与标准库同名同签名的 `strcmp`，**实测能编译也能链接**，不构成冲突（legacy.md 第五节）。", 5.15, 3.95, 4.35, 1.15, { fontSize: 10, fill: C.mint, tcolor: C.dark });
 }
@@ -535,7 +568,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 4.2a 工程版：拷贝
 {
   const s = content("4.2a", "4.2a 进阶（选读）· modern.hpp", "工程版的拷贝：读 raw()，copy-and-swap");
-  codeBlock(s, src(566, 581), 0.5, 1.05, 9.0, 2.6, { fontSize: 9, hl: [7, 12, 13] });
+  codeBlock(s, code("code/ch04/string_class/modern.hpp#rule-of-five", undefined, "/// 移动**不分配**"), 0.5, 1.05, 9.0, 2.6, { fontSize: 9, hl: [7, 12, 13] });
   callout(s, "为什么读 other.raw()", "源可能是**被移动过**的对象（`data_` 为空）；从空指针 `memcpy` 即便长度为 0 也是**未定义行为**。", 0.5, 3.85, 4.35, 1.25, { fontSize: 10.5 });
   callout(s, "拷贝并交换", "先把 `other` 拷成局部对象再 `swap`：**自赋值安全**，拷贝失败时原对象**不受影响**（强异常保证）。", 5.15, 3.85, 4.35, 1.25, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
@@ -543,7 +576,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
 // 4.2a 工程版：移动
 {
   const s = content("4.2a", "4.2a 进阶（选读）· modern.hpp", "移动之后的那个空壳怎么办");
-  codeBlock(s, src(583, 602), 0.5, 1.05, 6.1, 4.05, { fontSize: 8.5 });
+  codeBlock(s, code("code/ch04/string_class/modern.hpp#rule-of-five", "/// 移动**不分配**"), 0.5, 1.05, 6.1, 4.05, { fontSize: 8.5 });
   callout(s, "移动不分配", "移动声明为 `noexcept`，所以**不能在里面分配**——被移动方的 `data_` 只能置 `nullptr`。", 6.85, 1.05, 2.65, 1.45, { fontSize: 10 });
   callout(s, "可承诺不能作废", "教学版承诺「`c_str()` 永远不是空指针」。工程版加私有 `raw()`：`data_` 为空时返回**静态空串**，读取路径全走它——**不花任何分配**。", 6.85, 2.6, 2.65, 1.65, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   text(s, "其余差别同前几章：`[[nodiscard]]`、`noexcept`、copy-and-swap、`< > <= >=` 全由 `compare()` 派生。", 6.85, 4.35, 2.65, 0.8, { fontSize: 9.5, color: C.muted, margin: 0 });
@@ -593,7 +626,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // 4.3.1 朴素算法 C++
 {
   const s = content("4.3.1", "4.3.1 朴素的模式匹配 · modern.hpp（上）", "naive_search：接口与约定");
-  codeBlock(s, src(709, 727), 0.5, 1.05, 9.0, 2.95, { fontSize: 8.8 });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#naive", undefined, "std::size_t i = 0;  // 模式下标"), 0.5, 1.05, 9.0, 2.95, { fontSize: 8.8 });
   callout(s, "返回值", "返回**起始下标**；没有则 `std::nullopt`。`optional` 取代原书的 `int` + `-1`。", 0.5, 4.15, 2.85, 0.95, { fontSize: 9.5, fill: C.mint, tcolor: C.dark, tsize: 11 });
   callout(s, "空模式返回 0", "与 `std::string::find(\"\")` 一致；原书 `assert(m>0)` 在 `NDEBUG` 下整个消失。", 3.55, 4.15, 2.9, 0.95, { fontSize: 9.5, tsize: 11 });
   callout(s, "原书差 1", "原书 `return (j - pLen + 1);`，0 起始下标下正确的是 `j - pLen`。", 6.65, 4.15, 2.85, 0.95, { fontSize: 9.5, fill: RED, tcolor: C.bad, tsize: 11 });
@@ -602,7 +635,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // 朴素算法 C++ 下
 {
   const s = content("4.3.1", "4.3.1 朴素的模式匹配 · modern.hpp（下）", "朴素匹配：失配就右移一位，从头再比");
-  codeBlock(s, src(728, 740, { pre: "    // ..." }), 0.5, 1.05, 5.9, 2.75, { fontSize: 9.5, hl: [9, 13] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#naive", "std::size_t i = 0;  // 模式下标", undefined, { pre: "    // ..." }), 0.5, 1.05, 5.9, 2.75, { fontSize: 9.5, hl: [9, 13] });
   callout(s, "思路", "模式首字符对齐目标的每一个位置，逐字符比较；**失配**时模式对 T 右移一个字符，重新开始下一趟。直到某趟配串成功，或比到目标结束也没配上。", 6.65, 1.05, 2.85, 1.55, { fontSize: 10 });
   callout(s, "j = j - i + 1", "把目标下标退回**本趟起点的下一个**位置——这个 +1 是对的：「换一个起点重来」。", 6.65, 2.72, 2.85, 1.15, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "返回 j - m", "成功时 j 已走到匹配段**末尾之后**，所以起始位置是 `j - m`。", 6.65, 4.0, 2.85, 1.1, { fontSize: 10, fill: RED, tcolor: C.bad });
@@ -617,7 +650,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // 朴素 Python + 空模式约定
 {
   const s = content("4.3.1", "4.3.1 朴素的模式匹配 · modern.py", "Python 版：同一个回溯过程");
-  codeBlock(s, src(744, 757), 0.5, 1.05, 5.6, 2.8, { fontSize: 10, lang: "py", hl: [12] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.py#naive"), 0.5, 1.05, 5.6, 2.8, { fontSize: 10, lang: "py", hl: [12] });
   callout(s, "与 C++ 逐行对应", "空模式返回 0、两个下标、失配时 `j = j - i + 1`、成功返回 `j - len(pattern)`，全都一样；找不到返回 `None`。", 6.35, 1.05, 3.15, 1.6, { fontSize: 10.5 });
   callout(s, "n < m 不必单独判", "C++ 版先判 `n < m` 返回 `nullopt`；Python 版由循环条件自然结束，返回 `None`。", 6.35, 2.8, 3.15, 1.05, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   text(s, "手算一例：T = abababd，P = ababd", 0.5, 4.0, 9, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
@@ -774,7 +807,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // build_next C++ 上
 {
   const s = content("4.3.2", "4.3.2 特征向量 · modern.hpp（上）", "build_next：原书【算法4.7】优化版，只改了所有权");
-  codeBlock(s, src(873, 889), 0.5, 1.05, 9.0, 2.75, { fontSize: 9 });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#build-next", undefined, "while (i < static_cast<next_type>(m))"), 0.5, 1.05, 9.0, 2.75, { fontSize: 9 });
   callout(s, "原书：int* findNext(String P)", "用 `new int[m]` 返回裸数组，书中调用它的地方**一次都没有**配对的 `delete[]`——每匹配一个模式就漏一个数组。", 0.5, 3.95, 4.35, 1.15, { fontSize: 10.5, fill: RED, tcolor: C.bad });
   callout(s, "本书：std::vector<next_type>", "返回拥有所有权的容器，**计算过程一字未改**。空模式返回空向量（原书 `assert(m > 0)` 在 release 里是一次越界写）。", 5.15, 3.95, 4.35, 1.15, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
@@ -782,7 +815,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // build_next C++ 下
 {
   const s = content("4.3.2", "4.3.2 特征向量 · modern.hpp（下）", "用模式串跟自己匹配：沿已算好的特征值回退");
-  codeBlock(s, src(890, 905, { pre: "    // ..." }), 0.5, 1.05, 9.0, 3.0, { fontSize: 9, hl: [3, 4, 14] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#build-next", "while (i < static_cast<next_type>(m))", undefined, { pre: "    // ..." }), 0.5, 1.05, 9.0, 3.0, { fontSize: 9, hl: [3, 4, 14] });
   callout(s, "内层 while", "P[i] ≠ P[k] 时 `k = next[k]`：沿**已算好**的特征值回退，直到能延长或 k 退到 −1。", 0.5, 4.2, 4.35, 0.9, { fontSize: 10.5 });
   callout(s, "最后那个三目表达式 = 优化", "若 P[i] == P[k]，退到 k 必然**在同一个字符上再失配一次**，不如直接借用 `next[k]` 一步到位。", 5.15, 4.2, 4.35, 0.9, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
@@ -818,14 +851,14 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
     [{ t: "next[i]", bold: true }, "−1", "0", "0", "0", "−1", "1", "0", "0", "3", "0"],
   ], 0.5, 1.1, 9.0, [1.3, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77], { fontSize: 12, rowH: 0.36, align: "center" });
   text(s, "Python 版（modern.py）", 0.5, 2.33, 4, 0.28, { fontSize: 11, bold: true, color: C.dark, margin: 0 });
-  codeBlock(s, src(909, 924), 0.5, 2.62, 5.9, 2.48, { fontSize: 8, lang: "py", hl: [15] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.py#build-next"), 0.5, 2.62, 5.9, 2.48, { fontSize: 8, lang: "py", hl: [15] });
   callout(s, "原书正文与图 4.11 不一致", "正文写 `next = {-1,0,0,0,0,-1,1,0,0,3,0}`——**11 个值**，而模式只有 **10 个字符**。图 4.11 的 10 个值与实算相符，正文多出的那个 0 是错的。本书测试逐个比对十个值，并单独断言「模式只有 10 个字符」。", 6.6, 2.33, 2.9, 2.77, { fontSize: 9.5, fill: RED, tcolor: C.bad, tsize: 11 });
 }
 
 // 4.3.3 KMP C++ 上
 {
   const s = content("4.3.3", "4.3.3 KMP 模式匹配 · modern.hpp（上）", "接口：next 由调用方传入");
-  codeBlock(s, src(1006, 1024), 0.5, 1.05, 9.0, 3.0, { fontSize: 9 });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#kmp", undefined, "next_type i = 0;    // 模式下标"), 0.5, 1.05, 9.0, 3.0, { fontSize: 9 });
   callout(s, "为什么 next 作参数", "同一个模式只算一次、**跨多个目标复用**——这正是原书强调的性质，接口把它显式表达出来。", 0.5, 4.2, 4.35, 0.9, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   callout(s, "防御", "`next.size() != m` 抛 `std::invalid_argument`；返回值同样修正了原书【算法4.8】的差一错误。", 5.15, 4.2, 4.35, 0.9, { fontSize: 10.5 });
 }
@@ -833,7 +866,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // KMP C++ 下
 {
   const s = content("4.3.3", "4.3.3 KMP 模式匹配 · modern.hpp（下）", "与朴素算法只差失配那一步");
-  codeBlock(s, src(1025, 1042, { pre: "    // ..." }), 0.5, 1.05, 9.0, 3.0, { fontSize: 9, hl: [2, 3, 9] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#kmp", "next_type i = 0;    // 模式下标", undefined, { pre: "    // ..." }), 0.5, 1.05, 9.0, 3.0, { fontSize: 9, hl: [2, 3, 9] });
   table(s, [
     ["", "朴素匹配失配时", "KMP 失配时"],
     [{ t: "模式下标 i", bold: true }, { t: "i = 0", mono: true }, { t: "i = next[i]（可退到 −1）", mono: true, color: C.ok }],
@@ -844,7 +877,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // KMP Python
 {
   const s = content("4.3.3", "4.3.3 KMP 模式匹配 · modern.py", "Python 版：目标串下标只向前移动");
-  codeBlock(s, src(1046, 1062), 0.5, 1.05, 9.0, 3.05, { fontSize: 9, lang: "py", hl: [12, 16] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.py#kmp"), 0.5, 1.05, 9.0, 3.05, { fontSize: 9, lang: "py", hl: [12, 16] });
   callout(s, "i == -1 分支", "`next[i] = −1` 表示 P[0] 也不必比：下一步 i、j **同时 +1**——模式整体越过 T[j]。", 0.5, 4.25, 4.35, 0.85, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   callout(s, "对照朴素版", "循环条件、相等分支、返回值与 `naive_search` 完全一样，**只有 else 分支不同**。", 5.15, 4.25, 4.35, 0.85, { fontSize: 10.5 });
 }
@@ -981,7 +1014,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // border_lengths
 {
   const s = content("4.3+", "KMP 的另一个用途 · modern.hpp", "border_lengths：去掉「优化」的失效函数");
-  codeBlock(s, src(1106, 1130), 0.5, 1.05, 6.4, 4.05, { fontSize: 8.2 });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#border-lengths"), 0.5, 1.05, 6.4, 4.05, { fontSize: 8.2 });
   callout(s, "与 build_next 的关系", "回退链一模一样：`k = border[k - 1]` 与 `k = next[k]` 是同一个动作。\n未优化的 `next[i+1] == border[i]`：下标错开一位、没有 −1。", 7.1, 1.05, 2.4, 2.2, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
   callout(s, "代价", "整个串只算一遍，**O(n)**。", 7.1, 3.4, 2.4, 0.8, { fontSize: 10 });
   text(s, "border[i] = 前缀 s[0..i] 的最长真边界长度。", 7.1, 4.35, 2.4, 0.7, { fontSize: 10, bold: true, color: C.goldText, margin: 0 });
@@ -1007,7 +1040,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // minimal_period + is_repetition
 {
   const s = content("4.3+", "KMP 的另一个用途 · modern.hpp", "minimal_period 与 is_repetition");
-  codeBlock(s, src(1159, 1181), 0.5, 1.05, 6.4, 4.05, { fontSize: 8.5, hl: [22] });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#minimal-period", undefined, "/// 最大的 K"), 0.5, 1.05, 6.4, 4.05, { fontSize: 8.5, hl: [22] });
   callout(s, "陷阱二：整除 ≠ 循环", "判断是否由更短的串重复而成，要同时满足 **n mod p = 0** 与 **p < n**。\n边界为 0 时 p = n，而 n mod n = 0 **恒成立**——只写第一个条件，`abcd` 就被当成了循环串。", 7.1, 1.05, 2.4, 2.75, { fontSize: 9.5, fill: RED, tcolor: C.bad });
   callout(s, "p 不一定整除 n", "`ababa` 最小周期 2，但它不是某个串重复若干次。", 7.1, 3.95, 2.4, 1.15, { fontSize: 9.5 });
 }
@@ -1015,7 +1048,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
 // repetition_count + 三类题
 {
   const s = content("4.3+", "KMP 的另一个用途 · 三类题", "三类上机题怎么落到这组函数上");
-  codeBlock(s, src(1183, 1190), 0.5, 1.05, 9.0, 1.45, { fontSize: 9.5 });
+  codeBlock(s, code("code/ch04/pattern_matching/modern.hpp#minimal-period", "/// 最大的 K"), 0.5, 1.05, 9.0, 1.45, { fontSize: 9.5 });
   const probs = [
     ["循环串", "s 能否写成更短的串重复至少两次", "is_repetition(s)"],
     ["字符串乘方", "最大的 K，使 s 是某串重复 K 次", "repetition_count(s)"],
