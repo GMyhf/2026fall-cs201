@@ -173,7 +173,7 @@ sectionSlide("Part 1", "栈 Stack", "只在一端进出 · 后进先出 LIFO\n�
     [{ t: "top()", mono: true }, "只看栈顶，不弹出；**空栈返回「没有」**", "O(1)"],
     [{ t: "empty()", mono: true }, "栈里还有没有元素", "O(1)"],
     [{ t: "size()", mono: true }, "栈里有几个元素", "O(1)"],
-    [{ t: "clear()", mono: true }, "清空", "O(1)"],
+    [{ t: "clear()", mono: true }, "清空（教学版只归零长度；工程版逐个析构，O(n)）", "O(1)"],
   ], 0.5, 1.7, 5.6, [1.2, 3.3, 1.1], { fontSize: 11.5, rowH: 0.42 });
   callout(s, "「没有」在 C++17 里怎么说？", [
     "`std::optional<T>`：把「有没有值」搬进**类型**里。",
@@ -1096,7 +1096,7 @@ for _ in range(n):
   card(s, 0.5, 3.75, 4.35, 1.35, C.code);
   numCircle(s, 2, 0.65, 3.87, 0.38, C.dark);
   text(s, "参数 n 由栈深推出", 1.15, 3.85, 3.6, 0.35, { fontSize: 12.5, bold: true, color: C.dark, margin: 0 });
-  text(s, "每递归一层 n 减 1、栈深加 1，所以 **n = n₀ − 栈深**。只需维护一个 depth 计数器。", 1.15, 4.2, 3.6, 0.85, { fontSize: 10.5, margin: 0 });
+  text(s, "每递归一层 n 减 1、栈深加 1，所以 **n = n₀ − 栈深**（栈深 = 压在这一帧**下面**的帧数）。只需维护一个 depth 计数器。", 1.15, 4.2, 3.6, 0.85, { fontSize: 10.5, margin: 0 });
   codeBlock(s, `stack = [(capacity, enter)]      # 帧只剩两个域
 size = len(weights)
 depth = 1
@@ -1188,7 +1188,7 @@ sectionSlide("Part 2", "队列 Queue", "一端进、另一端出 · 先进先出
 // sacrifice slot
 {
   const s = content("2.2", "2 队列 · 顺序队列", "绕回之后的麻烦：front == rear 既可能空、也可能满");
-  text(s, "**抽屉原理**：n 个位置的数组，队列有「空、1 个、…、n 个」共 **n+1** 种状态；固定 front 后 rear 只有 **n** 种取值——必有两种状态撞在一起。", 0.5, 1.02, 9, 0.6, { fontSize: 12 });
+  text(s, "**抽屉原理**：m 个位置的数组若允许装满，队列有「空、1 个、…、m 个」共 **m+1** 种状态；固定 front 后 rear 只有 **m** 种取值——必有两种状态撞在一起。", 0.5, 1.02, 9, 0.6, { fontSize: 12 });
   const ring = (cx, cy, vals, frontI, rearI, title, color) => {
     const r = 0.72;
     vals.forEach((v, i) => {
@@ -1215,7 +1215,7 @@ bool full() const {
     return (rear_ + 1) % slots_
            == front_;
 }`, 6.6, 1.7, 2.9, 2.75, { fontSize: 9.5 });
-  callout(s, "牺牲一个槽位", "数组开 **n+1** 格却只装 n 个元素：`slots_ = 容量 + 1`。这就是「逻辑容量 3 时第 4 个入不进去」的原因。", 0.5, 4.55, 9.0, 0.62, { fontSize: 10.5, tsize: 10.5 });
+  callout(s, "牺牲一个槽位", "装 n 个就开 **m = n+1** 格（`slots_`），个数 `(rear−front+m)%m`。所以「容量 3 时第 4 个入不进去」。", 0.5, 4.55, 9.0, 0.62, { fontSize: 10.5, tsize: 10.5 });
 }
 
 // circular queue code + trace

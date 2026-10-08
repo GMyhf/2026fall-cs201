@@ -51,7 +51,7 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第七章  图",
   subtitle: "Graph：前驱和后继都不加限制的结构",
-  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差 300 倍\nDFS / BFS 周游 · 拓扑排序与环检测\nDijkstra · Floyd · MST 性质 · Prim · Kruskal",
+  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 拓扑排序与环检测\nDijkstra · Floyd · MST 性质 · Prim · Kruskal",
   footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
 });
 
@@ -612,12 +612,12 @@ public:
 
 // 7.3.2 demo output
 {
-  const s = content("7.3.2", "7.3.2 · 实测 code/ch07/adjacency_list/demo.cpp", "存储差 300 倍，BFS 的检查次数差 1000 倍");
+  const s = content("7.3.2", "7.3.2 · 实测 code/ch07/adjacency_list/demo.cpp", "存储差三百多倍，BFS 的检查次数差约 1000 倍");
   consoleBlock(s, "稀疏图 V=1000, E=999\n  邻接表存储 2998 格   ← 随 V+E 走\n  邻接矩阵存储 1000000 格 ← V*V\n  BFS 走遍 1000 个顶点，只检查了 999 条边\n  邻接矩阵的 BFS 要扫 1000000 格（每出队一个顶点扫一整行）\n\n从 0 出发的最短距离: 0 7 9 20 20 11\n最小生成树 5 条边，总权 33", 0.5, 1.05, 5.9, 2.45, 10);
   card(s, 0.5, 3.7, 2.85, 1.4, GREENBG);
   text(s, "存储", 0.65, 3.76, 2.6, 0.28, { fontSize: 11, bold: true, color: C.ok, margin: 0 });
   text(s, "2,998 : 1,000,000", 0.65, 4.05, 2.6, 0.45, { fontSize: 15, bold: true, color: C.text, margin: 0 });
-  text(s, "≈ 300 倍", 0.65, 4.55, 2.6, 0.4, { fontSize: 16, bold: true, color: C.ok, margin: 0 });
+  text(s, "≈ 334 倍", 0.65, 4.55, 2.6, 0.4, { fontSize: 16, bold: true, color: C.ok, margin: 0 });
   card(s, 3.55, 3.7, 2.85, 1.4, GREENBG);
   text(s, "BFS 检查次数", 3.7, 3.76, 2.6, 0.28, { fontSize: 11, bold: true, color: C.ok, margin: 0 });
   text(s, "999 : 1,000,000", 3.7, 4.05, 2.6, 0.45, { fontSize: 15, bold: true, color: C.text, margin: 0 });
@@ -730,7 +730,7 @@ struct VexNode {
     [m("headnextarc"), "同一个头点还有哪条下一弧？", "`headvex` 相同"],
     [m("info"), "权值、容量或其他边属性？", "不参与两条链的连接"],
   ], 0.5, 1.05, 9.0, [2.0, 3.6, 3.4], { fontSize: 11, rowH: 0.34 });
-  text(s, "例：依次插入 0→1、0→2、3→2。不管新弧接在表头还是表尾，两个查询的逻辑都是：", 0.5, 3.4, 9.0, 0.3, { fontSize: 11.5, margin: 0 });
+  text(s, "例：依次插入 0→1、0→2、3→2。不管新弧接在表头还是表尾，两个查询的逻辑都如下表；差别只在读出先后：本节实现是**表头插入**，实际依次读到 2、1 和 3、0（表中是表尾插入的次序）。", 0.5, 3.3, 9.0, 0.48, { fontSize: 10.5, margin: 0 });
   table(s, [
     ["查询", "起点", "读取字段", "下一步", "得到的顶点"],
     ["0 的出边", m("firstoutarc[0]"), "每个结点的 `headvex`", m("tailnextarc"), { t: "1、2", bold: true, color: C.green }],
@@ -1206,16 +1206,16 @@ sectionSlide("Part 5 · 7.5", "最短路径", "单源最短路：Dijkstra（贪�
   bullets(s, [
     "**所有顶点对之间的最短路径**：对任意有序对 ⟨vᵢ, vⱼ⟩ 求最短路径。",
     "可以以每个顶点为源点重复 Dijkstra n 次，O(n³)；Floyd 也是 **O(n³)**，但形式简单。",
-    "从 adj⁽⁰⁾ = 相邻矩阵出发，做 n 次迭代：**adj⁽ᵏ⁾[i, j] = 从 vᵢ 到 vⱼ、中间顶点序号不大于 k 的最短路径长度**。",
+    "从 adj⁽⁰⁾ = 相邻矩阵出发，做 n 次迭代：**adj⁽ᵏ⁾[i, j] = 从 vᵢ 到 vⱼ、中间顶点只取自前 k 个顶点 v₀…vₖ₋₁ 的最短路径长度**（第 k 轮新开放 vₖ₋₁）。",
   ], 0.5, 1.05, 9.0, 1.7, { fontSize: 13, gap: 8 });
   card(s, 0.5, 2.85, 4.35, 1.1, C.code);
-  text(s, "中间不经过 vₖ", 0.7, 2.93, 4, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  text(s, "中间不经过 vₖ₋₁", 0.7, 2.93, 4, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
   text(s, "adj⁽ᵏ⁾[i, j] = adj⁽ᵏ⁻¹⁾[i, j]", 0.7, 3.3, 4, 0.5, { fontSize: 13, fontFace: MONO, margin: 0 });
   card(s, 5.15, 2.85, 4.35, 1.1, C.code);
-  text(s, "中间经过 vₖ：两段拼起来", 5.35, 2.93, 4, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
-  text(s, "adj⁽ᵏ⁻¹⁾[i, k] + adj⁽ᵏ⁻¹⁾[k, j]", 5.35, 3.3, 4, 0.5, { fontSize: 13, fontFace: MONO, margin: 0 });
+  text(s, "中间经过 vₖ₋₁：两段拼起来", 5.35, 2.93, 4, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  text(s, "adj⁽ᵏ⁻¹⁾[i, k−1] + adj⁽ᵏ⁻¹⁾[k−1, j]", 5.35, 3.3, 4, 0.5, { fontSize: 13, fontFace: MONO, margin: 0 });
   card(s, 0.5, 4.1, 9.0, 1.0, C.dark);
-  text(s, "adj⁽ᵏ⁾[i, j] = min{ adj⁽ᵏ⁻¹⁾[i, j],  adj⁽ᵏ⁻¹⁾[i, k] + adj⁽ᵏ⁻¹⁾[k, j] }", 0.7, 4.1, 8.6, 1.0, { fontSize: 16, bold: true, color: C.gold, valign: "middle", align: "center", margin: 0 });
+  text(s, "adj⁽ᵏ⁾[i, j] = min{ adj⁽ᵏ⁻¹⁾[i, j],  adj⁽ᵏ⁻¹⁾[i, k−1] + adj⁽ᵏ⁻¹⁾[k−1, j] }", 0.7, 4.1, 8.6, 1.0, { fontSize: 15, bold: true, color: C.gold, valign: "middle", align: "center", margin: 0 });
 }
 
 // 7.5.2 floyd trace fig 7-20
@@ -1286,7 +1286,7 @@ sectionSlide("Part 6 · 7.6", "最小生成树", "MST 性质 · Prim：从点出
   card(s, 0.5, 2.85, 5.6, 1.1, C.dark);
   text(s, "MST 性质", 0.7, 2.9, 3, 0.3, { fontSize: 11, bold: true, color: C.gold, margin: 0 });
   text(s, "U 是 V 的非空真子集。若 (u, v) 是一端在 U、另一端在 V−U 的边里**权最小**的一条，则一定存在一棵包含 (u, v) 的 MST。", 0.7, 3.2, 5.3, 0.72, { fontSize: 11, color: C.white, margin: 0 });
-  callout(s, "反证", "设某棵 MST T 不含 (u, v)。把 (u, v) 加进 T 必成回路，回路上另有一条边 (u′, v′) 也跨在 U 与 V−U 之间。删掉它得到生成树 T′；因 W(u, v) ≤ W(u′, v′)，T′ 代价不比 T 大，也是 MST 且含 (u, v)——矛盾。", 0.5, 4.05, 5.6, 1.05, { fontSize: 9.5, lsm: 1.05 });
+  callout(s, "反证", "设**任何一棵** MST 都不含 (u, v)，任取一棵 T。把 (u, v) 加进 T 必成回路，回路从 u 到 v 还要回到 u，故另有一条边 (u′, v′) 也跨在 U 与 V−U 之间。删掉它得到生成树 T′；因 W(u, v) ≤ W(u′, v′)，T′ 代价不比 T 大，也是 MST 且含 (u, v)——矛盾。", 0.5, 4.05, 5.6, 1.05, { fontSize: 9.5, lsm: 1.05 });
   card(s, 6.35, 1.05, 3.15, 2.5, C.code);
   image(s, "fig-7-22", 6.5, 1.12, 2.85, 2.05);
   text(s, "图 7.22  含 (u, v) 的回路", 6.35, 3.2, 3.15, 0.28, { fontSize: 10, color: C.muted, align: "center" });

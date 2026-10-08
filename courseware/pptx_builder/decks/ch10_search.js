@@ -850,9 +850,10 @@ sectionSlide("10.3", "散列方法", "不比较，直接根据关键码算出存
   text(s, "n 个 d 位数，每位可能有 r 种符号；选**各种符号分布均匀**的若干位作地址。均匀度：", 0.7, 1.5, 4.0, 0.7, { fontSize: 10.5, margin: 0 });
   text(s, "λₖ = Σᵢ (αᵢᵏ − n/r)²", 0.7, 2.2, 4.0, 0.4, { fontSize: 14, bold: true, color: C.green, margin: 0, align: "center" });
   text(s, "αᵢᵏ：第 i 个符号在第 k 位出现的次数；**λₖ 越小越均匀**。", 0.7, 2.65, 4.0, 0.5, { fontSize: 10, color: C.muted, margin: 0 });
-  text(s, "例 10.5 学号形态：", 0.7, 3.2, 4, 0.3, { fontSize: 10.5, bold: true, color: C.dark, margin: 0 });
-  text(s, "992148  991269  990527\n991630  991805", 0.7, 3.5, 4, 0.55, { fontSize: 12, fontFace: MONO, margin: 0 });
-  text(s, "前三位几乎不变——取它们做地址等于把所有记录**挤进同一个槽**。", 0.7, 4.15, 4.0, 0.8, { fontSize: 10.5, color: C.bad, margin: 0 });
+  text(s, "例 10.5 学号形态（n = 8，r = 10，n/r = 0.8）：", 0.7, 3.12, 4, 0.3, { fontSize: 10.5, bold: true, color: C.dark, margin: 0 });
+  text(s, "992148 991269 990527 991630\n991805 991558 992047 990001", 0.7, 3.42, 4, 0.5, { fontSize: 11, fontFace: MONO, margin: 0 });
+  text(s, "λ₁ = λ₂ = 57.6，λ₃ = 17.6，λ₄ = λ₅ = λ₆ = 5.6 → 3 位地址取第**④⑤⑥位**；取前三位等于把记录**挤进少数几个槽**。", 0.7, 3.98, 4.0, 0.62, { fontSize: 10, color: C.bad, margin: 0 });
+  text(s, "只适用于事先知道全部关键码各位分布的情况。", 0.7, 4.65, 4.0, 0.35, { fontSize: 9.5, color: C.muted, margin: 0 });
   card(s, 5.15, 1.05, 4.35, 4.05, C.code);
   text(s, "5. 基数转换法", 5.35, 1.12, 4, 0.35, { fontSize: 15, bold: true, color: C.dark, margin: 0 });
   text(s, "把关键码看成另一种进制的数，再转换成原来进制，选其中几位作地址。", 5.35, 1.5, 4.0, 0.55, { fontSize: 10.5, margin: 0 });
@@ -908,25 +909,29 @@ sectionSlide("10.3", "散列方法", "不比较，直接根据关键码算出存
 //
 // 逐字节读的是 \`unsigned char\` 而不是 \`char\`——\`char\` 在多数平台上是有符号的，
 // 中文等非 ASCII 字节会变成负数，一进位运算就带出符号扩展，散列值随平台而变。
+//
+// 中间值用 32 位的 \`std::uint32_t\`：ELF 散列是按 32 位定义的。若用 64 位的
+// \`std::size_t\`，\`hash << 4\` 再加一个字节可能进位到第 32 位，下面只清第 28–31 位，
+// 那一位就永远留着，结果与经典 ELF 散列不同。
 inline std::size_t elf_hash(const std::string& text) {
-    std::size_t hash = 0;
+    std::uint32_t hash = 0;
     for (unsigned char character : text) {
         hash = (hash << 4U) + character;        // 左移 4 位，腾出位置放新字节
-        std::size_t high_bits = hash & 0xF0000000U;   // 溢出到高 4 位的那部分
+        std::uint32_t high_bits = hash & 0xF0000000U;   // 溢出到高 4 位的那部分
         if (high_bits != 0) {
             hash ^= high_bits >> 24U;           // 折回低位，别让它白白丢掉
         }
         hash &= ~high_bits;                     // 再把高 4 位清掉
     }
     return hash;
-}`, 0.5, 1.05, 9.0, 2.65, { fontSize: 9, hl: [7] });
+}`, 0.5, 1.05, 9.0, 2.95, { fontSize: 8.5, hl: [10, 11] });
   table(s, [
     ["字节（UTF-8「中」）", "h 的变化"],
     [{ t: "E4", mono: true }, { t: "0x0 << 4 + 0xE4 = 0xE4", mono: true }],
     [{ t: "B8", mono: true }, { t: "0xE40 + 0xB8 = 0xEF8", mono: true }],
     [{ t: "AD", mono: true }, { t: "0xEF80 + 0xAD = 0xF02D", mono: true, bold: true, color: C.ok }],
-  ], 0.5, 3.85, 4.9, [1.7, 3.2], { fontSize: 10, rowH: 0.3 });
-  callout(s, "测试守着的一条", "按无符号读得到 `0xF02D`；按有符号 `char` 读会被符号扩展成 `0xFFFFFF000FFF00DD`（本机实测）。两者天差地别，这一条能把两种写法分开。", 5.6, 3.85, 3.9, 1.25, { fontSize: 10 });
+  ], 0.5, 4.08, 4.9, [1.7, 3.2], { fontSize: 9.5, rowH: 0.26 });
+  callout(s, "测试守着的一条", "按无符号读得到 `0xF02D`；按有符号 `char` 读会被符号扩展，得 `0x0FFF00DD`（32 位中间值，本机实测）。两者天差地别，这一条能把两种写法分开。", 5.6, 4.08, 3.9, 1.07, { fontSize: 9.5 });
 }
 
 // evaluating hash functions

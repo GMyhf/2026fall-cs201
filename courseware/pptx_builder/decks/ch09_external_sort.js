@@ -161,7 +161,7 @@ int main() {
   consoleBlock(s, "工作区 M=7，得到 2 个顺串\n顺串 1（长度 8）: 15 25 30 35 45 49 50 60\n顺串 2（长度 3）: 1 16 27\n败者树当前冠军: 6\n替换后冠军: 8", 0.5, 1.05, 5.2, 1.75, 11);
   callout(s, "置换选择（M = 7）", [
     "第一顺串长 **8 > M**：读入的 60 不小于刚输出的 15，补进了当前顺串。",
-    "16、27、1 读入时都小于当时的输出值，被**冻结**，另成第二顺串。",
+    "16、27、1 依次遇到刚输出的 25、30、35，都比它小，被**冻结**，另成第二顺串。",
     "两条顺串 8 + 3 = 11 条，恰好是全部输入：**记录守恒**。",
   ], 0.5, 2.95, 5.2, 2.15, { fontSize: 11.5, gap: 5 });
   callout(s, "败者树", [
@@ -518,7 +518,7 @@ sectionSlide("Part 3 · 9.3 / 9.3.1", "外排序：顺串生成", "外排序两�
   text(s, "60 ≥ 15，补进了当前顺串", 5.95, 1.15, 3.5, 0.42, { fontSize: 10.5, color: C.ok, bold: true, valign: "middle", margin: 0 });
   text(s, "顺串 2", 0.5, 2.1, 0.9, 0.42, { fontSize: 12, bold: true, color: C.dark, valign: "middle", margin: 0 });
   cells(s, 1.4, 2.1, [1, 16, 27], { cw: 0.55, fills: ["F9D5D0", "F9D5D0", "F9D5D0"] });
-  text(s, "读入时都小于当时的输出值，被冻结", 3.2, 2.1, 4, 0.42, { fontSize: 10.5, color: C.bad, bold: true, valign: "middle", margin: 0 });
+  text(s, "读入时分别小于刚输出的 25、30、35，被冻结", 3.2, 2.1, 4.5, 0.42, { fontSize: 10.5, color: C.bad, bold: true, valign: "middle", margin: 0 });
   const inv = [
     ["每条顺串内部非递减", "保证**归并可以工作**。冻结的记录若继续和当前堆比赛，当前顺串就会倒序。"],
     ["全部顺串拼在一起，包含输入的每条记录且恰好一次", "防止冻结时**丢记录**或**重复输出**。"],
@@ -548,7 +548,7 @@ sectionSlide("Part 3 · 9.3 / 9.3.1", "外排序：顺串生成", "外排序两�
   const dec = [[8, 9, 10], [5, 6, 7], [2, 3, 4], [1]];
   let dx = 2.5;
   dec.forEach((r) => { cells(s, dx, 2.55, r, { cw: 0.34, ch: 0.38, fs: 10.5, fills: r.map(() => "F9D5D0") }); dx += r.length * 0.34 + 0.12; });
-  text(s, "几乎每次都冻结 → **4 条**，长 3,3,3,1，接近 M", 6.85, 2.5, 2.6, 0.5, { fontSize: 10.5, margin: 0 });
+  text(s, "每次读入都冻结 → **4 条**，长 3,3,3,1：恰好 M（末条可更短）", 6.85, 2.5, 2.6, 0.5, { fontSize: 10.5, margin: 0 });
   // random
   card(s, 0.5, 3.5, 9.0, 0.8, C.cream);
   text(s, "随机排列", 0.7, 3.58, 1.6, 0.35, { fontSize: 13, bold: true, color: C.goldText, margin: 0 });
@@ -744,7 +744,7 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
     ["3", "3", "一对归并，1 条轮空", "2", "2400, 600"],
     ["4", "2", "最后归并", "1", { t: "3000", bold: true }],
   ], 0.5, 3.15, 6.3, [0.6, 1.1, 2.0, 1.1, 1.5], { fontSize: 10, rowH: 0.32, align: "center" });
-  callout(s, "结论", "确实需要 **⌈log₂ 10⌉ = 4** 趟。每趟另写一个文件，归并阶段传输约 **4 × 2N = 8N** 条记录。", 7.0, 3.15, 2.5, 1.95, { fontSize: 11 });
+  callout(s, "结论", "确实需要 **⌈log₂ 10⌉ = 4** 趟。每页 100 条、共 30 页：各趟读 30、24、24、30 页，合计读/写各 **108 页**——轮空不复制，不是 4 × 30 = 120。", 7.0, 3.15, 2.5, 1.95, { fontSize: 11 });
 }
 
 // 9.3.2 two conclusions
@@ -759,7 +759,7 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
     s.addShape(pres.shapes.RECTANGLE, { x: 1.85, y: y + 0.05, w: b[2] * 0.55, h: 0.3, fill: { color: i === 0 ? "9AAFA6" : C.ok }, line: { type: "none" } });
     text(s, b[1], 1.9 + b[2] * 0.55, y, 1.6, 0.4, { fontSize: 10, valign: "middle", margin: 0 });
   });
-  text(s, "初始顺串数从 10 降到 5，直接省掉**一次完整读写**（约 2N 条记录的传输）。", 0.7, 2.9, 4, 0.55, { fontSize: 10.5, margin: 0 });
+  text(s, "初始顺串数从 10 降到 5，直接省掉**一次完整读写**（读/写各 108 → 24+24+30 = 78 页）。", 0.7, 2.9, 4, 0.55, { fontSize: 10.5, margin: 0 });
   card(s, 5.15, 1.1, 4.35, 2.4, "FDF0EE");
   text(s, "「增加归并路数总会更快」不成立", 5.35, 1.2, 4.1, 0.35, { fontSize: 13, bold: true, color: C.bad, margin: 0 });
   bullets(s, [
@@ -782,7 +782,7 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
   ], 0.5, 1.05, 5.5, 1.4, { fontSize: 12, gap: 5 });
   card(s, 0.5, 2.45, 5.5, 1.05, C.dark);
   text(s, "⌈log_k m⌉·(k−1)·(n−1)", 0.7, 2.52, 5.2, 0.42, { fontSize: 16, bold: true, color: C.gold, margin: 0 });
-  text(s, "= ⌈log₂ m⌉ / log₂ k · (k−1)·(n−1)", 0.7, 2.95, 5.2, 0.42, { fontSize: 14, bold: true, color: C.white, margin: 0 });
+  text(s, "= ⌈log₂ m / log₂ k⌉ · (k−1)·(n−1)", 0.7, 2.95, 5.2, 0.42, { fontSize: 14, bold: true, color: C.white, margin: 0 });
   callout(s, "削减了增大 k 的好处", "m 不变时，随着 k 增大，**(k−1) / log₂ k** 也增大：内部归并的时间随之增大，某种程度上**削减了由于增大 k 而减少归并趟数带来的好处**。", 0.5, 3.65, 5.5, 1.45, { fontSize: 11, fill: "FDF0EE", tcolor: C.bad });
   s.addChart(pres.charts.BAR, [{ name: "(k-1)/log2 k", labels: ["2", "4", "8", "16", "32"], values: [1, 1.5, 2.33, 3.75, 6.2] }], {
     x: 6.2, y: 1.05, w: 3.3, h: 4.05, barDir: "col", chartColors: [C.bad], dataLabelFormatCode: "0.##",
@@ -799,8 +799,8 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
   const s = content("9.3.3", "9.3.3 多路归并——选择树", "选择树正是用来消掉这一项的");
   text(s, "选择树从 k 个关键码中找出最小值，比较次数是树高 **⌈log₂ k⌉**。于是内部归并的总比较次数变为：", 0.5, 1.02, 9, 0.6, { fontSize: 12.5 });
   card(s, 0.5, 1.65, 9.0, 0.95, C.dark);
-  text(s, "⌈log_k m⌉·⌈log₂ k⌉·(n−1) = (log₂ m / log₂ k)·⌈log₂ k⌉·(n−1) = ⌈log₂ m⌉·(n−1)", 0.7, 1.72, 8.6, 0.45, { fontSize: 13, bold: true, color: C.gold, margin: 0 });
-  text(s, "内部比较次数与 k 无关，不随 k 的增加而增加——这就是选择树存在的全部理由。", 0.7, 2.18, 8.6, 0.35, { fontSize: 12, color: C.white, margin: 0 });
+  text(s, "⌈log_k m⌉·⌈log₂ k⌉·(n−1) = ⌈log₂ m / log₂ k⌉·⌈log₂ k⌉·(n−1) ≈ log₂ m·(n−1)", 0.7, 1.72, 8.6, 0.45, { fontSize: 13, bold: true, color: C.gold, margin: 0 });
+  text(s, "内部比较次数（主项）与 k 无关，不随 k 增加而增加——选择树存在的全部理由。（原书写「= ⌈log₂ m⌉·(n−1)」，两次取整不能抵消，如 m=5、k=4：4 ≠ 3）", 0.7, 2.15, 8.6, 0.44, { fontSize: 10.5, color: C.white, margin: 0 });
   table(s, [
     ["k", "趟数 ⌈log_k 256⌉", "直接比较：趟数 × (k−1)", "选择树：趟数 × ⌈log₂ k⌉"],
     ["2", "8", "8", { t: "8", bold: true, color: C.ok }],
@@ -845,8 +845,8 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
     text(s, r[0], 0.7, 1.15 + i * 0.42, 2.6, 0.38, { fontSize: 10.5, color: C.mint, valign: "middle", margin: 0 });
     text(s, r[1], 3.2, 1.15 + i * 0.42, 2.55, 0.38, { fontSize: 11.5, bold: true, color: C.white, valign: "middle", margin: 0 });
   });
-  text(s, "p = (i + offset) / 2              i ≤ LowExt", 0.7, 2.5, 5, 0.3, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
-  text(s, "p = (i − LowExt + n − 1) / 2      i > LowExt", 0.7, 2.85, 5, 0.3, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
+  text(s, "p = ⌊(i + offset) / 2⌋            i ≤ LowExt", 0.7, 2.5, 5, 0.3, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
+  text(s, "p = ⌊(i − LowExt + n − 1) / 2⌋    i > LowExt", 0.7, 2.85, 5, 0.3, { fontSize: 11, bold: true, fontFace: MONO, color: C.gold, margin: 0 });
   text(s, "例：n = 5 → s = 2，2^s = 4，LowExt = 2，offset = 7（整数除法）", 0.5, 3.55, 5.3, 0.3, { fontSize: 11, bold: true, color: C.dark });
   table(s, [
     ["L[i]", "L[1]", "L[2]", "L[3]", "L[4]", "L[5]"],
@@ -975,7 +975,7 @@ R3:  6  8 30`, 6.25, 1.02, 3.25, 1.05, { fontSize: 10, lang: "text" });
     ["", "赢者树", "败者树"],
     [{ t: "内部结点存", bold: true }, "两子树比赛的**胜者**下标", "该场比赛的**败者**下标"],
     [{ t: "全局冠军", bold: true }, "根 B[1]", "另设冠军槽 B[0]（本书 `champion_`）"],
-    [{ t: "重赛时的对手", bold: true }, "要去找沿途的对手（**取兄弟**）", "直接与父结点里留下的败者比较"],
+    [{ t: "重赛时的对手", bold: true }, "要去找沿途的对手（**取兄弟**）", "直接与父结点里留下的败者比较（替换冠军时）"],
     [{ t: "替换一名选手", bold: true }, "沿叶到根，⌈log₂ k⌉ 场", "沿叶到根，⌈log₂ k⌉ 场"],
     [{ t: "本书存储", bold: true }, { t: "tree_（2·leaf_base）", mono: true }, { t: "loser_ + subtree_winner_", mono: true }],
   ], 0.5, 1.05, 9.0, [1.8, 3.4, 3.8], { fontSize: 11, rowH: 0.46 });
@@ -1053,7 +1053,7 @@ public:
         const auto index = winner_index();
         return index ? std::optional<int>(players_[*index]) : std::nullopt;
     }`, 0.5, 1.05, 6.55, 4.05, { fontSize: 7.9, hl: [13, 14, 15] });
-  callout(s, "完全二叉数组", [
+  callout(s, "完全二叉树数组", [
     "结点 1 是根；结点 i 的孩子是 2i、2i+1。",
     "叶从 `leaf_base_` 开始：选手 j 在 `leaf_base_ + j`。",
     "建树：从 `leaf_base_ - 1` 到 1 逐个结点比赛，自底向上。",
@@ -1262,7 +1262,7 @@ private:
     ["文件组织", "逻辑文件 vs 物理文件；顺序 / 散列 / 索引 / 倒排。读者顺序消费页，写者批量产生页。"],
     ["两阶段", "先生成**顺串**，再逐趟**归并**；趟数 `⌈log_k m⌉`——减小 m 或增大 k。"],
     ["置换选择", "最小堆 + **冻结**：`incoming >= emitted` 才进当前顺串；平均长约 **2M**（平均，不是保证）。"],
-    ["选择树", "赢者树记胜者、败者树记败者另设冠军；替换只沿叶到根重赛，内部比较**与 k 无关**。"],
+    ["选择树", "赢者树记胜者、败者树记败者另设冠军；替换只沿叶到根重赛，内部比较（主项）**与 k 无关**。"],
   ]);
 
   await D.save(OUT);

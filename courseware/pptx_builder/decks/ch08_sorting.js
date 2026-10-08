@@ -301,7 +301,7 @@ def insertion_sort(values: list[int]) -> None:
     "Shell 排序（D. L. Shell，1959）利用插入排序的**两条性质**：正序时 Θ(n)；短序列上很有效。",
     "把序列分成若干**不相邻、间距相同**的子序列，各自做插入排序；再缩小间距、重复。",
     "间距减到 **1** 时整个序列已**基本有序**，最后这趟插入排序接近 Θ(n)。",
-    "又称**缩小增量排序**（diminishing increment sorting）。本书按原书取增量**每次除以 2**：(2ᵏ, 2ᵏ⁻¹, ⋯, 2, 1)。",
+    "又称**缩小增量排序**（diminishing increment sorting）。本书按原书取增量**每次除以 2**：从 ⌊n/2⌋ 起每趟整除 2 直到 1（n = 2ᵏ⁺¹ 时即 2ᵏ, ⋯, 2, 1）。",
   ], 0.5, 1.1, 5.5, 4.0, { fontSize: 12.5, gap: 10 });
   card(s, 6.2, 1.05, 3.3, 4.05, C.code);
   image(s, "fig-8-2", 6.3, 1.2, 3.1, 3.4);
@@ -396,12 +396,12 @@ inline void selection_sort(std::vector<int>& values) {
   text(s, "比较次数", 7.0, 1.12, 2.4, 0.3, { fontSize: 11, bold: true, color: C.gold, margin: 0 });
   text(s, "Σ(n−1−i) = n(n−1)/2", 7.0, 1.45, 2.45, 0.4, { fontSize: 12, bold: true, color: C.white, margin: 0 });
   text(s, "**与输入顺序无关**：已排好的输入照样扫这么多次。最好、平均、最坏都是 Θ(n²)。", 7.0, 1.9, 2.4, 1.2, { fontSize: 10.5, color: C.white, margin: 0 });
-  callout(s, "别人没有的优点", "**交换最多 n−1 次**。记录很大、比较很便宜时，移动开销才是主导，这时选择排序反而合适。空间 Θ(1)。", 6.85, 3.35, 2.65, 1.75, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "别人没有的优点", "**真正改变位置的交换最多 n−1 次**（代码每轮都调 swap，minimum == first 时是白做的自交换）。记录很大、比较便宜时它反而合适。空间 Θ(1)。", 6.85, 3.35, 2.65, 1.75, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
 
 // 8.3.1 trace
 {
-  const s = content("8.3.1", "8.3 选择排序 · 直接选择", "逐轮结果：第 3 轮就看得出不稳定");
+  const s = content("8.3.1", "8.3 选择排序 · 直接选择", "逐轮结果：i=3 那一轮（第 4 轮）就看得出不稳定");
   table(s, [
     ["", "0", "1", "2", "3", "4", "5", "6", "7", "本轮交换"],
     seqRow("初始", [45, 34, 78, 12, "34′", 32, 29, 64], { 1: C.cream, 4: C.cream }, [""]),
@@ -535,7 +535,7 @@ inline void bubble_sort(std::vector<int>& values) {
     seqRow("第6趟", [12, 29, 32, 34, "34′", 45, 64, 78], {}),
   ], 5.65, 1.05, 3.85, [0.65, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4], { fontSize: 9.5, rowH: 0.33, tight: true });
   text(s, "第 6 趟一次交换都没有 → 结束。绿色：本趟被顶到位的最大者。", 5.65, 3.75, 3.85, 0.5, { fontSize: 9.5, color: C.muted });
-  callout(s, "稳定：只有严格小于才交换", "相等的两个元素永远不会互换位置——第 3、4 趟里 34 往左走，34′ 也在走，但始终「34 在前」。\n**把 `<` 写成 `<=`，稳定性当场消失**，这是最容易犯的错。", 0.5, 3.9, 4.95, 1.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "稳定：只有严格小于才交换", "相等的两个元素永远不会互换——第 3 趟 34 碰到 34′ 就停下，改由 34′ 往右走；第 4 趟 34 往右走，又停在 34′ 左边，始终「34 在前」。\n**把 `<` 写成 `<=`，稳定性当场消失**，这是最容易犯的错。", 0.5, 3.9, 4.95, 1.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "代价", "最好 Θ(n)（有序，第一趟就退出）；最坏逆序 n(n−1)/2 = Θ(n²)。", 5.65, 4.3, 3.85, 0.8, { fontSize: 10 });
 }
 
@@ -561,15 +561,15 @@ inline void bubble_sort(std::vector<int>& values) {
   const s = content("8.4.2", "8.4 交换排序 · 快速排序", "轴值怎么选，影响很大");
   card(s, 0.5, 1.1, 4.35, 2.55, RED);
   text(s, "✗ 选第一个或最后一个记录", 0.7, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.bad, margin: 0 });
-  text(s, "输入恰好**正序或逆序**时，每次分割都把剩余记录全分到一边，另一边为空——分治法根本起不到作用。\n递归深度 n，时间 **Θ(n²)**。", 0.7, 1.65, 4.0, 1.9, { fontSize: 11.5, lsm: 1.15 });
+  text(s, "输入恰好**正序、逆序或全部相等**时，每次分割都把剩余记录全分到一边，另一边为空——分治法根本起不到作用。\n递归深度 n，时间 **Θ(n²)**。", 0.7, 1.65, 4.0, 1.9, { fontSize: 11.5, lsm: 1.15 });
   card(s, 5.15, 1.1, 4.35, 2.55, GRN);
   text(s, "✓ 选中间点 (start + end) / 2", 5.35, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.ok, margin: 0 });
   text(s, "正序或逆序输入时**正好平分**序列，实验效果非常好。\n实务中的快排一定要配**三数取中**或**随机枢轴**。", 5.35, 1.65, 4.0, 1.9, { fontSize: 11.5, lsm: 1.15 });
   callout(s, "本书的实现", [
     "选**区间末元素**为枢轴，把更小的元素换到左侧，再递归两边。",
-    "硬要求：**全相等的输入必须也能结束**。",
+    "硬要求：**全相等的输入必须也能结束**（能结束，但退化成 Θ(n²)）。",
   ], 0.5, 3.85, 4.35, 1.25, { fontSize: 10.5, gap: 3 });
-  callout(s, "等于轴值的记录怎么办？", "快排本来就不稳定，处理方法有多种。原书算法 8.6 注释：`<=` 也可以改写为 `<`，但增加记录移动——**两种都对，差别只在移动次数**。", 5.15, 3.85, 4.35, 1.25, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "等于轴值的记录怎么办？", "快排本来就不稳定，处理方法有多种。原书算法 8.6 注释：`<=` 也可以改写为 `<`，但增加记录移动——**两种都对**，差别在移动次数；重复值多时还关系到分得均不均匀。", 5.15, 3.85, 4.35, 1.25, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
 
 // fig 8.7 partition walkthrough
@@ -696,13 +696,13 @@ def quick_sort(values: list[int]) -> None:
   text(s, "默认 8 MB 栈\n几万层才炸", 7.25, 1.42, 2.2, 0.85, { fontSize: 12, bold: true, color: C.ok, margin: 0 });
   card(s, 7.1, 2.45, 2.4, 1.75, RED);
   text(s, "CPython", 7.25, 2.5, 2, 0.3, { fontSize: 11, bold: true, color: C.bad, margin: 0 });
-  text(s, "递归上限 1000 层\n两千个有序元素就抛 RecursionError", 7.25, 2.82, 2.2, 1.3, { fontSize: 11.5, bold: true, color: C.bad, margin: 0 });
+  text(s, "递归上限 1000 层\n一千个有序元素就抛 RecursionError", 7.25, 2.82, 2.2, 1.3, { fontSize: 11.5, bold: true, color: C.bad, margin: 0 });
   callout(s, "结论", "暴露阈值差**两个数量级**。下一页「只对较短的一侧递归」：在 C++ 里是省栈，在 Python 里是**能不能跑完**。", 0.5, 4.35, 9.0, 0.75, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
 
 // optimized quicksort
 {
-  const s = content("8.4.2", "8.4 交换排序 · 快速排序 · modern.hpp", "原书算法 8.7 的两处对策：短侧递归 + 小区间插入");
+  const s = content("8.4.2", "8.4 交换排序 · 快速排序 · modern.hpp", "两处对策：短侧递归（本书补）+ 小区间插入（原书算法 8.7）");
   codeBlock(s, `inline void quick_sort_optimized_range(std::vector<int>& values, std::size_t first, std::size_t last) {
     while (last - first > 16) {
         const std::size_t middle = partition(values, first, last);
@@ -729,7 +729,7 @@ inline void quick_sort_optimized(std::vector<int>& values) {
     quick_sort_optimized_range(values, 0, values.size());
 }`, 0.5, 1.05, 9.0, 4.05, { fontSize: 8.5, hl: [2, 4, 5, 6] });
   callout(s, "① 递归太深 → 只递归短侧", "较短的一侧递归，较长的一侧改成循环。每次递归的区间至少减半 → 深度 **O(log n)**。", 6.35, 1.5, 3.05, 1.55, { fontSize: 10 });
-  callout(s, "② 小区间 → 插入排序", "只剩十几个元素时，调用与划分的固定开销超过收益。本书阈值 **16**；原书按表 8.4 取 28。阈值在不同环境下得到过 9、16、28——**要在自己的机器上重测**。", 6.35, 3.15, 3.05, 1.85, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "② 小区间 → 插入排序", "只剩十几个元素时，调用与划分的固定开销超过收益。本书阈值 **16**、每个小区间**当场**插入排序；原书取 28、最后整体做**一次**，总代价同阶。阈值**要在自己的机器上重测**。", 6.35, 3.15, 3.05, 1.85, { fontSize: 10, fill: C.mint, tcolor: C.dark });
 }
 
 // optimization can't fix worst case
@@ -826,7 +826,7 @@ inline void merge_sort(std::vector<int>& values) {
 
 // merge optimized
 {
-  const s = content("8.5", "8.5 归并排序 · modern.hpp", "原书算法 8.9 的两处优化，本书都实现了");
+  const s = content("8.5", "8.5 归并排序 · modern.hpp", "原书 8.9 的两处优化：本书保留小区间插入，另一处换成跳过归并");
   codeBlock(s, `inline void merge_sort_optimized_range(std::vector<int>& values, std::vector<int>& buffer,
                                        std::size_t first, std::size_t last) {
     if (last - first <= 16) {
@@ -859,8 +859,8 @@ inline void merge_sort_optimized(std::vector<int>& values) {
   text(s, "Sedgewick 的监视哨技巧", 0.7, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.dark, margin: 0 });
   text(s, "复制到临时数组时，**把第二个子数组颠倒过来**。两个子数组从两端向中间推进，彼此成为对方的「监视哨」，循环里不再反复检查子序列是否已经结束。", 0.7, 1.65, 4.0, 1.8, { fontSize: 11, lsm: 1.15 });
   card(s, 5.15, 1.1, 4.35, 2.4, C.code);
-  text(s, "与优化快排同一个思路", 5.35, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.dark, margin: 0 });
-  text(s, "子数组小于某个长度（原书取 28）时不再递归，最后对整个序列做一次插入排序：各块内部无序，但**整块看是一块块有序的**，整体已基本有序。", 5.35, 1.65, 4.0, 1.8, { fontSize: 11, lsm: 1.15 });
+  text(s, "小区间当场插入排序", 5.35, 1.2, 4, 0.35, { fontSize: 14, bold: true, color: C.dark, margin: 0 });
+  text(s, "子数组小于某个长度（原书取 28）时不再递归，**当场对这个小子数组**做插入排序。原书正文说「最后对整个序列做一次」，像优化快排那样——对归并行不通：两半必须**各自有序**才能合并；原书算法 8.9 的代码本身就是逐段做的。", 5.35, 1.65, 4.0, 1.8, { fontSize: 10.5, lsm: 1.1 });
   table(s, [
     ["归并排序", "结论"],
     ["时间", "最大、最小、平均都是 **Θ(n log n)**——对初始排列不敏感，速度稳定"],
@@ -1146,7 +1146,7 @@ def radix_sort(values: list[int]) -> None:
 
 // StaticQueue
 {
-  const s = content("8.6.2", "8.6 分配排序 · 基数排序 · modern.hpp", "原书代码 8.12：显式的桶——固定容量队列");
+  const s = content("8.6.2", "8.6 分配排序 · 基数排序 · modern.hpp", "代码 8.12（编号沿用）：显式的桶——固定容量队列");
   codeBlock(s, `// 代码8.12：固定容量 FIFO，是基数排序的桶而非通用 STL queue 替身。
 template <typename T>
 class StaticQueue {
@@ -1195,7 +1195,7 @@ inline void radix_sort_linked_style(std::vector<int>& values) {
         values.swap(buffer);
     }
 }`, 0.5, 1.05, 9.0, 2.6, { fontSize: 8.5, hl: [10, 13] });
-  callout(s, "隐式桶 vs 显式桶", "`radix_sort` 把桶做成计数数组（先数、再累加、再放）；这一版更接近「分配—收集」的字面意思，更好懂，代价是每趟维护 256 个队列。", 0.5, 3.8, 3.0, 1.3, { fontSize: 10 });
+  callout(s, "隐式桶 vs 显式桶", "`radix_sort` 用计数数组作隐式桶；这一版每趟 push/pop 256 个队列，更贴「分配—收集」字面。原书的桶是**静态链**、记录不搬，这点这里没演示。", 0.5, 3.8, 3.0, 1.3, { fontSize: 10 });
   callout(s, "结果逐字节相同", "两种写法排出来的结果逐字节相同，测试对拍了这一点。", 3.65, 3.8, 2.7, 1.3, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "Python 用 list 作桶", "稳定性来自「桶内保持入桶顺序、收集时按桶号从小到大」——一个字都没少。", 6.5, 3.8, 3.0, 1.3, { fontSize: 10 });
 }
@@ -1284,7 +1284,7 @@ inline void adjust_by_index(std::vector<int>& values, std::vector<std::size_t>& 
     [{ t: "环 {0, 5, 4, 2}", bold: true }, ...N([12, 25, 29, 64, 34, "34′", 32, 45], { 0: C.cream, 2: C.cream, 4: C.cream, 5: C.cream })],
     [{ t: "环 {3, 6, 7}", bold: true }, ...N([12, 25, 29, 32, 34, "34′", 45, 64], { 3: GRN, 6: GRN, 7: GRN })],
   ], 0.5, 3.85, 6.4, [1.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], { fontSize: 9.5, rowH: 0.27, tight: true });
-  callout(s, "每个元素恰好搬一次", "整理 Θ(n) 次移动、O(1) 辅助空间。（底稿把这一环印成 {0,5,4,1}，与元素对不上，应为 {0,5,4,2}。）", 7.05, 3.85, 2.45, 1.25, { fontSize: 9.5, tsize: 11 });
+  callout(s, "不在位的元素各搬一次", "每个环另加一次存取临时变量（下标 1 的 25 已在位，不动）：整理 Θ(n)、O(1) 辅助空间。（底稿把这一环印成 {0,5,4,1}，与元素对不上，应为 {0,5,4,2}。）", 7.05, 3.85, 2.45, 1.25, { fontSize: 9.5, tsize: 11 });
 }
 
 // ============================ 8.7 ============================
@@ -1326,7 +1326,7 @@ sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么�
   text(s, "上机题第 1 题要求的正是这张表。", 0.5, 4.2, 5.6, 0.3, { fontSize: 10, color: C.muted });
   callout(s, "两件事值得停下来看", [
     "**同为 Θ(n²)，冒泡比插入慢 27 倍**（5822 对 214）：常数差来自三步交换 vs 一次搬移。",
-    "n 从 1 万到 5 万（5 倍）：Θ(n²) 的三个涨约 **25 倍**，Θ(n log n) 的三个只涨 **5～6 倍**。",
+    "n 从 1 万到 5 万（5 倍）：Θ(n²) 的三个涨 **25～36 倍**（理论 25，冒泡偏高），Θ(n log n) 的三个只涨 **4～6 倍**。",
     "优化快排在有序输入上比插入**慢了不止 100 倍**：末元素当轴，有序输入每次划分都最坏。",
   ], 6.35, 1.05, 3.15, 4.05, { fontSize: 10.5, gap: 6 });
 }
@@ -1364,7 +1364,7 @@ sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么�
     "每个内部结点是一次比较「aᵢ < aⱼ ?」，每片叶子是一种输出排列；比较次数 = 根到叶的路径长度。",
     "n 个互不相同的元素有 **n!** 种排列，每种都必须被区分 → **叶子 ≥ n!**。",
     "高度为 h 的二叉树最多 2ʰ 片叶子：2ʰ ≥ n!，",
-    "h ≥ log₂(n!) ≥ log₂(n/2)^(n/2) = (n/2) log₂(n/2) = **Θ(n log n)**。树高正是最坏比较次数。",
+    "h ≥ log₂(n!) ≥ log₂(n/2)^(n/2) = (n/2) log₂(n/2) = **Ω(n log n)**（大的一半因子都 ≥ n/2）。树高正是最坏比较次数。",
   ];
   st.forEach((t, i) => {
     const y = 1.08 + i * 0.77;
@@ -1386,7 +1386,7 @@ sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么�
     ["直接选择", "Θ(n²)", "Θ(n²)", "Θ(1)", NO, "最好也 Θ(n²)；交换 ≤ n−1"],
     ["堆排序", "Θ(n log n)", "Θ(n log n)", "Θ(1)", NO, "最坏有保证，原地"],
     ["冒泡", "Θ(n²)", "Θ(n²)", "Θ(1)", OK, "有序时 Θ(n)；实测最慢"],
-    ["快速排序", "Θ(n log n)", { t: "Θ(n²)", color: C.bad }, "Θ(log n)", NO, "实践中最快；枢轴策略决定最坏输入"],
+    ["快速排序", "Θ(n log n)", { t: "Θ(n²)", color: C.bad }, "平均 Θ(log n)", NO, "实践中最快；枢轴决定最坏输入，最坏栈 Θ(n)"],
     ["归并排序", "Θ(n log n)", "Θ(n log n)", "Θ(n)", OK, "对初始排列不敏感"],
     ["桶式排序", "Θ(m + n)", "Θ(m + n)", "Θ(m + n)", OK, "只适合值域 m 较小"],
     ["基数排序", "Θ(d(n + r))", "Θ(d(n + r))", "Θ(n + r)", OK, "关键码互不相同时实为 Θ(n log n)"],
@@ -1413,7 +1413,7 @@ sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么�
     text(s, "→ " + r[1], 4.0, y, 2.15, 0.46, { fontSize: 10, bold: true, color: C.green, valign: "middle", margin: 0 });
   });
   callout(s, "记录很大、搬不起", "减少移动：**索引排序**；或直接选择（交换 ≤ n−1）。", 6.45, 1.08, 3.05, 1.3, { fontSize: 10.5 });
-  callout(s, "有空间限制", "插入、选择、冒泡、Shell、堆：Θ(1)；快排 Θ(log n)；归并 Θ(n)。", 6.45, 2.5, 3.05, 1.3, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "有空间限制", "插入、选择、冒泡、Shell、堆：Θ(1)；快排平均 Θ(log n)（最坏 Θ(n)）；归并 Θ(n)。", 6.45, 2.5, 3.05, 1.3, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   callout(s, "也可以组合", "插入排序常与其他方法结合使用：优化快排、优化归并、std::sort。", 6.45, 3.92, 3.05, 1.18, { fontSize: 10.5 });
 }
 

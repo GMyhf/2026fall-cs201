@@ -217,7 +217,7 @@ sectionSlide("Part 1 · 5.1", "二叉树的概念", "递归定义 · 左右有�
   card(s, 5.15, 3.15, 4.35, 1.95, C.mint);
   text(s, "完全二叉树 complete", 5.35, 3.23, 4, 0.3, { fontSize: 13, bold: true, color: C.dark, margin: 0 });
   bullets(s, [
-    "不要求每个内部结点都有两个孩子，但叶只出现在**最下两层**。",
+    "**除最后一层外每层都排满**；只说「叶在最下两层」不够（左链 A→B→C 就不完全）。",
     "最下层的结点从左到右**连续**排列、没有空洞。",
     "堆正是利用这一条**按层编号存进数组**（编号关系见 5.1.3）。",
   ], 5.3, 3.58, 4.1, 1.5, { fontSize: 11, gap: 6 });
@@ -922,7 +922,7 @@ sectionSlide("Part 4 · 5.4", "二叉搜索树", "左小右大 · 中序即升�
 
 // remove: basic vs improved
 {
-  const s = content("5.4", "5.4 二叉搜索树 · 删除", "两个删除算法：原书【算法5.9】与改进的【算法5.10】");
+  const s = content("5.4", "5.4 二叉搜索树 · 删除", "两种删除方案：基本方案（原书只有文字）与改进的【算法5.10】");
   card(s, 0.5, 1.02, 5.3, 2.75, C.code);
   image(s, "fig-5-12", 0.65, 1.08, 5.0, 2.35);
   text(s, "图 5.12　(a) 删 52：无左子树，右子树顶上　(b) 删 55：基本方案", 0.5, 3.45, 5.3, 0.3, { fontSize: 9, color: C.muted, align: "center" });
@@ -1159,7 +1159,7 @@ sectionSlide("Part 5 · 5.5", "堆与优先队列", "完全二叉树 + 数组 ·
   text(s, "约 n/2 个非叶结点 × 每次下沉 O(log n)\n= O(n log n)", 0.7, 1.45, 4.0, 1.0, { fontSize: 12 });
   card(s, 5.15, 1.02, 4.35, 1.5, "EAF4EF");
   text(s, "细算：下沉代价 = 离底层还有多远", 5.35, 1.1, 4, 0.3, { fontSize: 12, bold: true, color: C.ok, margin: 0 });
-  text(s, "把堆放大成一棵同样高 h、**每层都排满**的二叉树（perfect）：每个结点能沉的距离都不短 → 算出的是**上界**。", 5.35, 1.45, 4.05, 1.0, { fontSize: 10.5 });
+  text(s, "把堆放大成一棵同样深 h（深度 = 最大层数，根在第 0 层）、**每层都排满**的二叉树（perfect）：每个结点能沉的距离都不短 → 算出的是**上界**。", 5.35, 1.45, 4.05, 1.0, { fontSize: 10.5 });
   card(s, 0.5, 2.7, 5.6, 1.15, C.dark);
   text(s, "Σ 2^i·(h−i) = 2^h · Σ j/2^j < 2^h · 2 = 2^(h+1) ≤ 2n", 0.65, 2.75, 5.35, 0.55, { fontSize: 14, bold: true, color: C.gold, margin: 0, fontFace: MONO, valign: "middle" });
   text(s, "第 i 层恰有 2^i 个结点、最多下沉 h−i 层；令 j = h−i；用 Σ j/2^j = 2 与 2^h ≤ n。", 0.65, 3.3, 5.35, 0.5, { fontSize: 9.5, color: C.mint, margin: 0 });
@@ -1171,7 +1171,7 @@ sectionSlide("Part 5 · 5.5", "堆与优先队列", "完全二叉树 + 数组 ·
     ["3", "8", "0", "0"],
     [{ t: "合计", bold: true }, "15", "", { t: "11 < 16 ≤ 30", bold: true, color: C.ok }],
   ], 6.35, 2.98, 3.15, [0.6, 0.75, 0.85, 0.95], { fontSize: 9.5, rowH: 0.27, align: "center", tight: true });
-  text(s, "例：h = 3、每层排满（n = 15）", 6.35, 2.7, 3.15, 0.25, { fontSize: 9, color: C.muted, margin: 0, align: "center" });
+  text(s, "例：深度 h = 3、每层排满（n = 15）", 6.35, 2.7, 3.15, 0.25, { fontSize: 9, color: C.muted, margin: 0, align: "center" });
   callout(s, "实际后果", "堆排序总代价 O(n log n)，但那个 log n **全部来自后面 n 次取最小**，建堆是白送的。反过来一个个 `insert` 建堆是 O(n log n)，就把这份便宜丢掉了。", 0.5, 4.0, 5.6, 1.1, { fontSize: 10.5 });
 }
 

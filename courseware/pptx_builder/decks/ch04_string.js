@@ -218,7 +218,8 @@ sectionSlide("Part 1 · 4.1", "字符串的基本概念", "串、长度、子串
   text(s, "计算机只认 0、1 组成的字节，字符集的「字符」要用「字节」表示——这就是**字符编码**。C/C++ 的 `char` 是单字节，采用 **ASCII**：每个字符一个字节，低 7 位表示字符，最高位为 0，共 **128** 个字符。", 0.5, 1.05, 9, 0.75, { fontSize: 12.5 });
   table(s, [
     ["编号", "个数", "类别", "举例"],
-    ["0～32、127", "34", "控制 / 通信专用字符", "LF、CR、FF、DEL、BEL；SOH、EOT、ACK"],
+    ["0～31、127", "33", "控制 / 通信专用字符", "LF、CR、DEL、BEL；SOH、ACK（原书把 32 号空格也算进来，得 34）"],
+    ["32", "1", "空格", "可打印字符，只是看不见"],
     ["33～126", "94", "通用字符", "52 个大小写字母、10 个数字、标点与运算符号"],
     [{ t: "48～57", mono: true }, "10", "数字 0–9", { t: "'0' = 48", mono: true }],
     [{ t: "65～90", mono: true }, "26", "大写字母 A–Z", { t: "'A' = 65", mono: true }],
@@ -335,7 +336,7 @@ sectionSlide("Part 2 · 4.2", "字符串的存储结构和实现", "顺序存储
   image(s, "fig-4-1", 0.65, 1.12, 4.3, 2.2);
   text(s, "图 4.1  C 风格字符串的变量说明", 0.5, 3.33, 4.6, 0.25, { fontSize: 9.5, color: C.muted, align: "center", margin: 0 });
   codeBlock(s, "char s1[12] = \"Hello world\";\nchar s2[8]  = \"2008\";\nchar s3[6];", 0.5, 3.75, 4.6, 0.85, { fontSize: 10.5, lang: "text" });
-  text(s, "s3 没给初值，存的就是空串。", 0.5, 4.7, 4.6, 0.3, { fontSize: 10.5, color: C.muted, margin: 0 });
+  text(s, "s3 没给初值：全局 / static 数组才是空串，局部数组内容不确定；要空串写 `= \"\"`。", 0.5, 4.65, 4.6, 0.4, { fontSize: 10.5, color: C.muted, margin: 0 });
   bullets(s, [
     "末尾保留 `'\\0'` 作结束标志；另记不含终止符的长度 `length`。",
     "容量至少 `length + 1`；`'\\0'` **不计入长度**。`char s[M];` 的串长不能超过 **M − 1**。",
@@ -842,7 +843,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
   text(s, "-1 0 0 0 -1\n 1 0 0 3  0", 7.35, 2.4, 2.1, 0.6, { fontSize: 12, bold: true, fontFace: MONO, color: C.dark, margin: 0 });
 }
 
-// next 表 + 原书矛盾
+// next 表 + 原书正文核对
 {
   const s = content("4.3.2", "4.3.2 字符串的特征向量", "P = \"abcdaabcab\" 的特征向量，与图 4.11 一致");
   table(s, [
@@ -852,7 +853,7 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
   ], 0.5, 1.1, 9.0, [1.3, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77, 0.77], { fontSize: 12, rowH: 0.36, align: "center" });
   text(s, "Python 版（modern.py）", 0.5, 2.33, 4, 0.28, { fontSize: 11, bold: true, color: C.dark, margin: 0 });
   codeBlock(s, code("code/ch04/pattern_matching/modern.py#build-next"), 0.5, 2.62, 5.9, 2.48, { fontSize: 8, lang: "py", hl: [15] });
-  callout(s, "原书正文与图 4.11 不一致", "正文写 `next = {-1,0,0,0,0,-1,1,0,0,3,0}`——**11 个值**，而模式只有 **10 个字符**。图 4.11 的 10 个值与实算相符，正文多出的那个 0 是错的。本书测试逐个比对十个值，并单独断言「模式只有 10 个字符」。", 6.6, 2.33, 2.9, 2.77, { fontSize: 9.5, fill: RED, tcolor: C.bad, tsize: 11 });
+  callout(s, "与原书正文一致", "原书正文两处印的也是这 **10 个值**（扫描件第 95 页）。优化前按定义先给出 `{-1,0,0,0,0,1,1,2,3,1}`，可优化的下标是 **4、6、7、9**——正是左边与它不同的位置。\n\nOCR 底稿多出的一个 0 是识别噪声，不是原书矛盾。", 6.6, 2.33, 2.9, 2.77, { fontSize: 9.5, fill: C.mint, tcolor: C.dark, tsize: 11 });
 }
 
 // 4.3.3 KMP C++ 上
