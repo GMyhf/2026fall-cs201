@@ -118,12 +118,14 @@ const ch4 = {
     },
     {
       kind: "填空题", title: "单表代换加密",
-      stem: "利用给定的字母映射表进行加密（映射表见原题）。若 \"encrypt\" 被加密为 \"tkzwsdf\"，则 \"algorithm\" 被加密为：",
+      stem: "利用下面给定的字母映射表进行加密（上行明文，下行密文）。若 \"encrypt\" 被加密为 \"tkzwsdf\"，则 \"algorithm\" 被加密为：",
+      code: "a b c d e f g h i j k l m n o p q r s t u v w x y z\nn g z q t c o b m u h e l k p d a w x f y i v r s j",
       answer: "neopwmfbl",
       notes: [
-        "由已知一对可读出：e→t, n→k, c→z, r→w, y→s, p→d, t→f",
-        "其余字母查映射表：a→n, l→e, g→o, o→p, i→m, h→b, m→l",
-        "algorithm → neopwmfbl（其中 r→w、t→f 与上面一致）",
+        "逐字母查表替换。",
+        "验证：e→t, n→k, c→z, r→w, y→s, p→d, t→f，即 encrypt → tkzwsdf",
+        "a→n, l→e, g→o, o→p, r→w, i→m, t→f, h→b, m→l",
+        "algorithm → neopwmfbl",
       ],
     },
     {
