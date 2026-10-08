@@ -503,6 +503,13 @@ int f(char s[]) {
 
 ### **10. ** 利用给定的字母映射表进行加密。
 
+例如，假设字母映射表为：
+
+```
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+n g z q t c o b m u h e l k p d a w x f y i v r s j
+```
+
 若 "encrypt" 被加密为 "tkzwsdf"，则 "algorithm" 被加密为：
 
 **答案：** `【neopwmfbl】`
