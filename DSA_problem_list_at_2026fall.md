@@ -1,4 +1,4 @@
-## 2026fall 数算（DS Algo）每日选作
+jjj## 2026fall 数算（DS Algo）每日选作
 *Updated 2026-10-12 08:30 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
@@ -14,8 +14,8 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
-| 10 |       |       | Medium | http://cs101.openjudge.cn/practice/24591/ |
-| 1012 | 24591:中序表达式转后序表达式   | stack      | Medium |          |
+| 10 |       |       | Medium |  |
+| 1012 | 24591:中序表达式转后序表达式   | stack      | Medium | http://cs101.openjudge.cn/practice/24591/         |
 | 1011 | 31378:KMP 字符比较次数（nextval）| KMP   | Tough | http://cs101.openjudge.cn/practice/31378/          |
 | 1010 | 131.分割回文串       | dp, backtracking  | Medium | https://leetcode.cn/problems/palindrome-partitioning/  |
 | 1009 | 647.回文子串 | <mark>two pointers</mark>/中心扩散, dp/马拉车 | Medium | https://leetcode.cn/problems/palindromic-substrings/          |
