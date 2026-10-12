@@ -1,4 +1,4 @@
-jjj## 2026fall 数算（DS Algo）每日选作
+## 2026fall 数算（DS Algo）每日选作
 *Updated 2026-10-12 08:30 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
