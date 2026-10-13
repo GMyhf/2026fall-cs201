@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-10-12 08:30 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-10-13 14:30 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -15,6 +15,22 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 10 |       |       | Medium |  |
+| 1022 | 30894: 哈夫曼编码树      | greedy    | Tough | http://cs101.openjudge.cn/practice/30894/          |
+| 1021 | 124.二叉树中的最大路径和      | dfs, dp, binary tree      | Tough | https://leetcode.cn/problems/binary-tree-maximum-path-sum/          |
+| 1020 | 236.二叉树的最近公共祖先  | dfs, binary tree | Medium | https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/          |
+| 1019 | 03720: 文本二叉树     | tree    | Medium    | http://cs101.openjudge.cn/practice/03720/      |
+| 1018 | 580C. Kefa and Park  | dfs and similar, graphs, trees   | 1500 | https://codeforces.com/contest/580/problem/C           |
+| 1017 | 297.二叉树的序列化与反序列化      | dfs, bfs  | Medium | https://leetcode.cn/problems/serialize-and-deserialize-binary-tree/          |
+| 1016 | 1843D. Apple Tree     | Combinatorics, dfs and similar, dp, math, trees     | 1200 | https://codeforces.com/problemset/problem/1843/D          |
+| 1015 | 01577:Falling Leaves | tree    | Medium    | http://cs101.openjudge.cn/practice/01577/     |
+| 1014 | 27637:括号嵌套二叉树  | dfs, stack       | Medium | http://cs101.openjudge.cn/practice/27637          |
+| 1013 | 104.二叉树的最大深度   | dfs   | Easy | https://leetcode.cn/problems/maximum-depth-of-binary-tree/          |
 | 1012 | 24591:中序表达式转后序表达式   | stack      | Medium | http://cs101.openjudge.cn/practice/24591/         |
 | 1011 | 31378:KMP 字符比较次数（nextval）| KMP   | Tough | http://cs101.openjudge.cn/practice/31378/          |
 | 1010 | 131.分割回文串       | dp, backtracking  | Medium | https://leetcode.cn/problems/palindrome-partitioning/  |
