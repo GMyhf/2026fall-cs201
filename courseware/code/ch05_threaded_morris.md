@@ -71,7 +71,7 @@ static void inorder_impl(const Node* node, Visitor& visit) {
 这就是课件 5.2.2 的写法，在这里作为"标准答案"，用来检查另外两种方法的输出。要注意两点：
 
 - **递归自带一个栈。** 函数调用栈替你记住了"左子树走完后回到哪个结点"，栈深 = 树高。线索和 Morris 要省掉的就是这个栈。
-- **`Visitor` 是模板参数。** 传什么"访问"动作都可以，比如收集到数组、打印。参数是 `Visitor&`，`main` 里传的 lambda 是左值，可以直接绑定。
+- **`Visitor` 是模板参数。** 传什么"访问"动作都可以，比如收集到数组、打印。参数是 `Visitor&`，`main` 里传的 lambda 是左值，可以直接绑定。`template <typename Visitor>` 这句的含义见文末[附录](#附录template-typename-visitor-是什么意思)。
 
 ---
 
@@ -296,3 +296,85 @@ struct Tree {
 2. **中序前驱：** 仿照 `next` 写一个 `prev`，找中序前驱。
 3. **插入：** 在线索树里给一个叶子插入右孩子，哪几根指针和标志位要改？这就是"插入、删除要维护线索"的具体含义。
 4. **反过来会怎样：** 在已经线索化的树上直接跑 `morris_inorder`，会发生什么？为什么？
+
+---
+
+## 附录：`template <typename Visitor>` 是什么意思
+
+`template <typename Visitor>` 的意思是：**下面这个函数里有一个类型先不写死，暂时叫它 `Visitor`，等调用时由编译器根据传进来的参数自动确定。**
+
+### 从一个最简单的例子看
+
+假设要写一个"取两数较大值"的函数。不用模板时，每种类型都得写一遍：
+
+```cpp
+int    max_of(int a, int b)       { return a > b ? a : b; }
+double max_of(double a, double b) { return a > b ? a : b; }
+```
+
+两个函数除了类型完全一样。模板就是把类型也变成"参数"：
+
+```cpp
+template <typename X>        // X 是一个"类型参数"，名字随便起
+X max_of(X a, X b) { return a > b ? a : b; }
+
+max_of(3, 5);      // 编译器看到 int，自动生成 int 版本
+max_of(2.5, 1.0);  // 编译器看到 double，自动生成 double 版本
+```
+
+逐词看这一行：
+
+| 部分 | 意思 |
+|---|---|
+| `template` | 下面是一个模板，不是普通函数 |
+| `<typename X>` | 有一个类型参数，名字叫 `X` |
+| 函数里的 `X` | 用到这个类型的地方，先用 `X` 占位 |
+
+可以类比普通参数：`int a` 是"值先不定，调用时再给"；`typename X` 是"**类型**先不定，调用时再定"。
+
+### 回到 `Visitor`
+
+```cpp
+template <typename Visitor>
+static void morris_inorder(Node* root, Visitor& visit) {
+    ...
+    visit(cur->value);
+    ...
+}
+```
+
+这里的类型参数叫 `Visitor`，名字是随便起的，叫 `X`、`F` 都行，叫 Visitor 只是表达它是"访问者"。它是参数 `visit` 的类型。
+
+为什么这里需要模板：`main` 里传进去的是一个 lambda。
+
+```cpp
+auto visit_m = [&](T v) { morris.push_back(v); };
+morris_inorder(root, visit_m);
+```
+
+`[&](T v) { morris.push_back(v); }` 是一个临时写的小函数：`[&]` 表示函数体里可以直接用外面的变量 `morris`；`(T v)` 是参数；`{ ... }` 是函数体。
+
+**每个 lambda 的类型都是编译器自动生成的，没有名字，程序员写不出来。** 所以没法写成 `void morris_inorder(Node* root, 某个具体类型& visit)`，只能让编译器自己推断。
+
+调用 `morris_inorder(root, visit_m)` 时，编译器会这样处理：
+
+1. 看到 `visit_m` 的类型，记为"那个 lambda 类型"。
+2. 把模板里的 `Visitor` 替换成这个类型，生成一份真正的函数。
+3. 函数里的 `visit(cur->value)` 就变成了调用这个 lambda，也就是执行 `morris.push_back(cur->value)`。
+
+传另一个 lambda，编译器会再生成一份，函数里的 `Visitor` 就换成那个 lambda 的类型。比如直接打印：
+
+```cpp
+auto show = [](T v) { std::printf("%d ", v); };
+morris_inorder(root, show);      // 输出 4 2 5 1 3
+```
+
+**遍历代码只写一遍，"走到结点后做什么"由调用者决定。**
+
+### 对 `Visitor` 的唯一要求
+
+函数里对 `visit` 只做了一件事：`visit(一个 T 类型的值)`。所以凡是"能像函数一样用一个值去调用"的东西都可以传进来：lambda、普通函数、函数对象。传了不能这样调用的东西，比如一个 `int`，编译时就会报错。
+
+### 一句话总结
+
+`template <typename Visitor>` 表示：`visit` 的类型由编译器按调用时传入的东西自动确定。在这份代码里，它让遍历函数能接收任意 lambda 作为"访问动作"，而 lambda 的类型本来是写不出来的。
