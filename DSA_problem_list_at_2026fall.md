@@ -15,12 +15,6 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 | 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
-| 10 |       |       | Medium |  |
 | 1022 | 30894: 哈夫曼编码树      | greedy    | Tough | http://cs101.openjudge.cn/practice/30894/          |
 | 1021 | 124.二叉树中的最大路径和      | dfs, dp, binary tree      | Tough | https://leetcode.cn/problems/binary-tree-maximum-path-sum/          |
 | 1020 | 236.二叉树的最近公共祖先  | dfs, binary tree | Medium | https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/          |
