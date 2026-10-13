@@ -636,9 +636,59 @@ static void postorder_impl(const Node* node, Visitor& visit) {
   text(s, "再取一遍前序：A B D E G C F H I ✓", 7.0, 4.2, 2.4, 0.7, { fontSize: 10, color: C.ok, bold: true, margin: 0 });
 }
 
+// rebuild teaching version
+{
+  const s = content("5.2", "5.2.2 由周游序列重建 · 教学版 teaching.hpp", "把推演表翻译成递归：只传下标，只在本段里找根");
+  codeBlock(s, `// 把中序 inorder[in_begin, in_end) 与后序 postorder[post_begin, …) 建成一棵子树，挂到 link 上。
+// 两段一样长；只传下标，不拷贝子数组。
+//
+// 后序段的最后一个是根；在中序段里找到它（下标 k），左边 k - in_begin 个是左子树，
+// 右边是右子树。左子树的大小一旦知道，后序段也就切成了「左子树 | 右子树 | 根」。
+static void build_impl(Node*& link, const T* inorder, std::size_t in_begin, std::size_t in_end,
+                       const T* postorder, std::size_t post_begin) {
+    if (in_begin == in_end) {
+        return;                                         // 空区间：空子树，link 保持 nullptr
+    }
+    const std::size_t size = in_end - in_begin;
+    const T& key = postorder[post_begin + size - 1];    // 后序段的最后一个是根
+
+    std::size_t k = in_begin;                           // 在中序段里从左往右找根
+    while (k < in_end && inorder[k] != key) {           // 只找本段：根不在本段，说明两个序列对不上
+        ++k;
+    }
+    if (k == in_end) {
+        throw std::invalid_argument("build_from_inorder_postorder: root lies outside its inorder range");
+    }
+
+    link = new Node{key, nullptr, nullptr};             // 先挂上：子树里再抛异常，它也归临时树释放
+    const std::size_t left_size = k - in_begin;
+    build_impl(link->left, inorder, in_begin, k, postorder, post_begin);
+    build_impl(link->right, inorder, k + 1, in_end, postorder, post_begin + left_size);
+}`, 0.5, 1.02, 6.75, 3.48, { fontSize: 7, hl: [12, 15, 24, 25] });
+  callout(s, "推演表的一行 = 一次调用", [
+    "中序段 `[in_begin, in_end)`；后序段从 `post_begin` 起，一样长。",
+    "根 = `key`，取后序段**最后一个**。",
+    "左 / 右子树 = 最后两行递归；右子树的后序段从 `post_begin + left_size` 起。",
+  ], 7.4, 1.02, 2.1, 2.2, { fontSize: 8.5, tsize: 10.5 });
+  callout(s, "对不上就抛异常", "`while` 只在本段找：`1 2 3` / `3 1 2` 建左子树时找 `3`，本段只有 `1` → 抛异常。入口先建在临时树里，**原树不动**。", 7.4, 3.32, 2.1, 1.78, { fontSize: 8.5, tsize: 10.5, fill: RED, tcolor: C.bad });
+  card(s, 0.5, 4.62, 6.75, 0.48, C.mint);
+  text(s, "**代价**　每帧从左往右找根，总 **O(n·h)**，退化成链时 O(n²)；递归深度 = 树高。工程版的升级见后三页。", 0.65, 4.62, 6.5, 0.48, { fontSize: 10, color: C.dark, valign: "middle", margin: 0 });
+  s.addNotes(`讲法（6–8 分钟，接上一页的推演表）：
+1. 推演表每一行只做三件事：取根、在中序里找到它、按左子树大小切开。这一页就是把这三件事写成代码，一次 build_impl 调用 = 表里的一行。
+2. 先对参数（比方：中序是「座位表」，后序负责指出「谁是组长」）：中序段 [in_begin, in_end) 是座位表上的这一块；后序段从 post_begin 起、一样长；key = 后序段最后一个 = 这一组的组长。
+3. 找根：while 从左往右数座位，只在本段里数。拿表的第一行带一遍：A 在 k = 4，left_size = 4；左子树的后序段从 0 起（D G E B），右子树从 0 + 4 起（H I F C）。
+4. 最后两行递归 = 表里往下的两行；空区间直接返回 = 表里的「空」。
+5. 反例：中序 1 2 3、后序 3 1 2，让学生先自己手算（多数人会「算出」一棵树）。根 2 在 k = 1，左段只有座位 1；左子树从后序取 1 个，是 3 → while 数完本段没找到 → 抛异常。好比有人自称「左边这组的组长」，却根本不坐在这组。追问：去掉 k < in_end 会怎样？→ 一直往后读，越界。
+6. 入口函数代码没印，口头讲：先建在临时树 fresh 里，建成了再替换自己；出错时 fresh 的析构收拾半成品，原树不动。「先挂上再建子树」保证半成品始终挂在 fresh 上。
+7. 代价：每帧最多数一遍本段 → 总 O(n·h)，退化成链时 O(n²)；递归深度 = 树高。这两点正是后面工程版要改的。
+易错：右子树的后序起点是 post_begin + left_size，不是 k + 1（k 是中序下标；后序段里根在最后，不夹在左右中间）。后序取段末、前序取段首——前序 + 中序版留作上机题第 1 题，这里不讲。
+
+一句话总结：推演表的一行 = 一次 build_impl；只传下标不拷贝；只在本段里找根，找不到就报错。`);
+}
+
 // rebuild pitfalls + factories
 {
-  const s = content("5.2", "5.2.2 由周游序列重建 · 工程版 modern.hpp", "两处常见的坑；工程版做成两个静态工厂");
+  const s = content("5.2", "5.2.2 由周游序列重建 · 工程版 modern.hpp", "教学版的两处坑，工程版怎么处理；做成两个静态工厂");
   codeBlock(s, `/// 由中序 + 后序序列重建二叉树（两个序列各 count 个元素，关键码互不相同）。
 ///
 /// 不自洽的输入一律抛 std::invalid_argument，绝不默默建出一棵错树：
@@ -655,11 +705,19 @@ static BinaryTree from_preorder_inorder(const T* preorder, const T* inorder, std
   card(s, 0.5, 3.2, 4.35, 1.9, C.code);
   numCircle(s, 1, 0.65, 3.3, 0.36, C.goldText);
   text(s, "每层拷贝子数组 → O(n²)", 1.1, 3.3, 3.6, 0.36, { fontSize: 12.5, bold: true, color: C.dark, valign: "middle", margin: 0 });
-  text(s, "只传**下标区间**、在中序里**查位置**就不必拷贝。工程版把中序下标按键排序后二分查位置，总代价 O(n log n)。", 0.7, 3.75, 4.0, 1.3, { fontSize: 10.5, lsm: 1.15 });
+  text(s, "只传**下标区间**就不必拷贝（教学版已如此）。但教学版从左往右找根，链状输入仍是 O(n²)；工程版把中序下标按键排序后**二分**查位置，总代价 O(n log n)。", 0.7, 3.75, 4.0, 1.3, { fontSize: 10.5, lsm: 1.15 });
   card(s, 5.15, 3.2, 4.35, 1.9, RED);
   numCircle(s, 2, 5.3, 3.3, 0.36, C.bad);
   text(s, "输入不自洽时默默建出一棵树", 5.75, 3.3, 3.7, 0.36, { fontSize: 12.5, bold: true, color: C.bad, valign: "middle", margin: 0 });
-  text(s, "中序 `1 2 3`、后序 `3 1 2`：根是 2，左子树只该有 1，后序对应的却是 3。检查只要一条——**每次取出的根必须落在当前中序区间里**。", 5.35, 3.75, 4.05, 1.3, { fontSize: 10.5, lsm: 1.15 });
+  text(s, "中序 `1 2 3`、后序 `3 1 2`：根是 2，左子树只该有 1，后序对应的却是 3。检查只要一条——**每次取出的根必须落在当前中序区间里**。工程版另把重复键、键缺失单独报出。", 5.35, 3.75, 4.05, 1.3, { fontSize: 10.5, lsm: 1.15 });
+  s.addNotes(`讲法（3–4 分钟）：
+1. 代码不逐行读，只点三处：两个静态工厂；各自一行转调同一个 rebuild；差别只在 Order——根在段末（后序）还是段首（前序）。为什么不用构造函数：名字本身说明输入是哪两种序列，传反了也看得出。
+2. 坑 1：教学版已经只传下标、不拷贝；剩下的慢在「从左往右数」。比方：翻花名册 vs 查字典。工程版先把座位号按名字排好（下一页），之后每次二分，总 O(n log n)。可能被问：为什么不用哈希表做到 O(n)？→ 只要求 T 支持 <；而且排序后相邻一比就顺便查出重复键。
+3. 坑 2：教学版的 while 已经守住了；工程版是同一条检查（根必须落在本段），另把重复键、键缺失单独报出，让报错说对原因。
+4. 「能建完就一定对」：各帧的中序区间互不重叠，每个根都落在自己的区间里 → 每个座位恰好坐一个人 → 名单和座位表完全对得上，不必再周游核对。细节在第 29 页页底。
+易错：from_preorder_inorder 的参数次序是（前序, 中序），内部转成 rebuild(中序, 前序)——调用时别传反。
+
+一句话总结：工程版保留教学版的两处做法（只传下标、根必须在本段），再升级三处：二分查位置、显式栈、分类报错。`);
 }
 
 // rebuild impl p1
@@ -694,6 +752,15 @@ static BinaryTree rebuild(const T* inorder, const T* other, std::size_t count, O
         return *hit;
     };
     // ...`, 0.5, 1.02, 9.0, 4.08, { fontSize: 8 });
+  s.addNotes(`讲法（5–6 分钟）：这一页只做准备——做一本「按名字查座位」的小字典，顺便检查名单。真正建树在下一页。
+1. 门口检查：count == 0 交一棵空树；说有人、名单却是空指针 → 报错。
+2. by_key：排的是座位号，不是座位表本身——中序的顺序就是信息，不能打乱。板书让学生自己写：中序 D B G E A C H F I（座位 0–8），按名字排序后 by_key = 4 1 5 0 3 7 2 6 8，对应 A B C D E F G H I。像一叠按人名排好的索引卡片，每张写着座位号。
+3. 查重名：排好后同名的一定挨着，逐对要求「前 < 后」。写 !(a < b) 而不写 a == b：全程只要求 T 支持 <。
+4. position_in_inorder：lower_bound = 翻到第一张「不比 key 小」的卡片；翻到底，或翻到的名字比 key 大 → 字典里没有 → 报错。每次 O(log n)，n 次合计 O(n log n)。
+5. 一句带过即可：std::sort / lower_bound 只用在这张查找表上，树和栈仍手写（课程约定 D-001 §2）；unique_ptr 让中途报错时数组自动归还；lambda 是「当场写的小函数」。
+收尾板书三种错误各在哪抓：重复键 → 本页排序后相邻比较；键缺失 → 本页查字典；根不在本段 → 下一页。
+
+一句话总结：教学版里那个从左往右数的 while，在这里换成了「排序一次 + 每次二分」。`);
 }
 
 // rebuild impl p2
@@ -725,7 +792,18 @@ static BinaryTree rebuild(const T* inorder, const T* other, std::size_t count, O
     return result;
 }`, 0.5, 1.02, 9.0, 3.4, { fontSize: 7.9, hl: [12, 13] });
   callout(s, "为什么「能建完就一定对」", "对区间长度归纳：根取自区间末端（后序）或首端（前序），左右两段恰好分走剩下的元素；两段各自一致，拼上根整棵树也一致。测试用 400 棵随机树往返核对。", 0.5, 4.5, 5.6, 0.65, { fontSize: 9, tsize: 10, lsm: 1.0 });
-  callout(s, "为什么不递归", "递归深度 = 树高；显式栈在堆上，20 万结点的纯左链照样重建。", 6.3, 4.5, 3.2, 0.65, { fontSize: 9, tsize: 10, fill: C.mint, tcolor: C.dark, lsm: 1.0 });
+  callout(s, "为什么不递归", "教学版递归深度 = 树高；显式栈在堆上，20 万结点的纯左链照样重建。", 6.3, 4.5, 3.2, 0.65, { fontSize: 9, tsize: 10, fill: C.mint, tcolor: C.dark, lsm: 1.0 });
+  s.addNotes(`讲法（5–6 分钟，对照第 26 页教学版讲）：
+1. 一帧 Frame = 一次 build_impl 调用的参数：挂到哪（link）、中序区间、另一序列的起点。递归调用 → push 一帧；函数返回 → pop 掉。
+2. 先 push 右、再 push 左：栈后进先出，所以左子树先建，与递归次序一致（换了顺序结果也对）。
+3. root_at：前序取段首、后序取段末，一份代码两种用。left_other：前序时左子树紧跟在根后面（+1），后序时从段头开始。
+4. 根越界检查 = 教学版里的 k == in_end，同一条检查。
+5. 先挂上 *frame->link = node，再 push 子帧：中途抛异常时，已建的结点全挂在 result 上，由 result 的析构统一释放——与教学版「先建在临时树里」是同一个想法。
+6. 为什么不递归：递归深度 = 树高，20 万结点的纯左链会压穿运行栈（5.6a 的递归 clone 同理）；显式栈在堆上。
+7. 「能建完就一定对」（页底）：对区间长度归纳；测试用 400 棵随机树往返核对。
+易错：Node** link 是「指向该挂接的那根指针」，第一次见容易把 link 和 *link 搞混；5.4 BST 插入还会用同一手法，可以提前说一句。
+
+一句话总结：把递归的调用栈换成自己的链式栈，帧里只记下标和「挂到哪」；其余逻辑与教学版逐行对应。`);
 }
 
 // 5.2.3 level order principle + trace
