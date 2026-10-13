@@ -325,6 +325,161 @@ sectionSlide("Part 1 · 5.1", "二叉树的概念", "递归定义 · 左右有�
   card(s, 6.05, 1.05, 3.45, 4.05, C.code);
   image(s, "fig-5-23", 6.2, 1.15, 3.15, 3.35);
   text(s, "图 5.23　中序穿线二叉树：虚线是借空指针存下的中序前驱 / 后继", 6.15, 4.5, 3.25, 0.55, { fontSize: 9, color: C.muted, align: "center" });
+  s.addNotes(`讲法（5–8 分钟，性质 5 与 5.2 周游之间的过渡）：
+1. 换个角度再数一遍：n 个结点共 2n 个指针域；除根外每个结点被一根指针指着，用掉 n − 1 个；空着 2n − (n − 1) = n + 1 个。不用性质 5 也得到同一个数，一半以上的指针域是空的。
+2. 能不能利用？左指针空就存中序前驱，右指针空就存中序后继——这就是线索（thread）。
+3. 看图 5.23：挑一片叶子顺两条虚线找前驱、后继；再挑只有一个孩子的结点，只有空的那一侧变成线索。
+4. 追问：拿到一根指针，怎么知道它是孩子还是线索？→ 每根指针一位标志（ltag / rtag），不是每个结点一位。
+5. 中序还没正式讲：先一句「中序 = 左 → 根 → 右，5.2 细讲」。后面三页的代码可以讲完 5.2 中序后再回来看。
+6. 现代的看法：插入删除都要维护线索，通用库不这么做；思想今天仍活在 Morris 遍历里（临时线索，用完拆掉）。Trie 压缩、PATRICIA 到第 12 章再见。
+易错：线索与周游次序绑定。中序线索最好用；后序线索树找后继仍常要父指针。
+
+一句话总结：2n 个指针域只用了 n − 1 个；线索树把空指针改存前驱 / 后继，加标志位区分，中序周游就不需要栈。代价是插入删除要维护线索，所以今天很少当默认表示；它的思想在 Morris 遍历里还在用。`);
+}
+
+// threaded tree: build
+{
+  const s = content("5.1", "5.1.3 线索二叉树 · 代码（上）", "中序线索化：按中序走一遍，把空指针接到前驱 / 后继");
+  codeBlock(s, `struct Node {
+    T value;
+    Node* left = nullptr;
+    Node* right = nullptr;
+    bool left_thread = false;    // true：left 存的是中序前驱
+    bool right_thread = false;   // true：right 存的是中序后继
+};
+
+// 线索化：按中序走一遍，pre 是上一个访问到的结点
+static void thread_impl(Node* node, Node*& pre) {
+    if (node == nullptr) return;
+    thread_impl(node->left, pre);
+    if (node->left == nullptr) {                   // 空左指针 → 存中序前驱
+        node->left = pre;
+        node->left_thread = true;
+    }
+    if (pre != nullptr && pre->right == nullptr) { // 上一个结点的空右指针 → 存后继
+        pre->right = node;
+        pre->right_thread = true;
+    }
+    pre = node;
+    thread_impl(node->right, pre);
+}
+
+static void make_threaded(Node* root) {
+    Node* pre = nullptr;
+    thread_impl(root, pre);
+    if (pre != nullptr) pre->right_thread = true;  // 最后一个结点：后继为空
+}`, 0.5, 1.02, 6.2, 4.08, { fontSize: 8, hl: [14, 18] });
+  callout(s, "标志位：每根指针一位", "不是每个结点一位。拿到 `left` 时，必须靠 `left_thread` 才知道它指的是**孩子**还是**前驱**。", 6.95, 1.02, 2.55, 1.35, { fontSize: 10.5 });
+  callout(s, "两端是空线索", [
+    "中序第一个结点：`left` 为空，但 `left_thread = true`。",
+    "中序最后一个结点：`right` 为空，`right_thread = true`。",
+    "这样周游时只看标志位，不用再判空。",
+  ], 6.95, 2.5, 2.55, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "中序 = 左 → 根 → 右（5.2 细讲）。线索化本身就是一次中序周游，O(n)。", 6.95, 4.2, 2.55, 0.9, { fontSize: 10, color: C.goldText, bold: true, margin: 0 });
+}
+
+// threaded tree: traverse
+{
+  const s = content("5.1", "5.1.3 线索二叉树 · 代码（下）", "沿线索找后继：中序周游不用栈，也不用递归");
+  codeBlock(s, `// 中序后继：右指针是线索就直接跳；否则是右子树里最左下的结点
+static Node* next(Node* node) {
+    if (node->right_thread) return node->right;
+    node = node->right;
+    while (!node->left_thread) node = node->left;
+    return node;
+}
+
+template <typename Visitor>
+static void inorder_threaded(Node* root, Visitor& visit) {
+    if (root == nullptr) return;
+    Node* node = root;
+    while (!node->left_thread) node = node->left;  // 中序第一个：最左下
+    for (; node != nullptr; node = next(node)) visit(node->value);
+}`, 0.5, 1.02, 6.2, 2.3, { fontSize: 8.5, hl: [3, 5] });
+  table(s, [
+    ["结点 p 的情况", "中序后继"],
+    [{ t: "right_thread = true", mono: true }, "就是 `p->right`，一步到位"],
+    [{ t: "right_thread = false", mono: true }, "右子树里一路向左走到底（左指针是线索为止）"],
+  ], 0.5, 3.5, 6.2, [2.2, 4.0], { fontSize: 10, rowH: 0.38 });
+  text(s, "每个结点只多一位标志，额外空间 O(1)；每条边最多走两次，时间 O(n)。", 0.5, 4.75, 6.2, 0.35, { fontSize: 10.5, bold: true, color: C.goldText, margin: 0 });
+  // 示意：1(2(4,5),3) 的中序线索，虚线是线索
+  card(s, 6.95, 1.02, 2.55, 2.75, C.code);
+  const nodes = { a: ["1", 8.4, 1.4], b: ["2", 7.75, 2.05], c: ["3", 9.05, 2.05], d: ["4", 7.4, 2.75], e: ["5", 8.1, 2.75] };
+  drawTree(s, nodes, [["a", "b"], ["a", "c"], ["b", "d"], ["b", "e"]]);
+  const thread = (x1, y1, x2, y2) => s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: C.bad, width: 1.25, endArrowType: "triangle", dashType: "dash" } });
+  thread(7.5, 2.6, 7.68, 2.2);    // 4 → 2（后继）
+  thread(8.02, 2.6, 7.86, 2.19);  // 5 → 2（前驱）
+  thread(8.22, 2.63, 8.36, 1.58); // 5 → 1（后继）
+  thread(8.92, 1.93, 8.56, 1.48); // 3 → 1（前驱）
+  text(s, "中序 4 2 5 1 3\n红虚线 = 线索", 7.0, 3.12, 2.45, 0.6, { fontSize: 10, color: C.muted, align: "center", margin: 0 });
+  callout(s, "代价在别处", "插入、删除都要**维护线索**；通用库宁可用父指针或迭代器。", 6.95, 3.9, 2.55, 1.2, { fontSize: 10, fill: RED, tcolor: C.bad });
+}
+
+// Morris: code
+{
+  const s = content("5.1", "5.1.3 延伸 · Morris 遍历", "临时线索：用时搭上，用完拆掉，不要标志位");
+  codeBlock(s, `// Morris 中序周游：额外空间 O(1)。中途临时改树，结束时恢复原样。
+template <typename Visitor>
+static void morris_inorder(Node* root, Visitor& visit) {
+    Node* cur = root;
+    while (cur != nullptr) {
+        if (cur->left == nullptr) {            // 没有左子树：访问，往右走
+            visit(cur->value);
+            cur = cur->right;                  // 可能是真孩子，也可能是临时线索
+            continue;
+        }
+        Node* pre = cur->left;                 // 找中序前驱：左子树最右下
+        while (pre->right != nullptr && pre->right != cur) pre = pre->right;
+        if (pre->right == nullptr) {           // 第一次到 cur：搭线索，进左子树
+            pre->right = cur;
+            cur = cur->left;
+        } else {                               // 第二次到 cur：左子树已走完
+            pre->right = nullptr;              // 拆线索，恢复原树
+            visit(cur->value);
+            cur = cur->right;
+        }
+    }
+}`, 0.5, 1.02, 6.2, 3.3, { fontSize: 8.5, hl: [14, 17] });
+  text(s, "为什么需要栈？进左子树之前必须记住「回来的路」。Morris：左子树最后访问的结点（中序前驱）的 `right` 恰好是空的——让它临时指回 `cur`，路就存在树里了。", 0.5, 4.4, 6.2, 0.7, { fontSize: 10.5, color: C.dark, margin: 0 });
+  callout(s, "怎么分辨第一次 / 第二次", "不用标志位：从 `cur->left` 一路向右，碰到的若是 `cur` 本身，说明线索是**自己上次搭的**，左子树已经走完。", 6.95, 1.02, 2.55, 1.4, { fontSize: 10 });
+  callout(s, "代价", [
+    "时间 **O(n)**：找前驱的那条右链每个结点走两遍，每条边至多走 3 次。",
+    "空间 **O(1)**：只有 `cur`、`pre`。",
+  ], 6.95, 2.55, 2.55, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 中途在改树", "周游中途抛异常或提前退出，线索就留在树上；别的线程也不能同时读。", 6.95, 4.03, 2.55, 1.07, { fontSize: 9.5, tsize: 10.5, fill: RED, tcolor: C.bad });
+}
+
+// Morris: trace + compare
+{
+  const s = content("5.1", "5.1.3 延伸 · Morris 遍历逐步推演", "1(2(4, 5), 3)：每个有左子树的结点被经过两次");
+  card(s, 0.5, 1.02, 2.6, 2.55, C.code);
+  const nodes = { a: ["1", 1.95, 1.4], b: ["2", 1.3, 2.05], c: ["3", 2.6, 2.05], d: ["4", 0.95, 2.75], e: ["5", 1.65, 2.75] };
+  drawTree(s, nodes, [["a", "b"], ["a", "c"], ["b", "d"], ["b", "e"]]);
+  const thread = (x1, y1, x2, y2) => s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: C.bad, width: 1.25, endArrowType: "triangle", dashType: "dash" } });
+  thread(1.05, 2.6, 1.23, 2.2);   // 4 → 2
+  thread(1.77, 2.63, 1.91, 1.58); // 5 → 1
+  text(s, "红虚线：Morris 临时搭的线索\n（只用右指针）", 0.55, 3.05, 2.5, 0.5, { fontSize: 9, color: C.muted, align: "center", margin: 0 });
+  table(s, [
+    ["cur", "左子树最右下 pre", "动作", "输出"],
+    [{ t: "1", bold: true }, "5，right 空", "搭 5→1，进左子树", ""],
+    [{ t: "2", bold: true }, "4，right 空", "搭 4→2，进左子树", ""],
+    [{ t: "4", bold: true }, "（无左子树）", "访问；顺 4→2 回到 2", { t: "4", bold: true, color: C.bad }],
+    [{ t: "2", bold: true }, "4，right = 2", "第二次：拆 4→2，访问，进右", { t: "2", bold: true, color: C.bad }],
+    [{ t: "5", bold: true }, "（无左子树）", "访问；顺 5→1 回到 1", { t: "5", bold: true, color: C.bad }],
+    [{ t: "1", bold: true }, "5，right = 1", "第二次：拆 5→1，访问，进右", { t: "1", bold: true, color: C.bad }],
+    [{ t: "3", bold: true }, "（无左子树）", "访问；right 空，结束", { t: "3", bold: true, color: C.bad }],
+  ], 3.3, 1.02, 6.2, [0.5, 1.55, 3.45, 0.7], { fontSize: 9.5, rowH: 0.315 });
+  table(s, [
+    ["", "线索二叉树", "Morris 遍历"],
+    ["线索存多久", "一直在，是存储结构的一部分", "周游时临时搭，用完拆掉"],
+    ["结点结构", "每根指针多一位标志", "不变，不要标志位"],
+    ["代价", "插入、删除要维护线索", "周游中途改树，不能并发读"],
+  ], 0.5, 3.72, 9.0, [1.5, 3.75, 3.75], { fontSize: 10, rowH: 0.34 });
+  s.addNotes(`共同点：都利用性质 5 的 n + 1 个空指针，让中序周游不用栈也不用递归。Morris 可以看成「临时线索化」。
+
+比喻：普通周游随身带地图（栈）。Morris 每到一个岔路口，先派人去左边小路的尽头，在那里刻一个指回路口的箭头，再往左走；以后顺着箭头回来时，把箭头抹掉，继续往右走。
+
+推演口诀：有左子树的结点经过两次——第一次搭线索、进左；第二次拆线索、访问、进右。没有左子树的结点：访问，往右（可能顺着线索回去）。`);
 }
 
 // ============================ PART 2 ============================
