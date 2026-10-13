@@ -742,62 +742,68 @@ void build_by_table(BinaryTree<char>& out, const int pos[256], const char* posto
 
 // rebuild teaching: explicit stack (1)
 {
-  const s = content("5.2", "5.2.2 由周游序列重建 · 教学版 · 显式栈（上）", "递归调用的参数存成一帧：调用 = 压栈，返回 = 弹栈");
-  codeBlock(s, `// 同一个重建，不递归：把每次递归调用的参数存成一帧，压进一条手写的链式栈。
-// 与 build_impl 逐行对应——「递归调用」变成「压一帧」，「函数返回」变成「弹一帧」；
-// 参数 Node*& link 变成帧里的 Node** link（引用存不进结构体，只能存指针）。
-//
-// 注意：教学版的析构 destroy 仍是递归的，所以一条很长的链就算这样建出来了，
-// 析构时照样压穿运行栈。这里要学的是「递归 → 显式栈」的改写手法；
-// 工程版把析构也改成了迭代，见 5.6a。
-void build_from_inorder_postorder_iterative(const T* inorder, const T* postorder, std::size_t count) {
+  const s = content("5.2", "5.2.2 由周游序列重建 · 教学版 · 显式栈（上）", "递归调用的参数存成一帧；栈也要有主人");
+  codeBlock(s, `void build_from_inorder_postorder_iterative(const T* inorder, const T* postorder, std::size_t count) {
     struct Frame {
         Node** link;                    // 建好的子树挂到哪根指针上
         std::size_t in_begin, in_end;   // 中序段
         std::size_t post_begin;         // 后序段起点（与中序段一样长）
         Frame* next;                    // 链式栈：下面那一帧
     };
-    BinaryTree fresh;
-    Frame* top = new Frame{&fresh.root_, 0, count, 0, nullptr};   // 第一次「调用」
-    while (top != nullptr) {
-        const Frame f = *top;           // 弹出一帧
-        Frame* popped = top;
-        top = top->next;
-        delete popped;
-
-        if (f.in_begin == f.in_end) {
-            continue;                   // 空区间：空子树
+    // 栈也要有主人：它一离开作用域——正常建完、找不到根抛异常、
+    // 甚至 new 本身失败——析构都会把剩下的帧还掉。与 fresh 是同一个想法。
+    struct FrameStack {
+        Frame* top = nullptr;
+        FrameStack() = default;
+        FrameStack(const FrameStack&) = delete;             // 三法则：拷贝出两份，
+        FrameStack& operator=(const FrameStack&) = delete;  // 同一批帧就会被删两次
+        ~FrameStack() {
+            while (top != nullptr) {
+                Frame* rest = top->next;
+                delete top;
+                top = rest;
+            }
         }
-        // …… 下一页：找根、挂接、压栈`, 0.5, 1.02, 9.0, 3.38, { fontSize: 7, hl: [10, 16, 18, 20, 21] });
+    };
+
+    BinaryTree fresh;
+    FrameStack stack;
+    stack.top = new Frame{&fresh.root_, 0, count, 0, nullptr};   // 第一次「调用」
+        // …… 下一页：弹一帧、找根、挂接、压两帧`, 0.5, 1.02, 9.0, 3.38, { fontSize: 7, hl: [3, 10, 15, 18, 26] });
   callout(s, "与递归版逐项对应", "参数 → 帧的字段；第一次调用 → 压第一帧；`Node*&` → `Node**`（引用存不进结构体）。", 0.5, 4.48, 5.6, 0.7, { fontSize: 8.5, tsize: 10 });
-  callout(s, "栈用什么？", "手写链表，`next` 指向下面那一帧。", 6.3, 4.48, 3.2, 0.7, { fontSize: 8.5, tsize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么要 FrameStack？", "析构负责还帧：抛异常、`new` 失败都不漏。", 6.3, 4.48, 3.2, 0.7, { fontSize: 8.5, tsize: 10, fill: C.mint, tcolor: C.dark });
   s.addNotes(`讲法（4–5 分钟）：
 1. 先问：第 26 页的递归，深度是多少？→ 树高。树退化成一条 20 万结点的链，运行栈就压穿了。办法：把运行栈换成自己管的栈。
 2. 改写是机械的，三条规则：一次调用的参数 → 一帧（Frame 的字段）；调用 → 压一帧；返回 → 弹一帧。
 3. 对 Frame：link（建好的子树挂到哪根指针上）、中序段、后序段起点，正好是 build_impl 的参数。追问：为什么 Node*& 变成 Node**？→ 引用一旦绑定不能改指向，也不能存进结构体到处搬；指针可以。
 4. 栈本身：一条手写链表，next 指向下面那一帧——压栈就是在表头插一个，弹栈就是摘掉表头。和 level_order 里的手写队列是同一写法。
-5. 第一次「调用」= 压第一帧（挂到 fresh.root_，区间是整个序列）；然后 while 循环：弹一帧、处理一帧，直到栈空。空区间直接 continue，相当于递归版里的 return。
-易错：弹出时先把整帧拷贝到 f，再 delete 栈顶——顺序反了就是读已释放的内存（ASan 会报 heap-use-after-free）。
+5. FrameStack：问学生——递归版出错时，那些「帧」去哪了？→ 在运行栈上，函数一退出自动回收。自己管的栈就得有个主人：把 top 包进一个局部对象，析构负责把剩下的帧还掉。于是正常建完、找不到根抛异常、甚至某次 new 失败，都不会漏。这和入口里的临时树 fresh 是同一个想法（RAII）。拷贝构造、拷贝赋值删掉：三法则——拷贝出两份，同一批帧会被删两次。
+6. 这一版最初就漏了「new 失败」这条路：只在找不到根时手动清栈，new Frame 抛 bad_alloc 时剩下的帧没人还——是 Codex 复核抓出来的。测试把 28 次 new 逐个注入失败来守住它。
+7. 第一次「调用」= 压第一帧（挂到 fresh.root_，区间是整个序列）。
 
-一句话总结：递归的每次调用 = 栈里的一帧；调用就压、返回就弹。`);
+一句话总结：递归的每次调用 = 栈里的一帧；栈要有主人，析构负责还帧。`);
 }
 
 // rebuild teaching: explicit stack (2)
 {
-  const s = content("5.2", "5.2.2 由周游序列重建 · 教学版 · 显式栈（下）", "找根与递归版一字不差；两次递归调用变成压两帧");
-  codeBlock(s, `        // …… 接上一页：弹出的帧 f 不是空区间
+  const s = content("5.2", "5.2.2 由周游序列重建 · 教学版 · 显式栈（下）", "弹一帧、找根（与递归版一字不差）、挂接、压两帧");
+  codeBlock(s, `    // …… 接上一页
+    while (stack.top != nullptr) {
+        const Frame f = *stack.top;     // 弹出一帧
+        Frame* popped = stack.top;
+        stack.top = stack.top->next;
+        delete popped;
+
+        if (f.in_begin == f.in_end) {
+            continue;                   // 空区间：空子树
+        }
         const std::size_t size = f.in_end - f.in_begin;
         const T& key = postorder[f.post_begin + size - 1];
         std::size_t k = f.in_begin;
         while (k < f.in_end && inorder[k] != key) {
             ++k;
         }
-        if (k == f.in_end) {
-            while (top != nullptr) {    // 抛异常之前，先把栈里剩下的帧还掉
-                Frame* rest = top->next;
-                delete top;
-                top = rest;
-            }
+        if (k == f.in_end) {            // 剩下的帧由 stack 的析构还掉
             throw std::invalid_argument("build_from_inorder_postorder_iterative: root lies outside its inorder range");
         }
 
@@ -805,25 +811,26 @@ void build_from_inorder_postorder_iterative(const T* inorder, const T* postorder
         *f.link = node;                 // 先挂上：之后再抛异常，它也归临时树释放
         const std::size_t left_size = k - f.in_begin;
         // 先压右、再压左：栈后进先出，于是左子树先建，与递归的次序一致
-        top = new Frame{&node->right, k + 1, f.in_end, f.post_begin + left_size, top};
-        top = new Frame{&node->left, f.in_begin, k, f.post_begin, top};
+        stack.top = new Frame{&node->right, k + 1, f.in_end, f.post_begin + left_size, stack.top};
+        stack.top = new Frame{&node->left, f.in_begin, k, f.post_begin, stack.top};
     }
     clear();
     root_ = fresh.root_;
     fresh.root_ = nullptr;
-}`, 0.5, 1.02, 9.0, 3.38, { fontSize: 7, hl: [11, 18, 21, 22] });
-  callout(s, "先压右、再压左", "后进先出 → 左子树先建，次序同递归。抛异常前**先还掉剩下的帧**（递归版由运行栈自动回收）。", 0.5, 4.48, 5.6, 0.7, { fontSize: 8.5, tsize: 10 });
-  callout(s, "教学版的局限", "析构仍递归：长链建得出、拆时照样爆栈。", 6.3, 4.48, 3.2, 0.7, { fontSize: 8.5, tsize: 10, fill: RED, tcolor: C.bad });
+}`, 0.5, 1.02, 9.0, 3.46, { fontSize: 6.5, hl: [3, 5, 17, 22, 25, 26] });
+  callout(s, "先压右、再压左", "后进先出 → 左子树先建，次序同递归。找不到根直接抛：剩下的帧由 `stack` 的析构还掉。", 0.5, 4.54, 5.6, 0.64, { fontSize: 8.5, tsize: 10 });
+  callout(s, "教学版的局限", "析构仍递归：长链建得出、拆时照样爆栈。", 6.3, 4.54, 3.2, 0.64, { fontSize: 8.5, tsize: 10, fill: RED, tcolor: C.bad });
   s.addNotes(`讲法（3–4 分钟）：
-1. 找根这几行和第 26 页一字不差（只是变量从参数变成了 f.xxx），快速带过。
-2. 抛异常前多了一个循环：把栈里剩下的帧还掉。问：递归版为什么不用写这个？→ 递归时这些「帧」在运行栈上，函数一退出自动回收；自己管的栈，得自己还。（测试里中序 1234、后序 3412 专门制造「栈里还有帧时失败」，不还就会被 LeakSanitizer 抓到。）
-3. 建结点、先挂上，和递归版一样。
-4. 两次递归调用变成压两帧。先压右、再压左：栈后进先出，所以左子树先建，次序和递归一样。追问：反过来压行不行？→ 也能建对，每一帧只管自己那一段，与先后无关；只是建的次序不同。
-5. 收尾和入口函数一样：建成了，再拆旧树、接新树。
-6. 诚实交代局限（右下角）：教学版的析构 destroy 仍是递归的，所以长链就算建出来，析构时照样爆栈。这里要学的是「递归 → 显式栈」的改写手法；工程版连析构也改成了迭代（5.6a）。
-易错：left_size 是 k - f.in_begin，不是 k；右子树的后序起点是 f.post_begin + left_size。
+1. 循环：弹一帧、处理一帧，直到栈空。弹出时先把整帧拷到 f，再 delete 栈顶。空区间直接 continue，相当于递归版里的 return。
+2. 找根这几行和第 26 页一字不差（只是变量从参数变成了 f.xxx），快速带过。
+3. 找不到根就直接抛——不用手动清栈，剩下的帧由 stack 的析构还掉（上一页）。
+4. 建结点、先挂上，和递归版一样：之后再出错，它也归临时树 fresh 释放。
+5. 两次递归调用变成压两帧。先压右、再压左：栈后进先出，所以左子树先建，次序和递归一样。追问：反过来压行不行？→ 也能建对，每一帧只管自己那一段，与先后无关；只是建的次序不同。
+6. 收尾和入口函数一样：建成了，再拆旧树、接新树。
+7. 诚实交代局限（右下角）：教学版的析构 destroy 仍是递归的，所以长链就算建出来，析构时照样爆栈。这里要学的是「递归 → 显式栈」的改写手法；工程版连析构也改成了迭代（5.6a）。
+易错：先 delete 栈顶再读它的字段 → 读已释放内存（ASan 报 heap-use-after-free），所以先拷到 f。left_size 是 k - f.in_begin，不是 k；右子树的后序起点是 f.post_begin + left_size。
 
-一句话总结：两次递归调用 = 压两帧（先右后左）；自己管的栈，出错时要自己清空。`);
+一句话总结：两次递归调用 = 压两帧（先右后左）；出错时剩下的帧交给栈对象的析构。`);
 }
 
 // rebuild pitfalls + factories
