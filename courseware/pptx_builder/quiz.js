@@ -113,7 +113,7 @@ async function injectReveal(zip) {
 // ---------- deck ----------
 // spec = { title, kicker, chapters: [{ label, name, questions: [q, ...] }] }
 // q = { kind, title, stem, code?, codeLang?, table?, image?: {url, h}, options?, grid?, correct?: ["A"],
-//       after?, answer, notes?: [str | {code}] }
+//       after?, answer, notes?: [str | {code}], speaker?: 讲课备注 }
 async function buildQuiz(spec, out) {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_WIDE";
@@ -307,6 +307,7 @@ async function buildQuiz(spec, out) {
     txt(sl, q.title, 1.8, 0.8, 6.0, 0.6, { fontSize: units(q.title) > 13 ? 24 : 28, bold: true, color: C.dark, valign: "middle" });
     drawLeft(sl, q);
     drawCard(sl, q);
+    if (q.speaker) sl.addNotes(q.speaker);
   }
 
   for (const ch of spec.chapters) for (const q of ch.questions) if (q.image) q.image.file = await fetchImage(q.image.url);

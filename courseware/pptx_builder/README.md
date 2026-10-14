@@ -23,7 +23,7 @@ node quiz.js ../202609_DSA_MOOC_Quiz_CH03-04.pptx ch03 ch04   # 或 npm run quiz
 ```
 
 - 题目数据在 `quiz_data/chNN.js`，每个文件导出 chapter 数组（「上 / 下」两半各算一个 chapter，题号各自从 Q1 起）。
-- 一道题：`{ kind, title, stem, code?, table?, image?: {url, h}, options?, correct?: ["A"], after?, answer, notes?: [str | {code}] }`。
+- 一道题：`{ kind, title, stem, code?, table?, image?: {url, h}, options?, correct?: ["A"], after?, answer, notes?: [str | {code}], speaker? }`；`speaker` 是讲课备注（演讲者视图可见，不上屏）。
   文本支持 `**粗体**`、`` `代码` ``、`^{上标}`、`_{下标}`、`\n`。选项都短时自动排成格子（`grid: false` 可关掉），否则一行一个。
 - 版面自动缩放：左栏整体按比例缩小直到放得下，解析按字号 17→11 逐级缩；仍放不下会打印 `! 溢出`，要删减文字。
 - 单击淡入：名字以 `ANS_` 开头的形状，保存时注入 `<p:timing>`（pptxgenjs 本身不支持动画）。
