@@ -1179,7 +1179,7 @@ sectionSlide("Part 2", "队列 Queue", "一端进、另一端出 · 先进先出
   const s = content("2.2", "2 队列 · 顺序队列", "循环队列：下标 0 是下标 mSize−1 的直接后继");
   card(s, 0.5, 1.05, 9.0, 2.45, C.code);
   image(s, "fig-3-11", 0.7, 1.15, 8.6, 2.25);
-  text(s, "(a) 初始队列里有 12、17、8、20 四个元素；(b) 两次出队、三次入队之后。入队增加 rear，出队增加 front，两者都在环上顺时针走。", 0.5, 3.55, 9, 0.5, { fontSize: 10.5, color: C.muted });
+  text(s, "(a) 初始队列里有 12、17、8、20 四个元素；(b) 两次出队、三次入队之后。入队增加 rear，出队增加 front，两者都在环上顺时针走。**注意**：本图沿用原书约定，rear 指向最后一个元素；后面的代码（教学版）里 rear_ 指向下一个可写入的空位，二者差一格。", 0.5, 3.55, 9, 0.55, { fontSize: 10.5, color: C.muted });
   card(s, 0.5, 4.15, 4.35, 0.95, C.dark);
   text(s, "位置 x 的后继", 0.7, 4.22, 3, 0.3, { fontSize: 10.5, bold: true, color: C.gold, margin: 0 });
   text(s, "(x + 1) % mSize", 0.7, 4.5, 4, 0.5, { fontSize: 22, bold: true, fontFace: MONO, color: C.white, margin: 0 });
