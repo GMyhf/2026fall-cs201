@@ -15,6 +15,7 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |       |       | Medium |          |
+| 1027 | 31454:第一个 AA 型子串   | brute force   | Medium | http://cs101.openjudge.cn/practice/31454/          |
 | 1026 | M437.路径总和 III  | prefix sum, backtracking  | Medium | https://leetcode.cn/problems/path-sum-iii/          |
 | 1025 | 76.最小覆盖子串    | sliding window    | Tough | https://leetcode.cn/problems/minimum-window-substring/          |
 | 1024 | 04082: 树的镜面映射      | tree     | Medium | http://cs101.openjudge.cn/practice/04082/          |
