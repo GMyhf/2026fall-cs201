@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-10-21 23:06 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-10-23 00:18 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -15,6 +15,8 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |       |       | Medium |          |
+| 1029 | 05430:表达式·表达式树·表达式求值      | tree      | Tough | http://cs101.openjudge.cn/practice/05430     |
+| 1028 | 05414:由中根序列和后根序列重建二叉树     | tree      | Easy | http://cs101.openjudge.cn/practice/05414         |
 | 1027 | 31454:第一个 AA 型子串   | brute force   | Medium | http://cs101.openjudge.cn/practice/31454/          |
 | 1026 | M437.路径总和 III  | prefix sum, backtracking  | Medium | https://leetcode.cn/problems/path-sum-iii/          |
 | 1025 | 76.最小覆盖子串    | sliding window    | Tough | https://leetcode.cn/problems/minimum-window-substring/          |
