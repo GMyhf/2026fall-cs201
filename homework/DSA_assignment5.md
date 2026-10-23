@@ -146,7 +146,7 @@ bitmask dp, http://cs101.openjudge.cn/practice/30201/
 
 ### T30102:完美交易窗口
 
-monotonic stack, binary search, http://cs101.openjudge.cn/practice/T30102/
+monotonic stack, binary search, http://cs101.openjudge.cn/practice/30102/
 
 思路：
 
