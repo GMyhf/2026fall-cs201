@@ -1045,11 +1045,11 @@ LCA, binary lifting, https://www.luogu.com.cn/problem/P3379
 > 一棵树的镜面映射指的是对于树中的每个结点，都将其子结点反序。例如，对左边的树，镜面映射后变成右边这棵树。 
 >
 > ```
->     a                             a
->   / | \                         / | \
->  b  c  f       ===>            f  c  b
->    / \                           / \
->   d   e                         e   d
+>  a                             a
+> / | \                         / | \
+> b  c  f       ===>            f  c  b
+> / \                           / \
+> d   e                         e   d
 > ```
 >
 > 我们在输入输出一棵树的时候，常常会把树转换成对应的二叉树，而且对该二叉树中只有单个子结点的分支结点补充一个虚子结点“$”，形成“伪满二叉树”。
@@ -1057,15 +1057,15 @@ LCA, binary lifting, https://www.luogu.com.cn/problem/P3379
 > 例如，对下图左边的树，得到下图右边的伪满二叉树 
 >
 > ```
->     a                             a
->   / | \                          / \
->  b  c  f       ===>             b   $
->    / \                         / \
->   d   e                       $   c                          
->                                  / \
->                                 d   f
->                                / \
->                               $   e
+>  a                             a
+> / | \                          / \
+> b  c  f       ===>             b   $
+> / \                         / \
+> d   e                       $   c                          
+>                               / \
+>                              d   f
+>                             / \
+>                            $   e
 > ```
 >
 > 然后对这棵二叉树进行前序遍历，如果是内部结点则标记为0，如果是叶结点则标记为1，而且虚结点也输出。
@@ -1099,6 +1099,100 @@ LCA, binary lifting, https://www.luogu.com.cn/problem/P3379
 > 提示
 >
 > 样例输入输出对应着题目描述中的那棵树。
+>
+> 
+>
+> ```python
+> import sys
+> from collections import deque
+> 
+> sys.setrecursionlimit(10000)
+> 
+> # --- 第一步：读取输入并分割成 token 列表 ---
+> n = int(sys.stdin.readline().strip())          # 结点总数（包括虚节点）
+> tokens = sys.stdin.readline().split()           # 每个 token 形如 'a0'、'b1'、'$1'
+> 
+> # --- 第二步：将前序序列解析成“伪满二叉树” ---
+> idx = 0  # 全局索引，用于在 tokens 列表中遍历
+> 
+> class BinNode:
+>     __slots__ = ('label', 'is_leaf', 'left', 'right')
+>     def __init__(self, label, is_leaf):
+>         self.label = label      # 结点字符（小写字母或 '$'）
+>         self.is_leaf = is_leaf  # True=叶子或虚节点，False=内部节点
+>         self.left = None        # 左子指针（在左-子/右-兄弟表示中存第一孩子）
+>         self.right = None       # 右子指针（同一层的下一个兄弟）
+> 
+> def parse_binary():
+>     """
+>     递归按前序解析伪满二叉树：
+>     - 如果当前是内部节点（flag=='0'），则继续读两个子节点
+>     - 如果是叶子或虚节点（flag=='1'），则不再递归
+>     """
+>     global idx
+>     label = tokens[idx][0]
+>     flag  = tokens[idx][1]
+>     idx += 1
+>     node = BinNode(label, flag == '1')
+>     if not node.is_leaf:
+>         # 内部节点必然有左右两个孩子
+>         node.left = parse_binary()
+>         node.right = parse_binary()
+>     return node
+> 
+> root_bin = parse_binary()  # 根节点
+> 
+> # --- 第三步：将“左-子/右-兄弟”二叉树转换回 N 叉树，忽略 '$' 虚节点 ---
+> class NaryNode:
+>     __slots__ = ('label', 'children')
+>     def __init__(self, label):
+>         self.label = label    # 真实结点字符
+>         self.children = []    # 孩子列表
+> 
+> def build_nary(bin_node):
+>     """
+>     将二叉表示转换成 N 叉表示：
+>     - 跳过 bin_node 为 None 或 label=='$'
+>     - bin_node.left 指向第一个孩子；通过 .right 链接拿到所有兄弟
+>     """
+>     if bin_node is None or bin_node.label == '$':
+>         return None
+> 
+>     nnode = NaryNode(bin_node.label)
+>     child = bin_node.left
+>     while child:
+>         nch = build_nary(child)
+>         if nch:
+>             nnode.children.append(nch)
+>         child = child.right
+>     return nnode
+> 
+> root = build_nary(root_bin)
+> 
+> # --- 第四步：对 N 叉树做镜像（对每个节点的孩子列表反序） ---
+> def mirror_nary(node):
+>     if node is None:
+>         return
+>     node.children.reverse()
+>     for ch in node.children:
+>         mirror_nary(ch)
+> 
+> mirror_nary(root)
+> 
+> # --- 第五步：宽度优先遍历并输出结果 ---
+> q = deque([root])
+> res = []
+> while q:
+>     u = q.popleft()
+>     res.append(u.label)
+>     for ch in u.children:
+>         q.append(ch)
+> 
+> # 最终只输出结点编号，空格分隔
+> print(' '.join(res))
+> ```
+>
+> 
 
 **思路**：
 
