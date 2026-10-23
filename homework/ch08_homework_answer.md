@@ -1,16 +1,18 @@
 # 第八章作业 参考答案
 
+> **说明**：各题之后引用块中列出的力扣 / OpenJudge 编程题，只是与该题知识点对应的课外练习，仅供参考，不属于本次作业要求，无需提交。
+
 ## 1 快速排序的分割
 
-> 对应编程题：力扣 912. 排序数组（快速排序）、力扣 215. 数组中的第 K 个最大元素（快速选择）。
-
-**M912.排序数组**
-
-https://leetcode.cn/problems/sort-an-array/
-
-**M215.数组中的第 K 个最大元素**
-
-https://leetcode.cn/problems/kth-largest-element-in-an-array/
+> 参考练习（不要求提交）：对应编程题：力扣 912. 排序数组（快速排序）、力扣 215. 数组中的第 K 个最大元素（快速选择）。
+>
+> **M912.排序数组**
+>
+> https://leetcode.cn/problems/sort-an-array/
+>
+> **M215.数组中的第 K 个最大元素**
+>
+> https://leetcode.cn/problems/kth-largest-element-in-an-array/
 
 ### (1) Lomuto 分割
 
@@ -54,11 +56,11 @@ https://leetcode.cn/problems/kth-largest-element-in-an-array/
 
 ## 2 MSD 与 LSD 基数排序
 
-> 对应编程题：力扣 164. 最大间距（线性时间排序：桶排序 / 基数排序）。
-
-**H164.最大间距**
-
-https://leetcode.cn/problems/maximum-gap/
+> 参考练习（不要求提交）：对应编程题：力扣 164. 最大间距（线性时间排序：桶排序 / 基数排序）。
+>
+> **H164.最大间距**
+>
+> https://leetcode.cn/problems/maximum-gap/
 
 ### (1) MSD（高位优先）
 
@@ -115,11 +117,11 @@ https://leetcode.cn/problems/maximum-gap/
 
 ## 3 Shell 排序与排序算法的性质
 
-> 对应编程题：力扣 912. 排序数组、力扣 1122. 数组的相对排序。
-
-**E1122.数组的相对排序**
-
-https://leetcode.cn/problems/relative-sort-array/
+> 参考练习（不要求提交）：对应编程题：力扣 912. 排序数组、力扣 1122. 数组的相对排序。
+>
+> **E1122.数组的相对排序**
+>
+> https://leetcode.cn/problems/relative-sort-array/
 
 ### (1) Shell 排序过程
 
@@ -192,11 +194,11 @@ $$
 
 ## 4 子集和的生成与排序
 
-> 对应编程题：力扣 78. 子集（枚举全部子集）。
-
-**M78.子集**
-
-https://leetcode.cn/problems/subsets/
+> 参考练习（不要求提交）：对应编程题：力扣 78. 子集（枚举全部子集）。
+>
+> **M78.子集**
+>
+> https://leetcode.cn/problems/subsets/
 
 ### (1) 增量生成后排序
 

@@ -1,14 +1,16 @@
 # 第七章作业 参考答案
 
+> **说明**：各题之后引用块中列出的力扣 / OpenJudge 编程题，只是与该题知识点对应的课外练习，仅供参考，不属于本次作业要求，无需提交。
+
 以下仅给出一种规范解法。等价的拓扑序、不同的并查集实现与最短路径松弛顺序均可判为正确。
 
 ## 1 图的存储结构与周游
 
-> 第 (4) 问"用 DFS 判断有向图是否有回路"对应编程题：力扣 207. 课程表。
-
-**M207.课程表**
-
-https://leetcode.cn/problems/course-schedule/
+> 参考练习（不要求提交）：第 (4) 问"用 DFS 判断有向图是否有回路"对应编程题：力扣 207. 课程表。
+>
+> **M207.课程表**
+>
+> https://leetcode.cn/problems/course-schedule/
 
 ### (1) 相邻矩阵与度
 
@@ -83,19 +85,19 @@ $$
 
 ## 2 项目依赖、拓扑排序与关键路径
 
-> 拓扑排序对应编程题：力扣 210. 课程表 II、OpenJudge 04084 拓扑排序。第 (3) 问对应力扣 2050. 并行课程 III。
-
-**M210.课程表 II**
-
-https://leetcode.cn/problems/course-schedule-ii/
-
-**04084: 拓扑排序**
-
-http://cs101.openjudge.cn/practice/04084/
-
-**H2050.并行课程 III**
-
-https://leetcode.cn/problems/parallel-courses-iii/
+> 参考练习（不要求提交）：拓扑排序对应编程题：力扣 210. 课程表 II、OpenJudge 04084 拓扑排序。第 (3) 问对应力扣 2050. 并行课程 III。
+>
+> **M210.课程表 II**
+>
+> https://leetcode.cn/problems/course-schedule-ii/
+>
+> **04084: 拓扑排序**
+>
+> http://cs101.openjudge.cn/practice/04084/
+>
+> **H2050.并行课程 III**
+>
+> https://leetcode.cn/problems/parallel-courses-iii/
 
 ### (1) 顶点集与边集
 
@@ -171,19 +173,19 @@ B -> C -> E -> F -> G -> H      2 + 4 + 5 + 2 + 3 + 1 = 17
 
 ## 3 最小生成树与次小生成树
 
-> 最小生成树对应编程题：力扣 1584. 连接所有点的最小费用、OpenJudge 05442 兔子与星空。第 (3) 问的"换边"思路对应力扣 1489. 找到最小生成树里的关键边和伪关键边。
-
-**M1584.连接所有点的最小费用**
-
-https://leetcode.cn/problems/min-cost-to-connect-all-points/
-
-**05442: 兔子与星空**
-
-http://cs101.openjudge.cn/practice/05442/
-
-**H1489.找到最小生成树里的关键边和伪关键边**
-
-https://leetcode.cn/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/
+> 参考练习（不要求提交）：最小生成树对应编程题：力扣 1584. 连接所有点的最小费用、OpenJudge 05442 兔子与星空。第 (3) 问的"换边"思路对应力扣 1489. 找到最小生成树里的关键边和伪关键边。
+>
+> **M1584.连接所有点的最小费用**
+>
+> https://leetcode.cn/problems/min-cost-to-connect-all-points/
+>
+> **05442: 兔子与星空**
+>
+> http://cs101.openjudge.cn/practice/05442/
+>
+> **H1489.找到最小生成树里的关键边和伪关键边**
+>
+> https://leetcode.cn/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/
 
 ### (1) Kruskal 算法
 
@@ -267,15 +269,15 @@ SecondMST(G):
 
 ## 4 单源最短路径
 
-> 对应编程题：力扣 743. 网络延迟时间、OpenJudge 05443 兔子与樱花。
-
-**M743.网络延迟时间**
-
-https://leetcode.cn/problems/network-delay-time/
-
-**05443: 兔子与樱花**
-
-http://cs101.openjudge.cn/practice/05443/
+> 参考练习（不要求提交）：对应编程题：力扣 743. 网络延迟时间、OpenJudge 05443 兔子与樱花。
+>
+> **M743.网络延迟时间**
+>
+> https://leetcode.cn/problems/network-delay-time/
+>
+> **05443: 兔子与樱花**
+>
+> http://cs101.openjudge.cn/practice/05443/
 
 ### (1) Dijkstra 过程
 
