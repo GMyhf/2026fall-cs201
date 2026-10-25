@@ -1,4 +1,5 @@
 // 第四章 字符串 —— 由 dsa-modernization/book/ch04-string.md 整理成的讲课 PPT。
+// 正文（4.1–4.3 + 小结）+ 附录A 编程练习（T76 / 31378 / 01961 + 最小循环元引理的证明）。
 // 生成：cd courseware/pptx_builder && node decks/ch04_string.js ../202609_DSA_04_String.pptx
 const path = require("path");
 const fs = require("fs");
@@ -71,6 +72,8 @@ function code(file, from, until, { pre = "", post = "" } = {}) {
     cells, arrowLabel, pill, numCircle, titleSlide, sectionSlide, content, summarySlide,
   } = D;
   const RED = "FDF0EE";
+  // 代码块里要高亮的行：按行内文字定位，不用行号
+  const hlOf = (code, keys) => code.split("\n").map((l, i) => (keys.some((k) => l.includes(k)) ? i + 1 : 0)).filter(Boolean);
 
 // ---- slides（顶层不缩进）----
 // =====================================================================
@@ -78,8 +81,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第四章  字符串",
   subtitle: "String：元素是字符、操作按整段的线性表",
-  topics: "串、子串、真子串 · 字符编码：ASCII → UTF-8 · 编码顺序与字典序\n顺序存储与 '\\0' · 教学版 String：三法则与变长存储管理\nappend / substr / find / compare · 进阶：移动语义与 raw()\n朴素匹配与原书「差 1」 · 特征向量 next · KMP 与线性论证 · 最小循环节",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "串、子串、真子串 · 字符编码：ASCII → UTF-8 · 编码顺序与字典序\n顺序存储与 '\\0' · 教学版 String：三法则与变长存储管理\nappend / substr / find / compare · 进阶：移动语义与 raw()\n朴素匹配与原书「差 1」 · 特征向量 next · KMP 与线性论证 · 最小循环节\n附录：3 道字符串编程练习（滑动窗口 · KMP nextval · 前缀中的周期）与最小循环元引理",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-25 · github.com/GMyhf/dsa-modernization",
 });
 
 // 本章三个问题
@@ -113,10 +116,13 @@ titleSlide({
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
-    card(s, x, 1.15, 2.85, 3.9, i === 2 ? C.cream : C.code);
+    card(s, x, 1.15, 2.85, 3.25, i === 2 ? C.cream : C.code);
     text(s, c[0], x + 0.2, 1.3, 2.5, 0.45, { fontSize: 19, bold: true, color: C.dark, margin: 0 });
-    bullets(s, c[1], x + 0.15, 1.9, 2.6, 3.0, { fontSize: 12, gap: 8 });
+    bullets(s, c[1], x + 0.15, 1.9, 2.6, 2.45, { fontSize: 11.5, gap: 5 });
   });
+  card(s, 0.5, 4.55, 9.0, 0.55, C.dark);
+  text(s, "附录A 编程练习", 0.7, 4.55, 1.7, 0.55, { fontSize: 12.5, bold: true, color: C.gold, valign: "middle", margin: 0 });
+  text(s, "T76 最小覆盖子串（滑动窗口） · 31378 KMP 字符比较次数（nextval） · 01961 前缀中的周期 · 最小循环元引理", 2.4, 4.55, 7.0, 0.55, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
 }
 
 // 先跑一遍：String
@@ -1090,6 +1096,517 @@ sectionSlide("Part 3 · 4.3", "字符串的模式匹配", "朴素匹配与原书
     ["朴素匹配", "失配右移一位，目标回溯，最坏 **O(|T|·|P|)**。原书两个匹配算法返回值**一律差 1**，正确是 `j - m`。"],
     ["KMP", "next 只依赖模式、可复用；目标下标**只增不减**，整体 **O(|T|+|P|)**。求周期要用未优化的 border。"],
   ]);
+
+// ============================ 附录A ============================
+sectionSlide("附录 A", "编程练习", "3 道上机题 + 1 个引理：把 4.3 节的 next 真正用到题里\nT76 最小覆盖子串 · 31378 KMP 字符比较次数（nextval） · 01961 前缀中的周期 · 最小循环元引理的证明");
+
+// A.0 为什么是这 3 道题
+{
+  const s = content("A.0", "附录A 编程练习", "为什么是这 3 道题 + 1 个引理");
+  callout(s, "先记住这句话", "**字符串算法做到线性时间的共同手法是「下标只增不减」。** T76 的两个窗口端点、KMP 的目标下标 i 都是如此：每个字符进出窗口各一次，总步数 O(m+n)。", 0.5, 1.02, 9.0, 0.88, { fontSize: 11.5, tsize: 11 });
+  table(s, [
+    ["分组", "题号", "练什么", "对应章节"],
+    ["滑动窗口", "T76 最小覆盖子串（LeetCode）", "不用 next 的线性扫描：左右两个端点只增不减 + 计数数组当「还缺多少」", "4.1.1 字符编码（字符即下标）"],
+    ["KMP 匹配", "31378 KMP 字符比较次数（nextval）", "习题 9 的机考版：按题给伪代码**逐次计数**，看清优化版 next 省掉的是哪一次比较", "4.3.2 next · 4.3.3 KMP"],
+    ["KMP 周期", "01961 前缀中的周期（OpenJudge）", "对每个前缀 i 读 nxt[i]，最小周期 p = i − nxt[i]；N 到 10⁶，必须 O(N)", "4.3+ 最小循环节"],
+    [{ t: "引理", fill: C.cream }, { t: "最小循环元引理", fill: C.cream }, { t: "为什么 n − next[n] 整除 n 时就是**最短**循环节；不整除时又是什么情形", fill: C.cream }, { t: "4.3+ 「真边界 ⇔ 周期」定理", fill: C.cream }],
+  ], 0.5, 2.05, 9.0, [1.1, 2.6, 3.6, 1.7], { fontSize: 10.5, rowH: 0.48 });
+  card(s, 0.5, 4.6, 9.0, 0.5, C.dark);
+  text(s, "**01961 是这一组的收官题**：4.3+ 节讲的「最小周期 = n − 最长真边界」在 OJ 上的直接落地，引理就是它的严格证明。", 0.7, 4.6, 8.6, 0.5, { fontSize: 11.5, color: C.white, boldColor: C.gold, valign: "middle", margin: 0 });
+}
+
+// ---------------- T76 ----------------
+{
+  const s = content("T76", "附录A · 滑动窗口", "T76 最小覆盖子串：题意与三个示例");
+  text(s, "给你一个字符串 `s`、一个字符串 `t`，返回 `s` 中**涵盖 `t` 所有字符**的最小子串；不存在则返回空串 `\"\"`。`t` 中重复的字符，子串里该字符的数量**不少于** `t` 中的数量。若存在，保证答案唯一。`1 ≤ m, n ≤ 10⁵`，均由英文字母组成。", 0.5, 1.02, 9.0, 0.78, { fontSize: 11.5 });
+  const ex = [
+    ["示例 1", "s = \"ADOBECODEBANC\"\nt = \"ABC\"", "\"BANC\"", "BANC 含 t 的 A、B、C 各一个，且找不到更短的。"],
+    ["示例 2", "s = \"a\"\nt = \"a\"", "\"a\"", "整个 s 就是最小覆盖子串。"],
+    ["示例 3", "s = \"a\"\nt = \"aa\"", "\"\"", "t 中**两个** a 都要包含，s 里只有一个，无解。"],
+  ];
+  ex.forEach((e, i) => {
+    const x = 0.5 + i * 3.05;
+    card(s, x, 1.9, 2.85, 2.05, C.code);
+    pill(s, e[0], x + 0.15, 2.02, 0.9, 0.3, C.green, C.white, 10);
+    text(s, e[1], x + 0.15, 2.4, 2.6, 0.55, { fontSize: 10, fontFace: MONO, margin: 0, color: C.text });
+    text(s, "输出 " + e[2], x + 0.15, 3.0, 2.6, 0.3, { fontSize: 12, bold: true, fontFace: MONO, color: C.bad, margin: 0 });
+    text(s, e[3], x + 0.15, 3.35, 2.6, 0.55, { fontSize: 9.5, margin: 0 });
+  });
+  callout(s, "进阶要求：O(m + n)", "朴素做法枚举所有子串再逐个检查，是 O(m²·n)。要线性时间，只能让**每个字符进出窗口各一次**——这就是滑动窗口。", 0.5, 4.1, 5.9, 1.0, { fontSize: 10.5 });
+  callout(s, "字符即下标", "`s`、`t` 只有英文字母，直接用 `need[128]`（ASCII 码当下标）计数，比哈希表更快、更省。", 6.6, 4.1, 2.9, 1.0, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+{
+  const s = content("T76", "附录A · 滑动窗口", "滑动窗口：右端扩、左端缩，两个端点都只增不减");
+  const steps = [
+    ["扩", "`right` 右移一格，把 `s[right]` 放进窗口；若它是 `t` 还缺的字符，`required--`。", C.green],
+    ["缩", "一旦 `required == 0`（窗口已覆盖 `t`），尽量右移 `left`：每次移出 `s[left]`，若移出后 `t` 又缺了它，`required++` 并停下。", C.goldText],
+    ["记", "每个覆盖状态下记录最短的 `[left, right)`。两个端点各最多走 m 步，总共 **O(m + n)**。", C.bad],
+  ];
+  steps.forEach((l, i) => {
+    const y = 1.05 + i * 0.86;
+    card(s, 0.5, y, 5.9, 0.78, C.code);
+    numCircle(s, l[0], 0.65, y + 0.2, 0.38, l[2]);
+    text(s, l[1], 1.15, y + 0.06, 5.15, 0.68, { fontSize: 10.5, margin: 0, valign: "middle" });
+  });
+  callout(s, "计数数组的两重身份", [
+    "`need[c] > 0`：窗口里还**缺** c 个；",
+    "`need[c] < 0`：窗口里 c **多了**（或 c 根本不在 t 中）；",
+    "`required` = 所有正的 `need[c]` 之和，**等于 0 当且仅当窗口覆盖 t**。于是判断覆盖是 O(1)，不用遍历 26 个字母。",
+  ], 6.6, 1.05, 2.9, 2.6, { fontSize: 9.5, gap: 4, fill: C.mint, tcolor: C.dark });
+  text(s, "示例 1 的三次「覆盖」时刻（s = ADOBECODEBANC，t = ABC）", 0.5, 3.72, 6.0, 0.3, { fontSize: 11.5, bold: true, color: C.dark, margin: 0 });
+  table(s, [
+    ["right 停在", "放进的字符", "left 缩到", "窗口", "长度", "当前最优"],
+    ["5", "C", "0", { t: "ADOBEC", mono: true }, "6", { t: "ADOBEC", mono: true }],
+    ["10", "A", "5", { t: "CODEBA", mono: true }, "6", { t: "ADOBEC", mono: true }],
+    [{ t: "12", fill: C.cream }, { t: "C", fill: C.cream }, { t: "9", fill: C.cream }, { t: "BANC", mono: true, fill: C.cream, color: C.bad, bold: true }, { t: "4", fill: C.cream }, { t: "BANC", mono: true, fill: C.cream, color: C.bad, bold: true }],
+  ], 0.5, 4.05, 9.0, [1.3, 1.4, 1.3, 1.9, 1.0, 2.1], { fontSize: 10, rowH: 0.26, tight: true, align: "center" });
+}
+
+{
+  const s = content("T76", "附录A · 滑动窗口", "C++ 实现：need 数组 + required 计数");
+  codeBlock(s, `class Solution {
+public:
+    string minWindow(string s, string t) {
+        if (s.size() < t.size()) return "";
+        vector<int> need(128, 0);
+        for (char c : t) need[c]++;
+        int required = t.size();          // 剩余还需要匹配的字符数量
+        int left = 0, right = 0;
+        int start = 0, minLen = INT_MAX;
+        while (right < s.size()) {
+            char c = s[right];
+            if (need[c] > 0) required--;  // 是 t 还缺的字符
+            need[c]--;
+            right++;
+            // 窗口已经包含 t 的所有字符：尽量收缩左端
+            while (required == 0) {
+                if (right - left < minLen) { minLen = right - left; start = left; }
+                char d = s[left];
+                need[d]++;
+                if (need[d] > 0) required++;  // 移出后 t 又缺它了
+                left++;
+            }
+        }
+        return minLen == INT_MAX ? "" : s.substr(start, minLen);
+    }
+};`, 0.5, 1.05, 6.4, 4.05, { fontSize: 8.5, hl: [12, 20] });
+  callout(s, "为什么先判 `> 0` 再减", "`need[c]--` 之前 `need[c] > 0`，说明这个 c 正是 t 还缺的，`required` 才减；不在 t 中的字符 `need` 变负，不影响 `required`。收缩时顺序**反过来**：先加回，再看是否变成正数。", 7.1, 1.05, 2.4, 2.3, { fontSize: 9.5 });
+  callout(s, "复杂度", "`right`、`left` 各最多走 m 步，**时间 O(m + n)，空间 O(128)**。窗口是半开区间 `[left, right)`，长度就是 `right − left`。", 7.1, 3.5, 2.4, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+{
+  const s = content("T76", "附录A · 滑动窗口", "Python 实现：Counter，以及一种略不同的收缩写法");
+  codeBlock(s, `class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        from collections import Counter
+        need = Counter(t)
+        missing = len(t)
+        l = start = end = 0
+        for r, ch in enumerate(s, 1):        # r 是窗口的右开端点
+            if need[ch] > 0:
+                missing -= 1
+            need[ch] -= 1                    # 不在 t 中的字符，need 变为负数
+            if missing == 0:
+                while l < r and need[s[l]] < 0:   # 过滤掉左侧无用或冗余的字符
+                    need[s[l]] += 1
+                    l += 1
+                if end == 0 or r - l < end - start:  # 更新全局最短子串
+                    start, end = l, r
+                # 破坏当前窗口的有效性，继续寻找下一个可行解
+                need[s[l]] += 1
+                missing += 1
+                l += 1
+        return s[start:end]`, 0.5, 1.05, 6.4, 3.45, { fontSize: 8.5, lang: "py", hl: [12, 18] });
+  callout(s, "与 C++ 版的两点差别", [
+    "C++ 用 `while (required == 0)` **一边缩一边记**；Python 版先把左侧 `need < 0` 的冗余字符全部挤出，**记一次**，再主动移出 `s[l]` 把窗口弄坏。两者走的步数相同。",
+    "`Counter` 对不存在的键返回 0，所以 `need[ch]` 不必先判 `in`。",
+    "`end == 0` 表示还没记过答案：窗口长度至少 1，`end` 不可能为 0。",
+  ], 7.1, 1.05, 2.4, 4.05, { fontSize: 9, gap: 5 });
+  text(s, "示例 3（s = \"a\"，t = \"aa\"）：`missing` 永远到不了 0，返回 `s[0:0] = \"\"`，**无需特判**。", 0.5, 4.62, 6.4, 0.45, { fontSize: 10.5, color: C.dark });
+}
+
+// ---------------- 31378 ----------------
+{
+  const s = content("31378", "附录A · KMP 匹配", "31378 KMP 字符比较次数（nextval）：题意");
+  text(s, "用 KMP 在主串 `t` 中查找模式串 `p` **第一次**出现的位置，失配时按**优化后的 next 数组（nextval）**回退。统计到第一次匹配成功为止，一共做了多少次字符比较。下标从 0 起，记 m = |p|。", 0.5, 1.02, 9.0, 0.6, { fontSize: 11.5 });
+  card(s, 0.5, 1.7, 4.4, 1.9, C.code);
+  text(s, "两个数组的定义", 0.7, 1.78, 4.0, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  bullets(s, [
+    "**next[0] = −1**；j ≥ 1 时 next[j] = p[0..j−1] 的**最长相等真前缀与真后缀**的长度。",
+    "**nextval[0] = −1**；j ≥ 1 时：若 p[j] == p[next[j]]，则 nextval[j] = nextval[next[j]]；否则 nextval[j] = next[j]。",
+  ], 0.65, 2.1, 4.2, 1.5, { fontSize: 10, gap: 5 });
+  codeBlock(s, `i = j = cnt = 0
+while i < len(t) and j < m:
+    if j == -1:          # 后移不计数
+        i += 1
+        j = 0
+        continue
+    cnt += 1             # 只有 t[i] 与 p[j] 的比较计数
+    if t[i] == p[j]:
+        i += 1
+        j += 1
+    else:
+        j = nextval[j]`, 5.1, 1.7, 4.4, 1.9, { fontSize: 8.5, lang: "py" });
+  text(s, "循环结束：j == m 则匹配成功，起始位置 i − m；否则不存在。", 5.1, 3.62, 4.4, 0.28, { fontSize: 9.5, color: C.muted, margin: 0 });
+  card(s, 0.5, 3.95, 4.4, 1.15, C.code);
+  text(s, "输入 / 输出", 0.7, 4.02, 4.0, 0.3, { fontSize: 11.5, bold: true, color: C.dark, margin: 0 });
+  text(s, "第一行模式串 p，第二行主串 t，均只含大写字母，1 ≤ |p| ≤ |t| ≤ 100000。\n输出一行两个整数：比较总次数 `cnt`、第一次匹配成功的起始下标（不存在输出 `-1`）。", 0.7, 4.32, 4.1, 0.78, { fontSize: 9.5, margin: 0 });
+  consoleBlock(s, "BAAABBBAA\nBAAABBBCDDDCCHHHHBBBAAABBBAADD", 5.1, 3.95, 2.9, 0.78, 9);
+  consoleBlock(s, "31 19", 8.1, 3.95, 1.4, 0.78, 9);
+  text(s, "← 样例输入 / 样例输出。模式串正是 4.3 节习题 9 的 BAAABBBAA。", 5.1, 4.78, 4.4, 0.3, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+}
+
+{
+  const s = content("31378", "附录A · KMP 匹配", "样例的 next 与 nextval：优化版改掉了哪三个位置");
+  const B = (t) => ({ t, mono: true, bold: true });
+  table(s, [
+    ["下标 j", "0", "1", "2", "3", "4", "5", "6", "7", "8"],
+    [{ t: "p[j]", bold: true }, B("B"), B("A"), B("A"), B("A"), B("B"), B("B"), B("B"), B("A"), B("A")],
+    [{ t: "next[j]", bold: true }, "−1", "0", "0", "0", { t: "0", color: C.bad, bold: true }, "1", "1", { t: "1", color: C.bad, bold: true }, { t: "2", color: C.bad, bold: true }],
+    [{ t: "nextval[j]", bold: true }, "−1", "0", "0", "0", { t: "−1", color: C.ok, bold: true }, "1", "1", { t: "0", color: C.ok, bold: true }, { t: "0", color: C.ok, bold: true }],
+  ], 0.5, 1.05, 9.0, [1.44, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84, 0.84], { fontSize: 12, rowH: 0.4, align: "center" });
+  const why = [
+    ["j = 4", "p[4] = B，next[4] = 0，p[0] = B **相等** → nextval[4] = nextval[0] = −1。退到 0 再比 B 必然再失配，索性直接后移 i。"],
+    ["j = 7", "p[7] = A，next[7] = 1，p[1] = A **相等** → nextval[7] = nextval[1] = 0。"],
+    ["j = 8", "p[8] = A，next[8] = 2，p[2] = A **相等** → nextval[8] = nextval[2] = 0。其余位置 p[j] ≠ p[next[j]]，照抄 next。"],
+  ];
+  why.forEach((w, i) => {
+    const y = 2.85 + i * 0.62;
+    card(s, 0.5, y, 5.9, 0.55, C.code);
+    pill(s, w[0], 0.65, y + 0.12, 0.8, 0.31, i === 0 ? C.bad : C.green, C.white, 10);
+    text(s, w[1], 1.6, y + 0.03, 4.7, 0.5, { fontSize: 9.5, valign: "middle", margin: 0 });
+  });
+  callout(s, "和 4.3.2 节是同一个东西", "原书【代码 4.4】的「优化版 next」就是这里的 nextval：习题 9 的答案 `-1 0 0 0 -1 1 1 0 0` 与上表最后一行**逐位相同**。本题要求先算未优化的 next，再按定义导出 nextval——与 4.3+ 节「求周期要用未优化版」相呼应。", 6.6, 2.85, 2.9, 2.25, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+{
+  const s = content("31378", "附录A · KMP 匹配", "匹配与比较过程追踪：31 次比较，起始下标 19");
+  table(s, [
+    ["步骤", "比较内容", "结果", "本步", "累计"],
+    ["①", "t[0..6] 与 p[0..6]", "7 个字符均匹配", "7", "7"],
+    ["②", "t[7]=C 与 p[7]=A", "失配，j ← nextval[7] = 0", "1", "8"],
+    ["③", "t[7]=C 与 p[0]=B", "失配，j ← nextval[0] = −1（i 后移，不计数）", "1", "9"],
+    ["④", "t[8..16] 依次与 p[0]=B", "9 个字符 D D D C C H H H H 均不等", "9", "18"],
+    ["⑤", "t[17]=B 与 p[0]=B", "匹配", "1", "19"],
+    ["⑥", "t[18]=B 与 p[1]=A", "失配，j ← nextval[1] = 0", "1", "20"],
+    ["⑦", "t[18]=B 与 p[0]=B", "匹配", "1", "21"],
+    ["⑧", "t[19]=B 与 p[1]=A", "失配，j ← nextval[1] = 0", "1", "22"],
+    ["⑨", "t[19]=B 与 p[0]=B", "匹配", "1", "23"],
+    [{ t: "⑩", fill: C.cream }, { t: "t[20..27] 与 p[1..8]", fill: C.cream }, { t: "8 个字符均匹配，整体匹配完成", fill: C.cream }, { t: "8", fill: C.cream }, { t: "31", fill: C.cream, bold: true, color: C.bad }],
+  ], 0.5, 1.05, 6.4, [0.55, 2.0, 2.9, 0.45, 0.5], { fontSize: 9, rowH: 0.29, tight: true });
+  callout(s, "对比：若用朴素 next", "第 ② 步失配后 j 退到 next[7] = **1**，要多比一次 C 与 p[1] = A（必然失败）才回到 0，总次数 **32**。nextval 跳过了这次注定失败的比较——这正是题目名里「nextval」的意义。", 7.1, 1.05, 2.4, 2.25, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  callout(s, "起始下标", "匹配结束时 i = 28，j = m = 9，起始位置 i − m = **19**。", 7.1, 3.45, 2.4, 0.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "t = BAAABBBCDDDCCHHHHBB**BAAABBBAA**DD", 0.5, 4.4, 6.4, 0.32, { fontSize: 12, fontFace: MONO, margin: 0, color: C.text });
+  text(s, "两个计数规则：只有 `t[i] == p[j]` 的比较计数；`j == −1` 时的后移**不计数**。第 ③、④ 步就是这样分开算的。", 0.5, 4.75, 9.0, 0.35, { fontSize: 10, color: C.dark });
+}
+
+{
+  const s = content("31378", "附录A · KMP 匹配", "C++ 实现：求 next → 导出 nextval → 按伪代码计数");
+  codeBlock(s, `#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    string p, t;
+    if (!(cin >> p >> t)) return 0;
+    int m = p.size(), n = t.size();
+
+    // 1. 计算 next 数组（未优化）
+    vector<int> next_arr(m, 0);
+    next_arr[0] = -1;
+    int k = -1, j = 0;
+    while (j < m - 1) {
+        if (k == -1 || p[j] == p[k]) {
+            ++j; ++k;
+            next_arr[j] = k;
+        } else {
+            k = next_arr[k];
+        }
+    }`, 0.5, 1.05, 4.4, 3.3, { fontSize: 8 });
+  codeBlock(s, `    // 2. 由定义导出 nextval
+    vector<int> nextval(m, 0);
+    nextval[0] = -1;
+    for (int idx = 1; idx < m; ++idx)
+        nextval[idx] = (p[idx] == p[next_arr[idx]])
+                     ? nextval[next_arr[idx]] : next_arr[idx];
+
+    // 3. 严格按题目流程统计比较次数
+    long long cnt = 0;
+    int i = 0; j = 0;
+    while (i < n && j < m) {
+        if (j == -1) { i++; j = 0; continue; }
+        cnt++;
+        if (t[i] == p[j]) { i++; j++; }
+        else j = nextval[j];
+    }
+    int match_pos = (j == m) ? (i - m) : -1;
+    cout << cnt << " " << match_pos << "\\n";
+    return 0;
+}`, 5.1, 1.05, 4.4, 3.3, { fontSize: 8, hl: [5, 6] });
+  callout(s, "三个要点", "`nextval[idx]` 用到 `nextval[next_arr[idx]]`，而 `next_arr[idx] < idx`，**按 idx 递增算一遍**就够；答案是「到第一次匹配成功为止」，匹配成功就退出循环，**不要继续往后找**；`cnt` 最坏约 2·|t|，用 `int` 也够，`long long` 更保险。", 0.5, 4.45, 9.0, 0.7, { fontSize: 9, tsize: 10, lsm: 1.1 });
+}
+
+{
+  const s = content("31378", "附录A · KMP 匹配", "Python 实现：与 C++ 逐段对应");
+  codeBlock(s, `import sys
+
+def solve():
+    lines = sys.stdin.read().split()
+    if not lines:
+        return
+    p, t = lines[0], lines[1]
+    m, n = len(p), len(t)
+
+    # 1. 计算 next 数组（未优化）
+    next_arr = [0] * m
+    next_arr[0] = -1
+    k, j = -1, 0
+    while j < m - 1:
+        if k == -1 or p[j] == p[k]:
+            j += 1
+            k += 1
+            next_arr[j] = k
+        else:
+            k = next_arr[k]`, 0.5, 1.05, 4.4, 3.4, { fontSize: 8, lang: "py" });
+  codeBlock(s, `    # 2. 由定义导出 nextval
+    nextval = [0] * m
+    nextval[0] = -1
+    for idx in range(1, m):
+        if p[idx] == p[next_arr[idx]]:
+            nextval[idx] = nextval[next_arr[idx]]
+        else:
+            nextval[idx] = next_arr[idx]
+
+    # 3. 模拟匹配过程
+    i = j = cnt = 0
+    while i < n and j < m:
+        if j == -1:
+            i += 1; j = 0
+            continue
+        cnt += 1
+        if t[i] == p[j]:
+            i += 1; j += 1
+        else:
+            j = nextval[j]
+
+    match_pos = (i - m) if j == m else -1
+    print(f"{cnt} {match_pos}")
+solve()`, 5.1, 1.05, 4.4, 3.4, { fontSize: 8, lang: "py", hl: [5, 6] });
+  callout(s, "为什么 next_arr[0] = −1 要单独写", "`k == -1` 是递推的「兜底」分支：p[0] 之前没有真边界，失配只能整体右移；匹配循环里的 `if j == -1` 消费的就是这个信号。", 0.5, 4.55, 9.0, 0.6, { fontSize: 9, tsize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// ---------------- 01961 ----------------
+{
+  const s = content("01961", "附录A · KMP 周期", "01961 前缀中的周期：题意");
+  text(s, "一个 N 位字符串 S 的**每个长度 i ≥ 2 的前缀**，是否由某个子串 A 重复出现 K 次（K > 1）拼成？若是，输出**最短循环节**对应的 K（即所有可能重复节中**最大**的 K）。例：\"abaab\" 有 5 个前缀 a, ab, aba, abaa, abaab。", 0.5, 1.02, 9.0, 0.75, { fontSize: 11.5 });
+  card(s, 0.5, 1.9, 4.4, 1.95, C.code);
+  text(s, "输入 / 输出", 0.7, 1.98, 4.0, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  bullets(s, [
+    "多组数据；每组两行：N（2 ≤ N ≤ 1 000 000）和字符串 S。以只含一个 0 的行结束。",
+    "每组先输出 `Test case #编号`；随后每行输出「前缀长度 i 与 K」，i 升序；**每组之后输出一个空行**（包括最后一组）。",
+  ], 0.65, 2.3, 4.2, 1.5, { fontSize: 10, gap: 5 });
+  consoleBlock(s, "3\naaa\n12\naabaabaabaab\n0", 5.1, 1.9, 1.9, 1.95, 9.5);
+  consoleBlock(s, "Test case #1\n2 2\n3 3\n\nTest case #2\n2 2\n6 2\n9 3\n12 4\n", 7.1, 1.9, 2.4, 1.95, 9.5);
+  text(s, "样例输入", 5.1, 3.88, 1.9, 0.25, { fontSize: 9, color: C.muted, margin: 0 });
+  text(s, "样例输出（第二组后面还有一个空行）", 7.1, 3.88, 2.4, 0.25, { fontSize: 9, color: C.muted, margin: 0 });
+  callout(s, "这就是 4.3+ 节「三类题」里的第三类", "循环串 → `is_repetition`，字符串乘方 → `repetition_count`，前缀中的周期 → **对每个前缀套同一判断**。4.3+ 节已经说了：要用**未优化**的 border / next，不能用优化版。", 0.5, 4.2, 9.0, 0.9, { fontSize: 10.5, tsize: 11, fill: C.mint, tcolor: C.dark });
+}
+
+{
+  const s = content("01961", "附录A · KMP 周期", "思路：对每个前缀读一次 nxt，最小周期 p = i − nxt[i]");
+  const steps = [
+    ["nxt[i]", "前缀 S[0..i−1]（长 i）的**最长相等真前后缀**长度，即 4.3+ 节的 border；一次 O(N) 算完整个数组（长度 N + 1）。", C.green],
+    ["p = i − nxt[i]", "由「真边界 ⇔ 周期」定理，这是长 i 前缀的**最小周期**。", C.goldText],
+    ["判定", "**nxt[i] > 0 且 i mod p == 0** ⇔ 该前缀恰由长 p 的子串重复 K = i / p 次。p 最小，K 自然最大。", C.bad],
+  ];
+  steps.forEach((l, i) => {
+    const y = 1.05 + i * 0.78;
+    card(s, 0.5, y, 5.9, 0.7, C.code);
+    pill(s, l[0], 0.65, y + 0.17, 1.35, 0.36, l[2], C.white, 10);
+    text(s, l[1], 2.15, y + 0.04, 4.15, 0.62, { fontSize: 10, margin: 0, valign: "middle" });
+  });
+  callout(s, "为什么 nxt[i] > 0 不能省", "nxt[i] = 0 时 p = i，而 i mod i = 0 **恒成立**——没有真边界的前缀（如 ab）会被误判为「重复 1 次」。这就是 4.3+ 节的陷阱二「整除 ≠ 循环」。", 6.6, 1.05, 2.9, 2.25, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "样例 2：S = aabaabaabaab（N = 12）", 0.5, 3.48, 6.0, 0.3, { fontSize: 11.5, bold: true, color: C.dark, margin: 0 });
+  const I = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const NX = [0, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const hit = (i) => NX[i - 1] > 0 && i % (i - NX[i - 1]) === 0;
+  const row = (label, f) => [{ t: label, bold: true }].concat(I.map((i) => (hit(i) ? { t: f(i), fill: C.cream, bold: true, color: C.ok } : f(i))));
+  table(s, [
+    ["i"].concat(I.map(String)),
+    row("nxt[i]", (i) => String(NX[i - 1])),
+    row("p = i − nxt[i]", (i) => String(i - NX[i - 1])),
+    row("输出 K", (i) => (hit(i) ? String(i / (i - NX[i - 1])) : "—")),
+  ], 0.5, 3.8, 9.0, [1.5].concat(I.map(() => 0.625)), { fontSize: 10, rowH: 0.3, tight: true, align: "center" });
+  text(s, "p = 1 的前缀 aa 报 K = 2；p = 3 的前缀中长度是 3 的倍数的 6、9、12 分别报 2、3、4；其余前缀不整除，不输出。", 0.5, 5.0, 9.0, 0.25, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+{
+  const s = content("01961", "附录A · KMP 周期", "C++ 实现：O(N) 求 nxt，再 O(N) 扫一遍前缀");
+  const cpp01961 = `#include <iostream>
+#include <string>
+using namespace std;
+
+const int MAXN = 1000005;   // 预分配，避免每组都重新申请
+int nxt[MAXN];
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, case_num = 1;
+    while (cin >> n && n != 0) {
+        string s;
+        cin >> s;
+        // nxt[i] = s[0..i-1] 的最长相等真前后缀长度
+        nxt[0] = -1;
+        for (int i = 0, k = -1; i < n; ) {
+            if (k == -1 || s[i] == s[k]) nxt[++i] = ++k;
+            else k = nxt[k];
+        }
+        cout << "Test case #" << case_num++ << "\\n";
+        for (int i = 2; i <= n; ++i) {
+            int p = i - nxt[i];                 // 最小周期
+            if (nxt[i] > 0 && i % p == 0)       // 有真边界，且周期整除长度
+                cout << i << " " << i / p << "\\n";
+        }
+        cout << "\\n";                           // 每组之后一个空行
+    }
+    return 0;
+}`;
+  codeBlock(s, cpp01961, 0.5, 1.05, 6.4, 4.05, { fontSize: 8, hl: hlOf(cpp01961, ["int p = i - nxt[i]", "if (nxt[i] > 0"]) });
+  callout(s, "数据量决定写法", [
+    "N 到 10⁶：`ios::sync_with_stdio(false)` + `cin.tie(nullptr)`，或改用 `scanf`/`printf`；",
+    "`nxt` 开成全局数组，长度 **N + 1**（下标 0..N）；",
+    "`nxt[++i] = ++k` 一行同时推进 i、k 并赋值，和 4.3.2 节的 `build_next` 是同一个递推。",
+  ], 7.1, 1.05, 2.4, 2.6, { fontSize: 9, gap: 4 });
+  callout(s, "复杂度", "每组 **O(N)** 时间、O(N) 空间；百万长度毫秒级完成。", 7.1, 3.8, 2.4, 1.3, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+{
+  const s = content("01961", "附录A · KMP 周期", "Python 实现：一次读入、攒好再输出");
+  const py01961 = `import sys
+
+def solve():
+    data = sys.stdin.read().split()
+    out, pos, case_num = [], 0, 1
+    while pos < len(data):
+        n = int(data[pos]); pos += 1
+        if n == 0:
+            break
+        s = data[pos]; pos += 1
+        # nxt[i] = 前缀 s[0..i-1] 的最长相等真前后缀长度
+        nxt = [0] * (n + 1)
+        nxt[0] = -1
+        i, k = 0, -1
+        while i < n:
+            if k == -1 or s[i] == s[k]:
+                i += 1; k += 1
+                nxt[i] = k
+            else:
+                k = nxt[k]
+        out.append(f"Test case #{case_num}")
+        case_num += 1
+        for i in range(2, n + 1):
+            p = i - nxt[i]                      # 最小周期
+            if nxt[i] > 0 and i % p == 0:
+                out.append(f"{i} {i // p}")
+        out.append("")                          # 每组之后一个空行
+    sys.stdout.write("\\n".join(out) + "\\n")
+solve()`;
+  codeBlock(s, py01961, 0.5, 1.05, 6.4, 4.05, { fontSize: 8, lang: "py", hl: hlOf(py01961, ["p = i - nxt[i]", "if nxt[i] > 0"]) });
+  callout(s, "过百万数据的两件事", [
+    "**读**：`sys.stdin.read().split()` 一次读完，不要逐行 `input()`；",
+    "**写**：结果先攒进列表，最后 `join` 一次输出，不要上百万次 `print`。",
+    "递推本身与 C++ 版逐行对应；Python 大约慢一个量级，O(N) 仍能过。",
+  ], 7.1, 1.05, 2.4, 2.75, { fontSize: 9, gap: 4 });
+  callout(s, "对拍过", "{a, b} 上长度 2～14 的随机串 500 个，与「逐个试 L 并比较 `pre == pre[:L] * (i // L)`」的 O(N³) 暴力解结果一致。", 7.1, 3.95, 2.4, 1.15, { fontSize: 9, fill: C.mint, tcolor: C.dark });
+}
+
+// ---------------- 最小循环元引理 ----------------
+{
+  const s = content("引理", "附录A · 最小循环元引理", "引理与充分性证明：L = n − next[n] 整除 n，则 L 是一个循环节");
+  card(s, 0.5, 1.02, 9.0, 0.7, C.dark);
+  s.addText(runs("设 |S| = n，next[n] 为 S 的最长相等真前后缀长度，L = n − next[n]。**引理：若 n mod L = 0，则 L 是 S 的最小循环元长度。**", { color: C.white, boldColor: C.gold }),
+    { x: 0.7, y: 1.02, w: 8.6, h: 0.7, fontFace: FONT, fontSize: 12.5, margin: 0, isTextBox: true, valign: "middle" });
+  const steps = [
+    ["等式建立", "令 k = next[n]。由定义，S[1..k] = S[n−k+1..n]（本页 S 下标从 1 起）。"],
+    ["位移关系", "L = n − k，等式即 **S[1..n−L] = S[L+1..n]**。"],
+    ["逐位对应", "对任意 1 ≤ i ≤ n−L 都有 **S[i] = S[i+L]**：距离为 L 的字符全部相等——这正是「L 是周期」的定义。"],
+    ["循环传导", "S[1] = S[1+L] = S[1+2L] = ⋯，S[2] = S[2+L] = ⋯，…，S[L] = S[2L] = ⋯。若 n = m·L，整串恰好切成 m 块，**第一块 = 第二块 = ⋯ = 第 m 块**，S 是 S[1..L] 重复 n/L 次。"],
+  ];
+  steps.forEach((st, i) => {
+    const y = 1.85 + i * 0.66;
+    card(s, 0.5, y, 5.9, 0.6, C.code);
+    numCircle(s, i + 1, 0.65, y + 0.12, 0.36, C.green);
+    text(s, st[0], 1.12, y + 0.04, 1.3, 0.52, { fontSize: 10.5, bold: true, color: C.dark, valign: "middle", margin: 0 });
+    text(s, st[1], 2.4, y + 0.03, 3.9, 0.56, { fontSize: 9.5, valign: "middle", margin: 0 });
+  });
+  // 示意：n = 9, L = 3
+  card(s, 6.6, 1.85, 2.9, 2.6, C.code);
+  text(s, "例：abcabcabc，n = 9，next[9] = 6，L = 3", 6.75, 1.92, 2.7, 0.45, { fontSize: 9.5, bold: true, color: C.dark, margin: 0 });
+  text(s, "S[1..6]", 6.75, 2.42, 0.8, 0.25, { fontSize: 8.5, color: C.muted, margin: 0 });
+  cells(s, 6.75, 2.65, ["a", "b", "c", "a", "b", "c", "", "", ""], { cw: 0.29, ch: 0.28, fs: 9, fills: [C.mint, C.mint, C.mint, C.mint, C.mint, C.mint, C.white, C.white, C.white] });
+  text(s, "S[4..9]", 6.75, 2.98, 0.8, 0.25, { fontSize: 8.5, color: C.muted, margin: 0 });
+  cells(s, 6.75, 3.21, ["", "", "", "a", "b", "c", "a", "b", "c"], { cw: 0.29, ch: 0.28, fs: 9, fills: [C.white, C.white, C.white, "CDEBD9", "CDEBD9", "CDEBD9", "CDEBD9", "CDEBD9", "CDEBD9"] });
+  text(s, "两行对齐相等 ⇔ 每个字符等于它右边第 3 个 ⇔ 周期 3；9 mod 3 = 0，所以 abc 重复 3 次。", 6.75, 3.55, 2.7, 0.85, { fontSize: 9, margin: 0 });
+  text(s, "记号对照：这里的 next[n]（整串的最长真边界）就是 4.3+ 节的 border[n−1]、01961 里的 nxt[N]；L 就是最小周期。", 0.5, 4.6, 9.0, 0.5, { fontSize: 10, color: C.goldText, bold: true });
+}
+
+{
+  const s = content("引理", "附录A · 最小循环元引理", "最小性证明（反证），以及 n mod L ≠ 0 时怎么办");
+  card(s, 0.5, 1.02, 5.9, 2.6, C.code);
+  text(s, "最小性：不存在更短的循环节", 0.7, 1.1, 5.5, 0.3, { fontSize: 12.5, bold: true, color: C.dark, margin: 0 });
+  const steps = [
+    ["反设", "存在更短的循环节 L′ < L。"],
+    ["构造前后缀", "L′ 是循环节 ⇒ S[1..n−L′] = S[L′+1..n]，即长为 **n − L′** 的前缀与后缀相等。"],
+    ["矛盾", "L′ < L ⇒ n − L′ > n − L = next[n]：找到了**比 next[n] 更长**的相等真前后缀，与 next[n] 的「最长」定义矛盾。故 L 最短。"],
+  ];
+  steps.forEach((st, i) => {
+    const y = 1.5 + i * 0.68;
+    numCircle(s, i + 1, 0.7, y + 0.12, 0.34, C.bad);
+    text(s, st[0], 1.15, y + 0.02, 1.2, 0.55, { fontSize: 10.5, bold: true, color: C.dark, valign: "middle", margin: 0 });
+    text(s, st[1], 2.3, y + 0.02, 4.0, 0.6, { fontSize: 9.5, valign: "middle", margin: 0 });
+  });
+  callout(s, "补充：n mod L ≠ 0 时", [
+    "S[i] = S[i+L] **仍成立**，L 仍是 S 的一个**周期**，但末尾剩下一段不足 L 的「残缺节」；",
+    "S **不具备**完整的循环元，最小循环元长度只能取 n 本身（不可再分）；",
+    "例：ababa，n = 5，next[5] = 3，L = 2，5 mod 2 ≠ 0——有周期 2，但不是任何串的整数次重复。",
+  ], 6.6, 1.02, 2.9, 2.6, { fontSize: 9, gap: 4 });
+  card(s, 0.5, 3.78, 9.0, 1.32, C.dark);
+  text(s, "总结", 0.7, 3.86, 2, 0.3, { fontSize: 11, bold: true, color: C.gold, margin: 0 });
+  s.addText(runs("**n − next[n]** 是串中重复特征的**最小偏移量**；只要总长能被它整除，这段偏移对应的前缀就是**最小循环元**。于是复杂的周期性判断化成了对 next 数组末尾一个数的简单算术——01961 对每个前缀做的，正是这件事。", { color: C.white, boldColor: C.gold }),
+    { x: 0.7, y: 4.18, w: 8.6, h: 0.85, fontFace: FONT, fontSize: 11.5, margin: 0, isTextBox: true, valign: "top", lineSpacingMultiple: 1.15 });
+}
+
+// ---------------- 附录小结 ----------------
+{
+  const s = content("A.4", "附录A · 小结", "三道题的复杂度总表与提交前自检");
+  table(s, [
+    ["题号", "核心手法", "时间", "额外空间", "一句话技巧"],
+    ["T76 最小覆盖子串", "滑动窗口 + 计数数组", "O(m + n)", "O(128)", "`required == 0` ⇔ 覆盖；左右端点只增不减"],
+    ["31378 KMP 比较次数", "next → nextval → 计数", "O(|p| + |t|)", "O(|p|)", "只数 `t[i] == p[j]` 的比较，`j == −1` 的后移不算"],
+    [{ t: "01961 前缀中的周期", fill: C.cream }, { t: "未优化 nxt，p = i − nxt[i]", fill: C.cream }, { t: "O(N)", fill: C.cream }, { t: "O(N)", fill: C.cream }, { t: "`nxt[i] > 0` 且 `i mod p == 0`，两个条件都要", fill: C.cream }],
+  ], 0.5, 1.05, 9.0, [1.95, 2.1, 1.15, 1.0, 2.8], { fontSize: 10, rowH: 0.45 });
+  const checks = [
+    "T76：`need` 先判 `> 0` 再 `--`，收缩时先 `++` 再判 `> 0`，顺序反了就错；",
+    "T76：窗口是半开区间，长度 `right − left`，返回 `substr(start, minLen)`；",
+    "31378：先算**未优化** next，再按定义导出 nextval；匹配成功立即停止；",
+    "01961：`nxt` 长度 N + 1；别漏 `nxt[i] > 0`；每组之后一个空行（含最后一组）；",
+    "01961：N 到 10⁶，C++ 关同步，Python 一次读入、一次输出；",
+    "三道题都是线性时间：如果你的循环里嵌了一个会「回头」的下标，先怀疑复杂度。",
+  ];
+  card(s, 0.5, 3.0, 9.0, 2.1, C.code);
+  text(s, "提交前的自检清单", 0.68, 3.07, 4.8, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  checks.forEach((c, i) => {
+    const col = i < 3 ? 0 : 1;
+    const y = 3.42 + (i % 3) * 0.52;
+    const x = 0.68 + col * 4.45;
+    numCircle(s, i + 1, x, y + 0.08, 0.3, i === 5 ? C.goldText : C.green);
+    text(s, c, x + 0.4, y, 3.95, 0.5, { fontSize: 9.5, valign: "middle", margin: 0 });
+  });
+}
 
   await D.save(OUT);
 })().catch((e) => { console.error(e); process.exit(1); });

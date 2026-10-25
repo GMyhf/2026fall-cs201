@@ -8,7 +8,7 @@ pptx_builder/
 ├── decks/ch01_adt_floyd_complexity.js   # 第一章
 ├── decks/ch02_linear_list.js            # 第二章（含附录 A 六道链表题）
 ├── decks/ch03_stack_queue.js            # 第三章（做新章节照它新建一个文件）
-├── decks/ch04_string.js … ch12_advanced.js  # 第 4–12 章（取材 dsa-modernization/book）
+├── decks/ch04_string.js … ch12_advanced.js  # 第 4–12 章（取材 dsa-modernization/book）；第 4 章含附录 A 三道字符串题 + 最小循环元引理
 ├── qa.sh                      # 渲染成图片 + 2x2 网格，逐页目检
 └── package.json               # pptxgenjs 4.0.1 + jszip 3.10.2
 ```
