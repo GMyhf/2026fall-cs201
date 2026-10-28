@@ -42,7 +42,7 @@ titleSlide({
   title: "第11章  索引技术",
   subtitle: "Indexing：关键码到记录位置的查找表",
   topics: "线性索引：稠密 / 稀疏 · 多级索引 · 静态多分树与扇出\n倒排索引：有序表求交 · 短语查询\nB 树：插入分裂 · 删除借位与合并 · B+ 树与叶链范围扫描\n位图索引与尾部掩码 · 游程压缩 · 签名文件 · 红黑树（对照）",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -222,6 +222,29 @@ sectionSlide("Part 1 · 11.1", "线性索引", "项是 (key, location)，按 key
   callout(s, "索引页容量 4 → 64", "250 项只占 **4 页**，再用 1 个顶层页索引它们；查询只读 1 个下层索引页 + 1 个数据页 = **2 页**。", 6.35, 3.3, 3.15, 1.6, { fontSize: 11, fill: C.mint, tcolor: C.dark });
   text(s, "每层页数 = ⌈下层项数 / 4⌉：250 → 63 → 16 → 4 → 1", 0.5, 4.2, 5.6, 0.35, { fontSize: 11, bold: true, color: C.goldText, margin: 0 });
   text(s, "（顶层只剩一页即停：它常驻内存，不计页访问）", 0.5, 4.55, 5.6, 0.3, { fontSize: 10, color: C.muted, margin: 0 });
+}
+
+// ---- 补充（取材 2026spring-cs201 · MOOC 第十一章）：两级线性索引能管多少条记录 ----
+{
+  const s = content("11.1", "11.1 线性索引 · 算一笔账 · 补充", "4096 字节的块，两级索引最多能管多少条记录？");
+  text(s, "记录 68 字节（关键码 4 + 数据 64），已排序顺序存放；索引项 =（块内最小关键码 4 字节，块号 4 字节）。", 0.5, 1.02, 9.0, 0.32, { fontSize: 11.5, margin: 0 });
+  const steps = [
+    ["⌊4096 / 68⌋", "60", "每个数据块的记录数"],
+    ["4096 / 8", "512", "每个索引块的项数"],
+    ["二级索引 1 块", "512 个线性索引块", "每项指一个线性索引块"],
+    ["512 × 512", "256K 个数据块", "线性索引共 2 MB"],
+  ];
+  steps.forEach((st, i) => {
+    const x = 0.5 + i * 2.3;
+    card(s, x, 1.5, 2.1, 1.5, i === 3 ? C.dark : C.code);
+    text(s, st[0], x + 0.08, 1.58, 1.94, 0.4, { fontSize: 12, bold: true, color: i === 3 ? C.mint : C.muted, align: "center", valign: "middle", margin: 0 });
+    text(s, st[1], x + 0.08, 2.0, 1.94, 0.5, { fontSize: 15, bold: true, color: i === 3 ? C.gold : C.dark, align: "center", valign: "middle", margin: 0 });
+    text(s, st[2], x + 0.08, 2.52, 1.94, 0.4, { fontSize: 9.5, color: i === 3 ? C.mint : C.muted, align: "center", margin: 0 });
+  });
+  card(s, 0.5, 3.15, 9.0, 0.7, C.cream);
+  text(s, "256K 个数据块 × 60 条 = 15 360K = **15M** 条记录（K = 2¹⁰，M = 2²⁰）", 0.7, 3.15, 8.6, 0.7, { fontSize: 14, bold: true, color: C.dark, valign: "middle", margin: 0 });
+  callout(s, "两道 MOOC 题是同一个数", "「二级索引 4096 字节」与「线性索引 2 MB」说的是同一件事：2 MB / 8 = 256K 项 = 512 × 512。所以两题答案都是 **15M**。", 0.5, 4.0, 4.4, 1.1, { fontSize: 10 });
+  callout(s, "题面叫「稠密索引」", "但每项指向的是**一个块**（块内最小关键码），按本章的说法是**稀疏**索引；若真的每条记录一项，容量要再除以 60。", 5.1, 4.0, 4.4, 1.1, { fontSize: 10, fill: C.mint, tcolor: C.dark });
 }
 
 // 1.1 find code (1/2)
@@ -515,6 +538,42 @@ int main() {
   callout(s, "为什么手写", "这段归并是本节的核心，所以要自己写；**换成一行库调用，这一节就没有内容了**。", 7.35, 3.15, 2.15, 1.95, { fontSize: 10.5 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义 W03）：OJ 04093 倒排索引查询 ----
+{
+  const s = content("11.3", "11.3 倒排索引 · 上机 · 补充", "OJ 04093 倒排索引查询：先交、后差");
+  codeBlock(s, `import sys
+data = sys.stdin.read().split()
+pos = 0
+def nxt():
+    global pos
+    pos += 1
+    return int(data[pos - 1])
+
+n = nxt()
+docs = []
+for _ in range(n):
+    c = nxt()
+    docs.append(set(nxt() for _ in range(c)))   # 每个词的 posting 集合
+
+for _ in range(nxt()):
+    q = [nxt() for _ in range(n)]
+    must = [docs[i] for i in range(n) if q[i] == 1]
+    ban = [docs[i] for i in range(n) if q[i] == -1]
+    ans = set.intersection(*must)              # 1：先把必须出现的求交
+    for b in ban:
+        ans -= b                               # -1：最后统一减掉
+    print(*sorted(ans) if ans else ["NOT FOUND"])`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.6, lang: "py", hl: [19, 21] });
+  table(s, [
+    ["查询", "含义", "结果"],
+    [{ t: "1 1 1", mono: true }, "{1,2,3}∩{2}∩{3}", "NOT FOUND"],
+    [{ t: "1 −1 0", mono: true }, "{1,2,3} − {2}", "1 3"],
+    [{ t: "1 −1 −1", mono: true }, "{1,2,3} − {2} − {3}", "1"],
+  ], 6.6, 1.05, 2.9, [0.75, 1.35, 0.8], { fontSize: 8.5, rowH: 0.34, tight: true });
+  text(s, "三个词的文档表：{1,2,3}、{2}、{3}", 6.6, 2.5, 2.9, 0.3, { fontSize: 9, color: C.muted, margin: 0 });
+  callout(s, "1 / −1 / 0 = AND / NOT / 不管", "与 11.3 的 intersect 同一个思想：**从最短的必含表出发**，NOT 只从结果里剔除，不去构造「不含该词的文档」。", 6.6, 2.85, 2.9, 1.25, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "集合 vs 有序表归并", "set 求交平均 O(较小集合)；搜索引擎的 posting 表有序，用双指针归并。", 6.6, 4.2, 2.9, 0.9, { fontSize: 9 });
+}
+
 // 11.3 phrase query concept
 {
   const s = content("11.3", "11.3 倒排索引 · 短语查询", "短语查询要存位置：quick brown");
@@ -726,6 +785,30 @@ sectionSlide("Part 4 · 11.4", "动态索引：B 树与 B+ 树", "插入删除�
   callout(s, "(b) 删 120 → 借", "先与中序后继交换再删，删后下溢，向左邻**借**：118 上移，c 应为 `118 150`（扫描件印 `120 150` 是笔误，120 已删）。", 6.7, 1.05, 2.8, 1.5, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "(c) 删 150 → 合并", "先与后继 156 交换；叶 i 只剩 177 下溢，它只有左兄弟 h，h 恰在下限借不到 → h、156、i **合并**；c 随之下溢，b、103、c 合并成新根，树降一层。", 6.7, 2.65, 2.8, 1.85, { fontSize: 10, fill: "FDF0EE", tcolor: C.bad });
   text(s, "图 11.8  局部调整保证所有叶在同一层，B 树始终平衡。", 6.7, 4.6, 2.8, 0.5, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// ---- 补充（取材 2026spring-cs201 · MOOC 第十一章）：B 树删除的最大访外次数 ----
+{
+  const s = content("11.4.1", "11.4.1 B 树 · 删除 · 访外次数 · 补充", "删除时左右兄弟都检查：高度 h 最多访外 4h − 2 次");
+  const rows = [
+    ["读路径", "根到叶 h 个结点（路径结点留在内存，不重复读）", "h"],
+    ["读兄弟", "根以下每层**左右两个兄弟**都要看，才能决定借还是合并", "2(h − 1)"],
+    ["写合并结果", "根以下每层合并一次，写回合并后的结点", "h − 1"],
+    ["写根", "最后根少一个关键码（或被合并掉）", "1"],
+  ];
+  rows.forEach((r, i) => {
+    const y = 1.1 + i * 0.62;
+    numCircle(s, i + 1, 0.5, y + 0.08, 0.38, i < 2 ? C.green : C.goldText);
+    text(s, r[0], 1.0, y, 1.3, 0.54, { fontSize: 12, bold: true, color: C.dark, valign: "middle", margin: 0 });
+    text(s, r[1], 2.3, y, 4.2, 0.54, { fontSize: 10.5, valign: "middle", margin: 0 });
+    text(s, r[2], 6.55, y, 1.0, 0.54, { fontSize: 13, bold: true, color: C.green, fontFace: MONO, valign: "middle", margin: 0 });
+  });
+  card(s, 7.7, 1.1, 1.8, 2.42, C.dark);
+  text(s, "合计", 7.85, 1.18, 1.5, 0.3, { fontSize: 11, color: C.mint, margin: 0 });
+  text(s, "4h − 2", 7.85, 1.55, 1.6, 0.55, { fontSize: 22, bold: true, color: C.gold, fontFace: MONO, margin: 0 });
+  text(s, "h = 4 → 14\nh = 5 → 18", 7.85, 2.3, 1.6, 0.9, { fontSize: 13, bold: true, color: C.white, margin: 0, lsm: 1.3 });
+  callout(s, "和插入对照", "插入最坏 **3h + 1**（读路径 h，每层分裂写两个结点 2(h−1)，根裂再写 3 个）。删除多出来的是**读兄弟**：只看一个兄弟时是 h + (h−1) + (h−1) + 1 = **3h − 1**。", 0.5, 3.7, 5.6, 1.4, { fontSize: 10.5 });
+  callout(s, "MOOC 两道题", "「修改删除方式：左右兄弟都检查」，高度 5 的 B 树最多 **18** 次，高度 4 的最多 **14** 次——都是这个计法。", 6.3, 3.7, 3.2, 1.4, { fontSize: 10, fill: C.mint, tcolor: C.dark });
 }
 
 // 11.4 B+ definition
@@ -1063,6 +1146,27 @@ int main() {
   callout(s, "实际上还可以更少", "树根通常在内存；现在内存大，把第二层结点也完全放在缓冲区是合理的——**只需读一次叶结点磁盘块**。这就是今天数据库索引的常见形态：三层 B+ 树 + 常驻内存的上两层。", 5.15, 3.15, 4.35, 1.95, { fontSize: 11, fill: C.mint, tcolor: C.dark });
 }
 
+// ---- 补充（取材 2026spring-cs201 · MOOC 第十一章）：B+ 树容量的上下界 ----
+{
+  const s = content("11.4.3", "11.4.3 B+ 树的索引规模 · 补充", "4 层 B+ 树：内部至多 100 个子女，叶至多 15 条记录");
+  table(s, [
+    ["层", "最少", "最多"],
+    ["第 1 层（根）", "1 个结点，**2** 个子女", "1 个结点，100 个子女"],
+    ["第 2 层", "2 个结点 × 50", "100 × 100"],
+    ["第 3 层", "100 个结点 × 50", "10⁴ × 100"],
+    ["第 4 层（叶）", "5 000 个叶 × **8** 条", "10⁶ 个叶 × 15 条"],
+    [{ t: "记录数", bold: true }, { t: "40 000", bold: true, color: C.bad }, { t: "15 000 000", bold: true, color: C.ok }],
+  ], 0.5, 1.05, 5.6, [1.4, 2.1, 2.1], { fontSize: 10.5, rowH: 0.45 });
+  callout(s, "三个下界各从哪来", [
+    "根：只要不是叶，至少 **2** 个子女；",
+    "其他内部结点至少 ⌈100/2⌉ = **50** 个子女；",
+    "叶至少半满：⌈15/2⌉ = **8** 条。",
+  ], 6.3, 1.05, 3.2, 1.9, { fontSize: 10 });
+  card(s, 6.3, 3.1, 3.2, 1.0, C.dark);
+  text(s, "最少 2·50·50·8 = 40 000\n最多 100³·15 = 15 000 000", 6.45, 3.1, 3.0, 1.0, { fontSize: 11.5, bold: true, color: C.gold, valign: "middle", margin: 0, lsm: 1.3 });
+  text(s, "上下界差 375 倍，但树高都是 4：记录数在这个范围里的文件，查一条都只要 **4 次访外**（根常驻内存则 3 次）。", 0.5, 3.9, 5.6, 0.7, { fontSize: 10.5, margin: 0 });
+  text(s, "MOOC 第十一章第 10 题，答案 40000,15000000。", 6.3, 4.25, 3.2, 0.5, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
 // 11.4.4 static vs dynamic
 {
   const s = content("11.4", "11.4.4 动态索引和静态索引的比较", "更新成本由谁承担？");
