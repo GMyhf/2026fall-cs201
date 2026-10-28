@@ -32,8 +32,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第三章  栈与队列",
   subtitle: "Stack & Queue：加了限制的线性表",
-  topics: "栈 ADT 与 LIFO · 顺序栈 / 链式栈 · 后缀表达式 · 调度场算法\n运行栈与递归深度实测 · 显式栈改写 · 背包问题\n队列 ADT 与 FIFO · 假溢出 · 循环队列「牺牲一格」 · 链式队列\n限制存取点的表 · 出栈序列判定与 Catalan 数",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-17 · github.com/GMyhf/dsa-modernization",
+  topics: "栈 ADT 与 LIFO · 顺序栈 / 链式栈 · 后缀表达式 · 调度场算法\n运行栈与递归深度实测 · 显式栈改写 · 背包问题\n队列 ADT 与 FIFO · 假溢出 · 循环队列「牺牲一格」 · 链式队列\n限制存取点的表 · 出栈序列判定与 Catalan 数\n附录：括号匹配 · 八皇后 · 单调栈（接雨水）· 约瑟夫 · deque · 单调队列",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -68,7 +68,7 @@ titleSlide({
   const cols = [
     ["1  栈", ["1.1 栈的抽象数据类型", "1.2 顺序栈（教学版完整实现）", "1.3 链式栈", "1.4 表达式求值（后缀式）", "1.5 中缀 → 后缀：调度场算法", "1.6 栈与递归：运行栈实测、显式栈改写、背包"]],
     ["2  队列", ["2.1 队列的抽象数据类型", "2.2 顺序队列：假溢出、循环队列、牺牲一格", "2.3 链式队列：队尾指针与边界"]],
-    ["3  深入讨论", ["3.1 顺序栈 vs 链式栈；双栈共享", "3.2 顺序队列 vs 链式队列", "3.3 限制存取点的表", "出栈序列判定与 Catalan 数", "本章小结"]],
+    ["3  深入讨论", ["3.1 顺序栈 vs 链式栈；双栈共享", "3.2 顺序队列 vs 链式队列", "3.3 限制存取点的表", "出栈序列判定与 Catalan 数", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -1490,6 +1490,171 @@ stack_operations_for(const std::vector<int>& pop_order) {
   card(s, 5.9, 4.15, 3.6, 0.95, C.dark);
   text(s, "Catalan 数  Cₙ = (2n)! / ((n+1)! · n!)", 6.05, 4.2, 3.4, 0.35, { fontSize: 11.5, bold: true, color: C.gold, margin: 0 });
   text(s, "测试对 n = 1…7 穷举全部 5913 个排列逐个核对。", 6.05, 4.55, 3.4, 0.5, { fontSize: 10, color: C.white, margin: 0 });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 讲义 W04-5.5（栈、队列、双端队列、单调栈 / 单调队列）的上机题；Python 代码逐题跑过样例。
+sectionSlide("附录 A", "编程练习", "8 道上机题：栈管「最近的那一个」，队列管「最早的那一个」\n03704 括号匹配 · 02734 进制 · 02754 八皇后\n04137 / 26977 单调栈 · 02746 约瑟夫 · 05902 deque · T239 单调队列");
+
+// A.1 03704 bracket matching
+{
+  const s = content("A.1", "附录 A · OJ 03704 括号匹配问题", "栈里存「还没配上的左括号」的下标");
+  codeBlock(s, `import sys
+
+for s in sys.stdin.read().splitlines():
+    mark = [' '] * len(s)
+    stack = []                          # 存未匹配的 '(' 的下标
+    for i, ch in enumerate(s):
+        if ch == '(':
+            stack.append(i)
+        elif ch == ')':
+            if stack:
+                stack.pop()             # 与最近的 '(' 配对
+            else:
+                mark[i] = '?'           # 没有可配的左括号
+    for i in stack:
+        mark[i] = '$'                   # 扫完还留在栈里的左括号
+    print(s)
+    print(''.join(mark).rstrip())`, 0.5, 1.05, 5.9, 3.0, { fontSize: 9, lang: "py", hl: [11, 13, 15] });
+  consoleBlock(s, "((ABCD(x)\n$$\n)(rttyy())sss)(\n?            ?$", 0.5, 4.15, 5.9, 0.97, 8.5);
+  callout(s, "为什么必须是栈", "右括号要配的是**最近的**、还没配过的左括号——后进先出。存下标而不是字符，才能在原位置打标记。", 6.6, 1.05, 2.9, 1.5, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "多种括号（LeetCode E20）", "用 `{')': '(', ']': '[', '}': '{'}` 查表：弹出的必须是对应的左括号，否则立即判无效；扫完栈必须空。", 6.6, 2.7, 2.9, 1.4, { fontSize: 9.5 });
+  callout(s, "⚠ 读到文件尾", "组数不给：用 `sys.stdin.read()` 一次读完再逐行处理。", 6.6, 4.2, 2.9, 0.9, { fontSize: 9.5, fill: "FDF0EE", tcolor: C.bad });
+}
+
+// A.2 02734 base conversion + 02754 eight queens
+{
+  const s = content("A.2", "附录 A · OJ 02734 十进制到八进制 · OJ 02754 八皇后", "余数逆序输出；回溯 = 进栈试探、出栈退回");
+  codeBlock(s, `def to_base(n, b):
+    digits = '0123456789ABCDEF'
+    stack = []
+    while True:
+        n, r = divmod(n, b)
+        stack.append(digits[r])         # 先得到的是最低位
+        if n == 0:
+            break
+    return ''.join(reversed(stack))  # 高位在前
+
+print(to_base(int(input()), 8))         # 9 → 11`, 0.5, 1.05, 4.35, 2.3, { fontSize: 8, lang: "py", hl: [6, 9] });
+  callout(s, "do-while 的写法", "先除再判：n = 0 时也输出一位「0」，不用特判。to_base(255, 16) = FF。", 0.5, 3.5, 4.35, 0.95, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "同一套路：除 b 取余，余数逆序输出——「先产生的后输出」正是 LIFO。", 0.5, 4.6, 4.35, 0.45, { fontSize: 9.5, color: C.muted, margin: 0 });
+  codeBlock(s, `def queens(n=8):
+    out, cols = [], []                  # cols[r] = 第 r 行皇后所在列
+    def ok(c):
+        r = len(cols)
+        return all(c != cc and abs(c - cc) != r - rr
+                   for rr, cc in enumerate(cols))
+    def place():
+        if len(cols) == n:
+            out.append(''.join(str(c + 1) for c in cols))
+            return
+        for c in range(n):              # 列从小到大：解按字典序产生
+            if ok(c):
+                cols.append(c)          # 进：压栈
+                place()
+                cols.pop()              # 退：回溯 = 出栈
+    place()
+    return out
+
+sols = queens()                         # 共 92 个解
+for _ in range(int(input())):
+    print(sols[int(input()) - 1])       # 1 → 15863724`, 5.05, 1.05, 4.45, 4.05, { fontSize: 7.6, lang: "py", hl: [13, 15] });
+}
+
+// A.3 monotonic stack
+{
+  const s = content("A.3", "附录 A · 单调栈：OJ 04137 最小新整数 · OJ 26977 接雨水", "栈里保持单调；新元素一来，把「不再有用」的统统弹掉");
+  codeBlock(s, `def remove_k(num, k):
+    stack = []
+    for d in num:
+        while k and stack and stack[-1] > d:
+            stack.pop()                 # 前面更大的数位删掉更划算
+            k -= 1
+        stack.append(d)
+    return ''.join(stack[:len(stack) - k])   # 没删够：从尾部删
+
+def trap(h):
+    stack, water = [], 0                # 栈里是下标，对应高度单调递减
+    for i, x in enumerate(h):
+        while stack and h[stack[-1]] < x:
+            bottom = stack.pop()        # 找到一个「凹槽」的底
+            if not stack:
+                break
+            left = stack[-1]
+            water += (min(h[left], x) - h[bottom]) * (i - left - 1)
+        stack.append(i)
+    return water
+
+print(remove_k("9128456", 2), remove_k("1444", 3))      # 12456 1
+print(trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))      # 6`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.2, lang: "py", hl: [4, 5, 13, 18] });
+  callout(s, "04137 贪心：高位越小越好", "从左往右，只要栈顶比当前数位大、还能删，就删栈顶。9128456 删 2 位：9 被 1 弹掉，8 被 4 弹掉 → **12456**。", 6.6, 1.05, 2.9, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "26977 按「层」接水", "弹出的 bottom 是槽底，新栈顶 left 是左墙、当前 i 是右墙：这一层水高 min(左, 右) − 底，宽 i − left − 1。", 6.6, 2.85, 2.9, 1.5, { fontSize: 9.5 });
+  text(s, "每个下标进栈、出栈各一次：**O(n)**。", 6.6, 4.5, 2.9, 0.5, { fontSize: 10, bold: true, color: C.goldText, margin: 0 });
+}
+
+// A.4 02746 josephus + python performance trap
+{
+  const s = content("A.4", "附录 A · OJ 02746 约瑟夫问题", "队列转圈：报数的排到队尾，报到 m 的出局");
+  codeBlock(s, `from collections import deque
+import sys
+
+for line in sys.stdin:
+    n, m = map(int, line.split())
+    if n == 0:
+        break
+    q = deque(range(1, n + 1))
+    while len(q) > 1:
+        q.rotate(-(m - 1))              # 前 m-1 只依次排到队尾
+        q.popleft()                     # 第 m 只出局
+    print(q[0])`, 0.5, 1.05, 5.0, 2.65, { fontSize: 9, lang: "py", hl: [10, 11] });
+  consoleBlock(s, "6 2 → 5\n12 4 → 1\n8 3 → 7", 0.5, 3.85, 5.0, 1.25, 10);
+  card(s, 5.7, 1.05, 3.8, 2.05, "FDF0EE");
+  text(s, "⚠ Python 的性能陷阱", 5.85, 1.12, 3.5, 0.3, { fontSize: 11.5, bold: true, color: C.bad, margin: 0 });
+  table(s, [
+    ["10 万个元素，出队 + 入队 2 万次", "实测"],
+    [{ t: "list.pop(0)", mono: true }, { t: "0.22 s", bold: true, color: C.bad }],
+    [{ t: "deque.popleft()", mono: true }, { t: "0.0005 s", bold: true, color: C.ok }],
+  ], 5.85, 1.5, 3.5, [2.4, 1.1], { fontSize: 9.5, rowH: 0.34, tight: true });
+  text(s, "list 是顺序表：删表头要把后面全部前移，O(n)。", 5.85, 2.6, 3.5, 0.4, { fontSize: 9.5, margin: 0 });
+  callout(s, "和 2.2 节对照", "CPython 的 deque 是**定长块组成的双向链表**：两端进出都是 O(1)——和本章循环队列、链式队列要的是同一件事。", 5.7, 3.25, 3.8, 1.85, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// A.5 05902 deque + T239 monotonic queue
+{
+  const s = content("A.5", "附录 A · OJ 05902 双端队列 · LeetCode T239 滑动窗口最大值", "deque 两头进出；单调队列 = 队尾单调栈 + 队头过期出队");
+  codeBlock(s, `from collections import deque
+import sys
+
+data = iter(sys.stdin.read().split())
+for _ in range(int(next(data))):
+    q = deque()
+    for _ in range(int(next(data))):
+        op, x = int(next(data)), int(next(data))
+        if op == 1:
+            q.append(x)                 # 队尾进
+        elif x == 0:
+            q.popleft()                 # 队头出
+        else:
+            q.pop()                     # 队尾出
+    print(*q if q else ["NULL"])`, 0.5, 1.05, 4.4, 3.3, { fontSize: 7.8, lang: "py", hl: [10, 12, 14] });
+  consoleBlock(s, "样例两组 → 3 / NULL", 0.5, 4.45, 4.4, 0.65, 9);
+  codeBlock(s, `from collections import deque
+
+def max_sliding_window(nums, k):
+    q, out = deque(), []                # q 存下标，值单调递减
+    for i, x in enumerate(nums):
+        while q and nums[q[-1]] <= x:
+            q.pop()                     # 比 x 小的不会再当最大值
+        q.append(i)
+        if q[0] <= i - k:
+            q.popleft()                 # 队头滑出窗口
+        if i >= k - 1:
+            out.append(nums[q[0]])      # 队头就是窗口最大值
+    return out
+
+print(max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3))
+# [3, 3, 5, 5, 6, 7]`, 5.1, 1.05, 4.4, 3.0, { fontSize: 7.6, lang: "py", hl: [6, 7, 9, 10] });
+  callout(s, "为什么是 O(n)", "每个下标从队尾进一次、至多从某一端出一次；暴力每窗扫 k 个是 O(nk)。", 5.1, 4.2, 4.4, 0.9, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
 }
 
   summarySlide("本章小结", [
