@@ -42,8 +42,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第六章  树",
   subtitle: "Tree & Forest：孩子个数不限的层次结构",
-  topics: "树与森林的两种等价定义 · 四种逻辑表示法 · 森林 ⇄ 二叉树「连线、切线、旋转」\n先根 / 后根 / 层次周游 · 子结点表 · 静态与动态「左子/右兄」\n父指针表示法与并查集：重量权衡合并 + 路径压缩 · 连通分量计数\n带右链 / 双标记先根 · 带度数后根 · 双标记层次 · K 叉树",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "树与森林的两种等价定义 · 四种逻辑表示法 · 森林 ⇄ 二叉树「连线、切线、旋转」\n先根 / 后根 / 层次周游 · 子结点表 · 静态与动态「左子/右兄」\n父指针表示法与并查集：重量权衡合并 + 路径压缩 · 连通分量计数\n带右链 / 双标记先根 · 带度数后根 · 双标记层次 · K 叉树\n附录：括号嵌套树 · 带度数层次序列 · 扩展域并查集（虫子的生活、食物链）",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -78,7 +78,7 @@ titleSlide({
   const cols = [
     ["6.1  定义与周游", ["6.1.1 树和森林：定义、术语、四种表示法", "6.1.2 森林与二叉树的等价转换", "6.1.3 树的抽象数据类型", "6.1.4 先根 / 后根 / 层次周游"]],
     ["6.2  链式存储", ["6.2.1 子结点表", "6.2.2 静态「左子/右兄」", "6.2.3 动态表示法", "6.2.4 动态「左子/右兄」（主实现 GeneralTree）", "6.2.5 父指针表示法与并查集"]],
-    ["6.3–6.4", ["6.3.1 带右链的先根次序", "6.3.2 带双标记的先根次序（算法 6.10）", "6.3.3 带度数的后根次序", "6.3.4 带双标记的层次次序", "6.4 K 叉树", "本章小结"]],
+    ["6.3–6.4", ["6.3.1 带右链的先根次序", "6.3.2 带双标记的先根次序（算法 6.10）", "6.3.3 带度数的后根次序", "6.3.4 带双标记的层次次序", "6.4 K 叉树", "附录 A：6 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -1335,6 +1335,193 @@ sectionSlide("6.4", "K 叉树", "每个结点的孩子数有固定上限 K\n满 
     text(s, q[0], 1.2, y + 0.06, 8.2, 0.36, { fontSize: 11.5, bold: true, color: C.dark, margin: 0 });
     text(s, q[1], 1.2, y + 0.44, 8.2, 0.44, { fontSize: 10.5, margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 讲义 W06-08（树、并查集）的上机题；Python 代码逐题跑过样例。
+sectionSlide("附录 A", "编程练习", "6 道上机题：把本章的表示法、周游与并查集用到题里\n24729 括号嵌套树 · 07161 带度数层次序列 · 27928 遍历树\n父数组求树高 · 07734 虫子的生活 · 01182 食物链");
+
+// A.1 24729
+{
+  const s = content("A.1", "附录 A · OJ 24729 括号嵌套树", "嵌套括号 → 树：一把栈记住「谁在收孩子」");
+  codeBlock(s, `class Node:
+    def __init__(self, val):
+        self.val, self.children = val, []
+
+def parse(s):
+    stack, last = [], None
+    for ch in s:
+        if ch.isalpha():
+            last = Node(ch)
+            if stack:
+                stack[-1].children.append(last)   # 挂到当前父结点下
+        elif ch == '(':
+            stack.append(last)          # last 要开始收孩子了
+        elif ch == ')':
+            last = stack.pop()          # 这个父结点的孩子收完
+    return last                         # 最后弹出的就是根
+
+def pre(t):
+    return t.val + ''.join(pre(c) for c in t.children)
+
+def post(t):
+    return ''.join(post(c) for c in t.children) + t.val
+
+root = parse(''.join(input().split()))   # 去掉空白
+print(pre(root))
+print(post(root))`, 0.5, 1.05, 5.7, 4.05, { fontSize: 8.4, lang: "py", hl: [11, 13, 15] });
+  consoleBlock(s, "输入 A(B(E),C(F,G),D(H(I)))\n先根 ABECFGDHI\n后根 EBFGCIHDA", 6.4, 1.05, 3.1, 1.05, 9);
+  const P = { A: [7.95, 2.4], B: [7.05, 2.95], C: [7.95, 2.95], D: [8.85, 2.95], E: [7.05, 3.5], F: [7.6, 3.5], G: [8.3, 3.5], H: [8.85, 3.5], I: [8.85, 4.05] };
+  [["A", "B"], ["A", "C"], ["A", "D"], ["B", "E"], ["C", "F"], ["C", "G"], ["D", "H"], ["H", "I"]].forEach(([a, b]) => edge(s, P[a][0], P[a][1], P[b][0], P[b][1]));
+  Object.entries(P).forEach(([k, [x, y]]) => node(s, k, x, y));
+  text(s, "这就是 6.1 节「嵌套括号表示法」：根在左，子树森林写在括号里。", 6.4, 4.35, 3.1, 0.75, { fontSize: 9.5, margin: 0 });
+}
+
+// A.2 07161
+{
+  const s = content("A.2", "附录 A · OJ 07161 森林的带度数层次序列存储", "层次序 + 度数 → 树：队头结点的孩子紧接着出现");
+  codeBlock(s, `import sys
+from collections import deque
+
+def build(tokens):                      # [名, 度, 名, 度, ...]
+    names, degs = tokens[0::2], list(map(int, tokens[1::2]))
+    children = [[] for _ in names]
+    q, nxt = deque([0]), 1
+    while q:                            # 层次序：队头结点的孩子紧接着出现
+        u = q.popleft()
+        for _ in range(degs[u]):
+            children[u].append(nxt)
+            q.append(nxt)
+            nxt += 1
+    return names, children
+
+def post(u, names, children, out):
+    for c in children[u]:
+        post(c, names, children, out)
+    out.append(names[u])
+
+lines = sys.stdin.read().splitlines()
+out = []
+for line in lines[1:1 + int(lines[0])]:
+    names, children = build(line.split())
+    post(0, names, children, out)       # 森林后根 = 各棵树后根依次相接
+print(' '.join(out))`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.2, lang: "py", hl: [8, 10, 24] });
+  consoleBlock(s, "2\nC 3 E 3 F 0 G 0 K 0 H 0 J 0\nD 2 X 0 I 0\n→ K H J E F G C X I D", 6.6, 1.05, 2.9, 1.3, 8.5);
+  callout(s, "和 6.3 节对照", "6.3.3「带度数的**后根**次序」用**栈**还原；这里是带度数的**层次**次序，用**队列**还原——次序换了，辅助结构跟着换。", 6.6, 2.5, 2.9, 1.5, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "下标代替指针", "结点就是它在序列里的位置，children 存下标，不必建 Node 类。", 6.6, 4.15, 2.9, 0.95, { fontSize: 9.5 });
+}
+
+// A.3 27928 + parent-array height
+{
+  const s = content("A.3", "附录 A · OJ 27928 遍历树 · 父数组求树高", "两种输入格式：孩子表、父数组");
+  codeBlock(s, `import sys
+sys.setrecursionlimit(10000)
+
+n = int(sys.stdin.readline())
+tree, kids = {}, set()
+for _ in range(n):
+    parent, *children = map(int, sys.stdin.readline().split())
+    tree[parent] = children
+    kids.update(children)
+root = (tree.keys() - kids).pop()       # 没当过孩子的就是根
+
+def walk(u):
+    for x in sorted(tree.get(u, []) + [u]):   # 自己和孩子一起排序
+        if x == u:
+            print(u)
+        else:
+            walk(x)
+
+walk(root)`, 0.5, 1.05, 4.6, 3.0, { fontSize: 8, lang: "py", hl: [10, 13] });
+  consoleBlock(s, "7 10 3 6 / 10 / 6 / 3 → 3 6 7 10", 0.5, 4.15, 4.6, 0.55, 8.5);
+  text(s, "「自己」插在排好序的孩子之间：先根、后根都是它的特例。", 0.5, 4.75, 4.6, 0.35, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  codeBlock(s, `def tree_height(parent):        # 高度按边数计
+    depth = [-1] * len(parent)
+    def d(i):
+        if depth[i] < 0:        # 备忘：每个点只算一次
+            p = parent[i]
+            depth[i] = 0 if p == -1 else d(p) + 1
+        return depth[i]
+    return max(d(i) for i in range(len(parent)))
+
+print(tree_height([-1, 0, 0, 0, 3, 1, 1, 2]))   # 2
+print(tree_height([-1, 0, 1, 2, 3]))            # 4`, 5.3, 1.05, 4.2, 2.3, { fontSize: 7.6, lang: "py", hl: [6] });
+  callout(s, "父数组 = 6.2.5 的父指针表示", "每个结点只记父亲：找根、求深度只能**向上**走。朴素地每个点走到根是 O(n²)；备忘之后每个点只算一次，**O(n)**。", 5.3, 3.5, 4.2, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+// A.4 07734
+{
+  const s = content("A.4", "附录 A · OJ 07734 虫子的生活", "扩展域并查集：每只虫子开两个「分身」");
+  codeBlock(s, `import sys
+
+def find(p, x):
+    while p[x] != x:
+        p[x] = p[p[x]]                  # 路径减半
+        x = p[x]
+    return x
+
+data = sys.stdin.read().split()
+pos = 1
+for case in range(1, int(data[0]) + 1):
+    n, m = int(data[pos]), int(data[pos + 1]); pos += 2
+    p = list(range(2 * n + 1))          # x：性别 A；x + n：性别 B
+    bad = False
+    for _ in range(m):
+        a, b = int(data[pos]), int(data[pos + 1]); pos += 2
+        if bad:
+            continue
+        if find(p, a) == find(p, b):    # 已被推出同性，却又交互
+            bad = True
+        else:
+            p[find(p, a)] = find(p, b + n)   # a 与 b 异性
+            p[find(p, a + n)] = find(p, b)
+    print(f"Scenario #{case}:")
+    print("Suspicious bugs found!" if bad else "No suspicious bugs found!")
+    print()`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.1, lang: "py", hl: [13, 19, 22, 23] });
+  callout(s, "分身的含义", "同一集合 = 「这些断言要么同真要么同假」。a 与 b 交互：「a 是 A」⇔「b 是 B」，「a 是 B」⇔「b 是 A」，所以各并一次。", 6.6, 1.05, 2.9, 1.7, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "矛盾怎么看出来", "a、b 本体已在同一集合：它们**被推出同性**；此刻又说它们交互，假设破产。样例 1→2→3 再给 1–3，第三条就撞上。", 6.6, 2.9, 2.9, 1.5, { fontSize: 9.5 });
+  text(s, "⚠ 每组输出后有一个空行；数据量大，用 sys.stdin 一次读入。", 6.6, 4.55, 2.9, 0.55, { fontSize: 9.5, color: C.bad, bold: true, margin: 0 });
+}
+
+// A.5 01182
+{
+  const s = content("A.5", "附录 A · OJ 01182 食物链", "三个域：同类 / 捕食 / 天敌，A 吃 B、B 吃 C、C 吃 A");
+  codeBlock(s, `import sys
+
+def find(p, x):
+    while p[x] != x:
+        p[x] = p[p[x]]
+        x = p[x]
+    return x
+
+def union(p, a, b):
+    p[find(p, a)] = find(p, b)
+
+data = list(map(int, sys.stdin.read().split()))
+n, k = data[0], data[1]
+p = list(range(3 * n + 1))   # x 同类域，x+n 捕食域（x 吃的），x+2n 天敌域（吃 x 的）
+lies = 0
+for i in range(k):
+    d, x, y = data[2 + 3 * i: 5 + 3 * i]
+    if x > n or y > n:
+        lies += 1; continue
+    if d == 1:                           # x 与 y 同类
+        if find(p, x) in (find(p, y + n), find(p, y + 2 * n)):
+            lies += 1; continue
+        union(p, x, y); union(p, x + n, y + n); union(p, x + 2 * n, y + 2 * n)
+    else:                                # x 吃 y
+        if find(p, x) in (find(p, y), find(p, y + n)):   # 同类或 y 吃 x
+            lies += 1; continue
+        union(p, x + n, y); union(p, x, y + 2 * n); union(p, x + 2 * n, y + n)
+print(lies)`, 0.5, 1.05, 6.2, 4.05, { fontSize: 7.9, lang: "py", hl: [14, 21, 25, 27] });
+  table(s, [
+    ["话", "判假条件"],
+    ["x、y 同类", "x 已在 y 的捕食域或天敌域"],
+    ["x 吃 y", "x 与 y 同类，或 x 在 y 的捕食域（y 吃 x）"],
+    ["越界", "x > n 或 y > n；「x 吃 x」按上一行判假"],
+  ], 6.9, 1.05, 2.6, [0.8, 1.8], { fontSize: 8.5, rowH: 0.42, tight: true });
+  callout(s, "x 吃 y 时并哪三对", "x 的猎物 = y；x = y 的天敌；x 的天敌 = y 的猎物（三角环，第三条最容易漏）。", 6.9, 2.85, 2.6, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  consoleBlock(s, "100 7 的样例 → 3", 6.9, 4.35, 2.6, 0.75, 9.5);
 }
 
   summarySlide("本章小结", [
