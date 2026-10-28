@@ -81,8 +81,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第四章  字符串",
   subtitle: "String：元素是字符、操作按整段的线性表",
-  topics: "串、子串、真子串 · 字符编码：ASCII → UTF-8 · 编码顺序与字典序\n顺序存储与 '\\0' · 教学版 String：三法则与变长存储管理\nappend / substr / find / compare · 进阶：移动语义与 raw()\n朴素匹配与原书「差 1」 · 特征向量 next · KMP 与线性论证 · 最小循环节\n附录：3 道字符串编程练习（滑动窗口 · KMP nextval · 前缀中的周期）与最小循环元引理",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-25 · github.com/GMyhf/dsa-modernization",
+  topics: "串、子串、真子串 · 字符编码：ASCII → UTF-8 · 编码顺序与字典序\n顺序存储与 '\\0' · 教学版 String：三法则与变长存储管理\nappend / substr / find / compare · 进阶：移动语义与 raw()\n朴素匹配与原书「差 1」 · 特征向量 next · KMP 与线性论证 · 最小循环节\n附录：3 道字符串编程练习（滑动窗口 · KMP nextval · 前缀中的周期）与最小循环元引理 · 附录 B：最长回文子串（中心扩展 · Manacher）",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 本章三个问题
@@ -121,8 +121,8 @@ titleSlide({
     bullets(s, c[1], x + 0.15, 1.9, 2.6, 2.45, { fontSize: 11.5, gap: 5 });
   });
   card(s, 0.5, 4.55, 9.0, 0.55, C.dark);
-  text(s, "附录A 编程练习", 0.7, 4.55, 1.7, 0.55, { fontSize: 12.5, bold: true, color: C.gold, valign: "middle", margin: 0 });
-  text(s, "T76 最小覆盖子串（滑动窗口） · 31378 KMP 字符比较次数（nextval） · 01961 前缀中的周期 · 最小循环元引理", 2.4, 4.55, 7.0, 0.55, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  text(s, "附录 A / B", 0.7, 4.55, 1.7, 0.55, { fontSize: 12.5, bold: true, color: C.gold, valign: "middle", margin: 0 });
+  text(s, "A：T76 最小覆盖子串 · 31378 KMP 比较次数（nextval） · 01961 前缀中的周期 · 最小循环元引理\nB：M5 最长回文子串——中心扩展与 Manacher", 2.4, 4.55, 7.0, 0.55, { fontSize: 9.5, color: C.white, valign: "middle", margin: 0 });
 }
 
 // 先跑一遍：String
@@ -1606,6 +1606,95 @@ solve()`;
     numCircle(s, i + 1, x, y + 0.08, 0.3, i === 5 ? C.goldText : C.green);
     text(s, c, x + 0.4, y, 3.95, 0.5, { fontSize: 9.5, valign: "middle", margin: 0 });
   });
+}
+
+// ============================ 附录B ============================
+// 取材 2026spring-cs201 讲义 W03 附录 B「KMP, Manacher: Symmetry Power」与 LeetCode M5；Python 代码与暴力中心扩展随机对拍 2000 次。
+sectionSlide("附录 B", "回文：中心扩展与 Manacher", "M5 最长回文子串：O(n²) 的中心扩展 → O(n) 的 Manacher\n和 KMP 同一个哲学：利用已知的对称，不重复比较");
+
+// B.1 problem + center expansion
+{
+  const s = content("B.1", "附录B · LeetCode M5 最长回文子串", "中心扩展：2n − 1 个中心，每个向两边扩");
+  codeBlock(s, `def expand_center(s):
+    best = (0, 0)                       # 答案的 [lo, hi)
+    for c in range(2 * len(s) - 1):     # 2n-1 个中心：字符本身或两字符之间
+        lo, hi = c // 2, (c + 1) // 2
+        while lo >= 0 and hi < len(s) and s[lo] == s[hi]:
+            lo -= 1; hi += 1            # 向两边扩
+        if hi - lo - 1 > best[1] - best[0]:
+            best = (lo + 1, hi)
+    return s[best[0]:best[1]]
+
+print(expand_center("babad"))           # bab（aba 也对）
+print(expand_center("cbbd"))            # bb：偶数长度，中心在两字符之间`, 0.5, 1.05, 5.9, 2.75, { fontSize: 9, lang: "py", hl: [3, 4, 5] });
+  table(s, [
+    ["做法", "时间", "空间", "要点"],
+    ["枚举子串逐个判", "O(n³)", "O(1)", "反面教材"],
+    ["区间 DP", "O(n²)", "O(n²)", "dp[i][j] = s[i]==s[j] 且 dp[i+1][j-1]"],
+    ["中心扩展", "O(n²)", "O(1)", "最常用：短、不易错"],
+    [{ t: "Manacher", bold: true }, { t: "O(n)", bold: true, color: C.ok }, "O(n)", "复用镜像中心的半径"],
+  ], 0.5, 3.95, 5.9, [1.4, 0.8, 0.8, 2.9], { fontSize: 9, rowH: 0.23, tight: true });
+  callout(s, "c // 2 与 (c + 1) // 2", "c 为偶数：lo = hi，中心是一个字符（奇数长度）；c 为奇数：hi = lo + 1，中心在两字符之间（偶数长度）。一个循环同时处理两种回文。", 6.6, 1.05, 2.9, 1.9, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "浪费在哪里", "aaaa…a 这样的串，每个中心都要扩到边，总共 Θ(n²) 次比较——而这些比较大多在**已经确认是回文的区段里**重复做。", 6.6, 3.1, 2.9, 2.0, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
+// B.2 Manacher idea + trace
+{
+  const s = content("B.2", "附录B · Manacher", "插 # 统一奇偶，维护最右回文 (c, r)，镜像点先给个下限");
+  const t = ["^", "#", "b", "#", "a", "#", "b", "#", "a", "#", "d", "#", "$"];
+  const p = ["", 0, 1, 0, 3, 0, 3, 0, 1, 0, 1, 0, ""];
+  const how = ["", "", "扩", "镜像 0", "扩", "镜像 0", "镜像 1→扩", "镜像 0", "镜像 1", "镜像 0", "扩", "", ""];
+  table(s, [
+    [{ t: "i" }, ...t.map((_, i) => String(i))],
+    [{ t: "t", bold: true }, ...t.map((ch, i) => ({ t: ch, mono: true, align: "center", bold: true, fill: i === 4 ? C.cream : undefined }))],
+    [{ t: "p", bold: true }, ...p.map((v, i) => ({ t: String(v), align: "center", bold: i === 4, color: i === 4 ? C.bad : undefined }))],
+    [{ t: "来源", bold: true }, ...how.map((h) => ({ t: h, align: "center" }))],
+  ], 0.5, 1.05, 9.0, [0.6, ...t.map(() => 0.646)], { fontSize: 8.5, rowH: 0.32, tight: true, align: "center" });
+  text(s, "s = babad → t = ^#b#a#b#a#d#$；p[i] 是 t 中以 i 为中心的回文**半径**，恰好等于对应 s 中回文的**长度**。", 0.5, 2.45, 9.0, 0.32, { fontSize: 10.5, margin: 0 });
+  const steps = [
+    ["i < r", "i 落在已知回文 (c−p[c], r) 里：它的镜像 2c − i 已经算过，**p[i] ≥ min(r − i, p[2c − i])**，直接从这里起步。"],
+    ["向外扩", "只比较越过 r 的部分；^ 与 $ 两个哨兵保证不越界，不用写边界判断。"],
+    ["推 r", "i + p[i] > r 就把 (c, r) 换成 (i, i + p[i])。r 只增不减，每次成功比较都把它推远一格 ⇒ **总比较 O(n)**。"],
+  ];
+  steps.forEach((st, i) => {
+    const y = 2.85 + i * 0.6;
+    numCircle(s, i + 1, 0.5, y + 0.07, 0.38, C.dark);
+    text(s, st[0], 1.0, y, 0.9, 0.52, { fontSize: 11.5, bold: true, color: C.green, valign: "middle", margin: 0 });
+    text(s, st[1], 1.9, y, 7.6, 0.52, { fontSize: 10, valign: "middle", margin: 0 });
+  });
+  card(s, 0.5, 4.7, 9.0, 0.42, C.dark);
+  text(s, "最大 p = 3 在 i = 4：起点 (4 − 3) // 2 = 0，答案 s[0:3] = bab。i = 6 先从镜像拿到 1，再扩到 3（aba）。", 0.65, 4.7, 8.8, 0.42, { fontSize: 10, color: C.white, valign: "middle", margin: 0 });
+}
+
+// B.3 Manacher code + KMP comparison
+{
+  const s = content("B.3", "附录B · Manacher · Python", "manacher：一个循环，c、r 边走边更新");
+  codeBlock(s, `def manacher(s):
+    t = '^#' + '#'.join(s) + '#$'       # 插 # 统一奇偶；^ $ 是哨兵
+    p = [0] * len(t)                    # p[i]：t 中以 i 为中心的回文半径
+    c = r = 0                           # 已知最右回文的中心与右端
+    for i in range(1, len(t) - 1):
+        if i < r:
+            p[i] = min(r - i, p[2 * c - i])   # 镜像点的答案先拿来用
+        while t[i + p[i] + 1] == t[i - p[i] - 1]:
+            p[i] += 1                   # 只有越过 r 的部分才真正比较
+        if i + p[i] > r:
+            c, r = i, i + p[i]          # 右端被推远：更新 c、r
+    k = max(range(len(t)), key=lambda i: p[i])
+    start = (k - p[k]) // 2             # t 的下标换回 s
+    return s[start:start + p[k]]
+
+print(manacher("babad"), manacher("forgeeksskeegfor"))   # bab geeksskeeg`, 0.5, 1.05, 5.9, 2.8, { fontSize: 8.6, lang: "py", hl: [7, 9, 11] });
+  text(s, "与 expand_center 在 {a, b} 上长度 1–12 的 2000 个随机串对拍，答案长度全部一致。", 0.5, 3.92, 5.9, 0.3, { fontSize: 9.5, color: C.muted, margin: 0 });
+  callout(s, "为什么取 min(r − i, …)", "镜像点的回文可能伸出 c 的回文左边界之外，那部分在右边**没被确认过**，只能信到 r 为止，剩下的老老实实比。", 0.5, 4.27, 5.9, 0.85, { fontSize: 9.5, tsize: 10.5 });
+  table(s, [
+    ["", "KMP", "Manacher"],
+    ["利用的对称", "前缀 = 后缀（平移）", "左 = 右（镜像）"],
+    ["复用的表", "next[j]", "p[2c − i]"],
+    ["只增不减", "目标下标 i", "最右边界 r"],
+    ["线性论证", "j 回退总量 ≤ 前进总量", "成功比较一次 r 右移一格"],
+  ], 6.6, 1.05, 2.9, [0.8, 1.05, 1.05], { fontSize: 8.5, rowH: 0.42, tight: true });
+  callout(s, "同一个哲学", "「我已经比过这一段了，别让我再比一遍」——KMP 记住前后缀，Manacher 记住镜像。两者的 O(n) 都是**摊还**出来的。", 6.6, 3.3, 2.9, 1.82, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
 }
 
   await D.save(OUT);
