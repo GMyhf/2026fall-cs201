@@ -35,8 +35,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第八章  内部排序",
   subtitle: "Internal Sorting：比较还是分配，稳不稳定，多快多省",
-  topics: "基本概念 · 稳定性 · 比较次数与移动次数\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n归并排序 · 逆序对计数 · 桶式 / 基数 / 索引排序\n实测：同阶不等于同速 · std::sort · 判定树下限 Ω(n log n)",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "基本概念 · 稳定性 · 比较次数与移动次数\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n双指针分割 · BST 排序 · 归并排序 · 逆序对（OJ 02299）\n计数 / 区间桶 / 基数 / 索引排序 · 实测 · std::sort 与 Timsort · 下限 Ω(n log n)",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -68,14 +68,14 @@ titleSlide({
   const s = content("≡", "本章导引", "内容地图");
   const cols = [
     ["基础与简单排序", ["8.1 基本概念：术语、稳定性、代价", "8.2 插入排序：直接插入、Shell 排序", "8.3 选择排序：直接选择、堆排序"]],
-    ["交换与分治", ["8.4 交换排序：冒泡、快速排序及两处优化", "8.5 归并排序：两路归并、稳定性来自一个 `<`", "副产品：逆序对计数"]],
-    ["突破与极限", ["8.6 分配排序：桶式、基数、索引排序", "8.7 时间代价：实测数据、std::sort", "判定树下限 Ω(n log n)", "本章小结"]],
+    ["交换与分治", ["8.4 交换排序：冒泡、快速排序及两处优化", "补充：双指针分割、BST 排序", "8.5 归并排序：两路归并、稳定性来自一个 `<`", "副产品：逆序对计数、OJ 02299"]],
+    ["突破与极限", ["8.6 分配排序：桶式、区间桶、基数、索引排序", "8.7 时间代价：实测数据、std::sort、Timsort", "判定树下限 Ω(n log n)", "本章小结"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
     card(s, x, 1.15, 2.85, 3.9, i === 0 ? C.cream : C.code);
     text(s, c[0], x + 0.2, 1.3, 2.5, 0.45, { fontSize: 18, bold: true, color: C.dark, margin: 0 });
-    bullets(s, c[1], x + 0.15, 1.9, 2.6, 3.0, { fontSize: 12, gap: 8 });
+    bullets(s, c[1], x + 0.15, 1.9, 2.6, 3.0, { fontSize: 11.5, gap: 6 });
   });
 }
 
@@ -491,7 +491,7 @@ inline void heap_sort(std::vector<int>& values) {
 }
 
 // ============================ 8.4 ============================
-sectionSlide("8.4", "交换排序", "发现逆置就交换，直到没有逆置为止\n冒泡排序 · 快速排序 · 深递归与小区间两处优化");
+sectionSlide("8.4", "交换排序", "发现逆置就交换，直到没有逆置为止\n冒泡排序 · 快速排序 · 深递归与小区间两处优化\n补充：双指针分割 · BST 排序与快排同构");
 
 // 8.4.1 bubble concept
 {
@@ -646,6 +646,64 @@ inline void bubble_sort(std::vector<int>& values) {
   callout(s, "⚠ 相等键被打乱了", "[0,3) 以 −2′ 为轴：没有更小的，−2′ 被换到下标 0，**越过了 −2**。\n[4,8) 以 3′ 为轴，同样把 3′ 换到 3 前面。\n\n这就是 demo 那句「快排不保证」：输出看起来一样，是因为 int 看不出谁是谁。", 7.1, 1.05, 2.4, 4.05, { fontSize: 10, fill: RED, tcolor: C.bad });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义）：双指针分割 ----
+// two-pointer partition trace
+{
+  const s = content("8.4.2", "8.4 交换排序 · 快速排序 · 双指针分割 · 补充", "双指针分割：首元素当轴，两头各找一个逆置就交换");
+  text(s, "例子：[5, 3, 8, 6, 2, 7, 1, 4]，pivot = arr[0] = 5；left 从 1 向右找 **> 5**，right 从 7 向左找 **< 5**", 0.5, 1.02, 9.0, 0.32, { fontSize: 11.5, margin: 0 });
+  const P = { fill: C.cream }, L = { fill: "FDE2C4" }, R = { fill: "D6E9F8" };
+  const row = (label, vals, marks, note) => [
+    { t: label, bold: true },
+    ...vals.map((v, i) => ({ t: String(v), mono: true, align: "center", fill: marks[i] && marks[i].fill, bold: !!marks[i] })),
+    { t: note },
+  ];
+  table(s, [
+    ["步", "0", "1", "2", "3", "4", "5", "6", "7", "说明"],
+    row("停 ①", [5, 3, 8, 6, 2, 7, 1, 4], { 0: P, 2: L, 7: R }, "left = 2 停在 8，right = 7 停在 4"),
+    row("换", [5, 3, 4, 6, 2, 7, 1, 8], { 0: P, 2: L, 7: R }, "交换 8 ↔ 4"),
+    row("停 ②", [5, 3, 4, 6, 2, 7, 1, 8], { 0: P, 3: L, 6: R }, "left = 3 停在 6，right = 6 停在 1"),
+    row("换", [5, 3, 4, 1, 2, 7, 6, 8], { 0: P, 3: L, 6: R }, "交换 6 ↔ 1"),
+    row("停 ③", [5, 3, 4, 1, 2, 7, 6, 8], { 0: P, 5: L, 4: R }, "left = 5，right = 4：**交错**，结束"),
+    row("归位", [2, 3, 4, 1, 5, 7, 6, 8], { 4: P }, "arr[0] ↔ arr[right]，返回 4"),
+  ], 0.5, 1.42, 9.0, [0.75, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 4.65], { fontSize: 10.5, rowH: 0.33 });
+  pill(s, "轴", 0.5, 3.85, 0.5, 0.3, "E3C178", C.dark, 10);
+  pill(s, "left", 1.1, 3.85, 0.65, 0.3, "F2B47A", C.dark, 10);
+  pill(s, "right", 1.85, 3.85, 0.75, 0.3, "8FBCE6", C.dark, 10);
+  text(s, "为什么和 right 交换：交错时 right 停在最后一个 ≤ pivot 的位置，换到首位不破坏「左 ≤ 轴」。", 2.75, 3.8, 6.75, 0.4, { fontSize: 10.5, valign: "middle", margin: 0 });
+  callout(s, "与原书、与 Lomuto 的区别", "原书（图 8.7）挖空位**交替填坑**；本书 C++ 用 Lomuto（末元素当轴，单向一趟）；这里是**两头相向、成对交换**——交换次数大约只有 Lomuto 的三分之一，是笔试与 OJ 最常见的 Python 模板。", 0.5, 4.3, 9.0, 0.82, { fontSize: 10, lsm: 1.05 });
+}
+
+// two-pointer partition code
+{
+  const s = content("8.4.2", "8.4 交换排序 · 快速排序 · Python · 补充", "quick_sort + partition：双指针版");
+  codeBlock(s, `def quick_sort(arr, low, high):
+    if low < high:
+        p = partition(arr, low, high)
+        quick_sort(arr, low, p - 1)
+        quick_sort(arr, p + 1, high)
+
+def partition(arr, low, high):
+    pivot = arr[low]                    # 首元素当轴
+    left, right = low + 1, high
+    while True:
+        while left <= right and arr[left] <= pivot:
+            left += 1                   # 找第一个 > pivot 的
+        while left <= right and arr[right] >= pivot:
+            right -= 1                  # 找第一个 < pivot 的
+        if left > right:                # 指针交错：扫描结束
+            break
+        arr[left], arr[right] = arr[right], arr[left]
+    arr[low], arr[right] = arr[right], arr[low]   # 轴值归位
+    return right
+
+a = [5, 3, 8, 6, 2, 7, 1, 4]
+quick_sort(a, 0, len(a) - 1)
+print(a)                                # [1, 2, 3, 4, 5, 6, 7, 8]`, 0.5, 1.05, 5.9, 4.05, { fontSize: 9, lang: "py", hl: [11, 13, 15, 18] });
+  callout(s, "left <= right", "两个内层循环都要带这个条件：否则 left 会越过 high，right 会退到轴的左边。", 6.6, 1.05, 2.9, 1.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 全相等的输入退化", "两边都**跳过等于 pivot** 的元素：2000 个 7，left 一路走到底，每次只切掉一个，递归 **1999 层**、约 200 万次比较。Hoare 原版让两边**遇到相等也停下来交换**，就能对半分。", 6.6, 2.4, 2.9, 1.75, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  callout(s, "仍然不稳定", "成对交换是**跨越式**移动；首元素当轴，有序输入照样 Θ(n²)。", 6.6, 4.3, 2.9, 0.8, { fontSize: 9.5 });
+}
+
 // quick_sort_range + analysis
 {
   const s = content("8.4.2", "8.4 交换排序 · 快速排序 · 代价分析", "quick_sort_range 与三种情况的代价");
@@ -745,6 +803,50 @@ inline void quick_sort_optimized(std::vector<int>& values) {
   text(s, "0.0", 5.35, 2.05, 4, 0.8, { fontSize: 40, bold: true, color: C.ok, margin: 0 });
   text(s, "有序输入内层循环一次都不进，Θ(n)", 5.35, 2.9, 4, 0.65, { fontSize: 10.5, margin: 0 });
   callout(s, "快排在这种输入上比 Θ(n²) 的插入排序还慢", "想根治得换**枢轴策略**（三数取中、随机枢轴）——那是习题里的事。原书的实现取中间点作轴值，所以原书的实验里「快排正序和逆序一样快」；**同一个算法，选轴策略不同，对输入形态的反应可以完全相反**。", 0.5, 3.85, 9.0, 1.25, { fontSize: 11 });
+}
+
+// ---- 补充（取材 2026spring-cs201 讲义 · 树）：BST 排序 ----
+{
+  const s = content("8.4.2", "8.4 交换排序 · 快速排序的另一面 · 补充", "二叉搜索树排序：插入就是分割，中序就是收集");
+  codeBlock(s, `class Node:
+    def __init__(self, val):
+        self.val, self.left, self.right = val, None, None
+
+def insert(root, val):
+    if root is None:
+        return Node(val)
+    if val < root.val:
+        root.left = insert(root.left, val)
+    else:                               # 相等进右子树：保持先后次序
+        root.right = insert(root.right, val)
+    return root
+
+def inorder(root, out):
+    if root:
+        inorder(root.left, out)
+        out.append(root.val)
+        inorder(root.right, out)
+
+def tree_sort(nums):
+    root = None
+    for x in nums:
+        root = insert(root, x)
+    out = []
+    inorder(root, out)
+    return out`, 0.5, 1.05, 5.4, 4.05, { fontSize: 8.6, lang: "py", hl: [8, 10] });
+  card(s, 6.1, 1.05, 3.4, 1.9, C.code);
+  text(s, "[5, 3, 8, 6, 2, 7, 1, 4] 建出的树", 6.2, 1.1, 3.2, 0.26, { fontSize: 9.5, bold: true, color: C.dark, margin: 0 });
+  const T = { 5: [7.8, 1.6], 3: [6.95, 1.98], 8: [8.65, 1.98], 2: [6.55, 2.36], 4: [7.35, 2.36], 6: [8.25, 2.36], 1: [6.3, 2.74], 7: [8.6, 2.74] };
+  [[5, 3], [5, 8], [3, 2], [3, 4], [8, 6], [2, 1], [6, 7]].forEach(([a, b]) => {
+    const [x1, y1] = T[a], [x2, y2] = T[b];
+    s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: C.green, width: 1.25 } });
+  });
+  Object.entries(T).forEach(([k, [x, y]]) => {
+    s.addShape(pres.shapes.OVAL, { x: x - 0.15, y: y - 0.15, w: 0.3, h: 0.3, fill: { color: k === "5" ? C.cream : C.white }, line: { color: C.dark, width: 1 } });
+    text(s, k, x - 0.15, y - 0.15, 0.3, 0.3, { fontSize: 9, bold: true, color: C.dark, align: "center", valign: "middle", margin: 0 });
+  });
+  callout(s, "和快排做的是同一批比较", "根 5 = 首元素当轴：后面每个数插入时**先和 5 比**，分到左 / 右子树——正是一次分割。子树再按各自的首元素分下去，比较的对象、次数与首元素轴的快排**完全相同**。", 6.1, 3.05, 3.4, 1.4, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "平均 Θ(n log n)；有序输入树退化成链，**Θ(n²)**、递归也深。要保证最坏，换 AVL / 红黑树（第 12 章）。", 6.1, 4.5, 3.4, 0.62, { fontSize: 9.5, margin: 0 });
 }
 
 // ============================ 8.5 ============================
@@ -967,8 +1069,43 @@ inline std::uint64_t count_inversions(std::vector<int> values) {
   ], 5.3, 1.65, 4.1, 3.4, { fontSize: 10.5, gap: 5 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义）：OJ 02299 ----
+{
+  const s = content("8.5", "8.5 归并排序 · 逆序对 · 上机 · 补充", "OJ 02299 Ultra-QuickSort：冒泡要交换几次？");
+  codeBlock(s, `import sys
+
+def merge_count(a):
+    if len(a) <= 1:
+        return a, 0
+    mid = len(a) // 2
+    left, x = merge_count(a[:mid])
+    right, y = merge_count(a[mid:])
+    res, i, j, inv = [], 0, 0, x + y
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:         # 相等不算逆序，也保证稳定
+            res.append(left[i]); i += 1
+        else:
+            res.append(right[j]); j += 1
+            inv += len(left) - i        # left[i:] 都比 right[j] 大
+    res += left[i:]
+    res += right[j:]
+    return res, inv
+
+data = sys.stdin.read().split()
+pos = 0
+while True:
+    n = int(data[pos]); pos += 1
+    if n == 0:
+        break
+    print(merge_count([int(x) for x in data[pos:pos + n]])[1])
+    pos += n`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.4, lang: "py", hl: [11, 15] });
+  callout(s, "题意 = 数逆序对", "只能交换**相邻**两个数，最少交换次数 = 逆序对数：每次相邻交换恰好消掉一个逆序对（8.2 节的结论）。n ≤ 50 万，O(n²) 冒泡超时，归并 **O(n log n)**。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  consoleBlock(s, "输入 5 / 9 1 0 5 4 → 6\n输入 3 / 1 2 3 → 0", 6.6, 2.95, 2.9, 0.8, 9);
+  callout(s, "⚠ 写成 < 就错了", "春季讲义的归并模板用 `left[i] < right[j]`：遇到相等先取右边，**把相等的一对也算成逆序**。数逆序对必须 `<=`。", 6.6, 3.9, 2.9, 1.2, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
 // ============================ 8.6 ============================
-sectionSlide("8.6", "分配排序和索引排序", "不比较关键码，但要事先知道记录的情况\n桶式排序 · 基数排序（LSD） · 索引排序");
+sectionSlide("8.6", "分配排序和索引排序", "不比较关键码，但要事先知道记录的情况\n桶式（计数）排序 · 区间桶排序 · 基数排序（LSD） · 索引排序");
 
 // 8.6 intro
 {
@@ -1043,6 +1180,39 @@ inline void counting_sort(std::vector<int>& values) {
   callout(s, "判断能不能用，看 m 与 n 的比值", "这也正是下一节要把**大值域拆成若干小值域**的原因。", 0.5, 3.85, 5.6, 1.25, { fontSize: 11.5 });
   callout(s, "Python 版的差别", "Python 整数没有宽度，`high − low + 1` 溢出的坑不存在——**但值域上限的检查一条都不能少**：它挡的是**内存**，不是溢出。", 6.35, 1.1, 3.15, 2.2, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
   callout(s, "分配排序天然稳定", "同一个桶里的记录按进桶顺序出桶，从头到尾没有任何一次比较能打乱它们（前提：收集方式保持入桶顺序）。", 6.35, 3.45, 3.15, 1.65, { fontSize: 10.5 });
+}
+
+// ---- 补充（取材 2026spring-cs201 讲义 · 十大排序）：区间分桶 ----
+{
+  const s = content("8.6.1", "8.6 分配排序 · 区间桶排序 · 补充", "另一种「桶排序」：按区间分桶，桶内再排");
+  codeBlock(s, `def bucket_sort(values, k=10):
+    # values 都在 [0, 1) 内，近似均匀分布
+    buckets = [[] for _ in range(k)]
+    for x in values:
+        buckets[int(x * k)].append(x)   # 第 i 个桶装 [i/k, (i+1)/k)
+    result = []
+    for b in buckets:
+        for i in range(1, len(b)):      # 桶内直接插入排序：稳定
+            cur, j = b[i], i - 1
+            while j >= 0 and b[j] > cur:
+                b[j + 1] = b[j]
+                j -= 1
+            b[j + 1] = cur
+        result.extend(b)                # 按桶号依次收集
+    return result
+
+print(bucket_sort([0.78, 0.17, 0.39, 0.26, 0.72, 0.94,
+                   0.21, 0.12, 0.23, 0.68]))`, 0.5, 1.05, 5.6, 2.95, { fontSize: 8.6, lang: "py", hl: [5, 14] });
+  consoleBlock(s, "[0.12, 0.17, 0.21, 0.23, 0.26, 0.39, 0.68, 0.72, 0.78, 0.94]", 0.5, 4.1, 5.6, 1.0, 9);
+  table(s, [
+    ["", "计数排序（8.6.1）", "区间桶排序"],
+    ["一个桶装", "**一个值**", "**一段区间**"],
+    ["桶内", "不用排", "要再排一次"],
+    ["适合", "整数、值域 m 小", "实数、分布均匀"],
+    ["时间", "Θ(n + m)", "平均 Θ(n + k)"],
+  ], 6.3, 1.05, 3.2, [0.85, 1.2, 1.15], { fontSize: 9.5, rowH: 0.38 });
+  callout(s, "⚠ 依赖分布", "均匀时每桶期望 O(1) 个，总代价线性；全挤进一个桶就退化成那个桶的插入排序，**Θ(n²)**。", 6.3, 3.1, 3.2, 1.0, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "原书的「桶式排序」实为**计数排序**；春季讲义「十大排序」里两者分开列。基数排序每一趟就是一次计数排序。", 6.3, 4.2, 3.2, 0.9, { fontSize: 9.5, color: C.muted, margin: 0 });
 }
 
 // 8.6.2 radix intro
@@ -1288,7 +1458,7 @@ inline void adjust_by_index(std::vector<int>& values, std::vector<std::size_t>& 
 }
 
 // ============================ 8.7 ============================
-sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么快不起来 · 实测：同阶不等于同速\nstd::sort 是怎么拼起来的 · 判定树：比较排序的下限");
+sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么快不起来 · 实测：同阶不等于同速\nstd::sort 与 Python 的 Timsort · 判定树：比较排序的下限");
 
 // 8.7.1
 {
@@ -1354,6 +1524,39 @@ sectionSlide("8.7", "排序算法的时间代价", "三种简单排序为什么�
   text(s, "这也是本书**不用 std::sort 顶替**这一章的理由：读懂它的前提，正是先把这三种都手写一遍。", 5.45, 4.35, 4.0, 0.7, { fontSize: 10, bold: true, color: C.goldText, margin: 0 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义）：Python 的 sorted 与 Timsort ----
+{
+  const s = content("8.7.2", "8.7 时间代价 · Python 的排序 · 补充", "sorted / list.sort 是 Timsort：插入 + 归并，稳定");
+  const steps = [
+    ["找 run", "从左往右切出**已经有序的段**（严格递减的段原地翻转），这是它在真实数据上快的根源。"],
+    ["补齐", "短于 minrun（32～64）的段用**二分插入排序**补长——小区间插入，与 8.4、8.5 节的优化同一思路。"],
+    ["归并", "段压栈，按长度规则**两两归并**，保持各段长度平衡；归并时一边连续胜出就**倍增跳跃**（galloping）。"],
+  ];
+  steps.forEach((st, i) => {
+    const y = 1.08 + i * 0.78;
+    numCircle(s, i + 1, 0.5, y + 0.1, 0.4, C.dark);
+    text(s, st[0], 1.05, y, 0.8, 0.6, { fontSize: 12, bold: true, color: C.green, valign: "middle", margin: 0 });
+    text(s, st[1], 1.85, y, 3.3, 0.7, { fontSize: 10, valign: "middle", margin: 0 });
+  });
+  table(s, [
+    ["", "最好", "平均", "最坏", "空间", "稳定"],
+    ["Timsort", { t: "n", bold: true, color: C.ok }, "n log n", "n log n", "n", { t: "是", color: C.ok, bold: true }],
+    ["introsort", "n log n", "n log n", "n log n", "log n", { t: "否", color: C.bad }],
+  ], 0.5, 3.55, 4.65, [1.0, 0.65, 0.75, 0.75, 0.65, 0.85], { fontSize: 9.5, rowH: 0.36 });
+  text(s, "已有序或逆序的输入只要 n − 1 次比较。", 0.5, 4.7, 4.65, 0.35, { fontSize: 10, color: C.muted, margin: 0 });
+  card(s, 5.4, 1.05, 4.1, 2.3, C.code);
+  text(s, "稳定性的直接用法：多关键字排序", 5.55, 1.1, 3.9, 0.3, { fontSize: 11, bold: true, color: C.dark, margin: 0 });
+  codeBlock(s, `stu = [("Bob",90), ("Amy",85), ("Cat",90), ("Dan",85)]
+stu.sort(key=lambda t: t[0])    # 先按姓名
+stu.sort(key=lambda t: -t[1])   # 再按分数降序
+# Bob 90, Cat 90, Amy 85, Dan 85`, 5.45, 1.45, 4.0, 1.1, { fontSize: 8.4, lang: "py" });
+  text(s, "同分者保持上一趟的姓名次序——这就是 8.1 节「稳定」的意义；与 LSD 基数排序「先排低位」同理。", 5.55, 2.6, 3.85, 0.7, { fontSize: 9.5, margin: 0 });
+  callout(s, "实用要点", [
+    "`key=` 只对每个元素算一次；`sorted(..., key=lambda t: (-t[1], t[0]))` 一次排也行。",
+    "Java 的对象排序、Android 也用 Timsort；C++ `std::sort` 是 introsort，`stable_sort` 才是归并。",
+    "OJ 里先用内置排序；本章手写，是为了知道它**为什么快、何时不快**。",
+  ], 5.4, 3.5, 4.1, 1.6, { fontSize: 9.5, gap: 3 });
+}
 // 8.7.3 lower bound
 {
   const s = content("8.7.3", "8.7 时间代价 · 排序问题的下限", "判定树：任何比较排序最坏至少 Ω(n log n) 次比较");
