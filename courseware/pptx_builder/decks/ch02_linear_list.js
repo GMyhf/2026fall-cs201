@@ -79,7 +79,7 @@ titleSlide({
   title: "第二章  线性表",
   subtitle: "Linear List：顺序表与链表",
   topics: "线性表的定义 (K, R) 与结构特点 · 抽象数据类型与运算的五个类别\n顺序表：类定义、检索、插入、删除、翻倍扩容 · 三法则与二次释放\n单链表：结点、头结点、尾指针、循链定位 · 双链表 · 循环链表\n两种实现的代价对比与取舍 · 附录：6 道链表编程练习",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-16 · github.com/GMyhf/2026fall-cs201",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/2026fall-cs201",
 });
 
 // 2. 本章三个问题
@@ -840,7 +840,7 @@ summarySlide("本章小结", [
 ]);
 
 // ============================ 附录A ============================
-sectionSlide("附录 A", "编程练习", "6 道题：把「链表的 O(1) 前提是拿到前驱」拆成三层\nE160 · E206 · M1472 · M146 · E21 · E234");
+sectionSlide("附录 A", "编程练习", "6 道题：把「链表的 O(1) 前提是拿到前驱」拆成三层\nE160 · E206 · M1472 · M146 · E21 · E234\n补充程序填空：循环链表 · P0020 删除链表元素 · 004 插入链表元素");
 
 // A.0 为什么是这 6 道题
 {
@@ -1833,6 +1833,98 @@ n=5（奇）  t=0: slow=1, fast=1
     "💡 空表 / 单结点其实**不需要特判**；开头那句只是让意图更清楚。",
   ], 6.5, 3.5, 3.0, 1.6, { fontSize: 8.8, gap: 4, fill: "FDF0EE", tcolor: C.bad });
   text(s, "反转两次，输入链表最终与调用前一致。", 0.5, 5.15, 5.9, 0.25, { fontSize: 9, color: C.muted });
+}
+
+// ---------------- 补充：程序填空（取材 2026spring-cs201 讲义 W04-5.5 §3.3 / §3.4.4）----------------
+// A.F1 仅设尾指针的循环链表
+{
+  const s = content("A.F", "附录A · 程序填空（补充） · 循环链表", "只存尾指针：tail.next 就是表头，两端插入都是 O(1)");
+  codeBlock(s, `class CircleList:                       # 只存尾指针；Node 同 A.1
+    def __init__(self):
+        self.tail, self.size = None, 0
+
+    def push_front(self, data):         # O(1)
+        nd = Node(data)
+        if self.tail is None:
+            nd.next = nd                # 一个结点自己成环
+            self.tail = nd
+        else:
+            nd.next = self.tail.next
+            self.tail.next = nd
+        self.size += 1
+
+    def push_back(self, data):          # O(1)：先插到表头，再把尾指针后移一格
+        self.push_front(data)
+        self.tail = self.tail.next
+
+    def pop_front(self):                # O(1)
+        if self.size == 0:
+            return None
+        head = self.tail.next
+        self.size -= 1
+        if self.size == 0:
+            self.tail = None
+        else:
+            self.tail.next = head.next
+        return head.data`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.2, lang: "py", hl: [8, 16, 17] });
+  table(s, [
+    ["操作", "只存头指针", "只存尾指针"],
+    ["表头插入 / 删除", "O(1)", "O(1)"],
+    ["表尾插入", "O(n)", { t: "O(1)", bold: true, color: C.ok }],
+    ["表尾删除", "O(n)", { t: "O(n)", color: C.bad }],
+  ], 6.7, 1.05, 2.8, [1.2, 0.8, 0.8], { fontSize: 9, rowH: 0.36, tight: true });
+  callout(s, "push_back 的一行技巧", "插到表头之后，新结点正好是 tail.next；把 tail 往后挪一格，它就从「表头」变成了「表尾」。", 6.7, 2.65, 2.8, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "删表尾为什么还是 O(n)", "要改的是**倒数第二个**结点的 next，单链只能从头走过去找它。", 6.7, 4.1, 2.8, 1.0, { fontSize: 9.5 });
+}
+
+// A.F2 P0020 删除链表元素
+{
+  const s = content("A.F", "附录A · 程序填空（补充） · P0020 删除链表元素", "在循环链表上实现 remove：找前驱、改链、维护尾指针");
+  codeBlock(s, `    def remove(self, data):             # 删第一个等于 data 的
+        if self.size == 0:
+            return None                 # 空表
+        prev = self.tail                # 从「表头的前驱」开始看
+        while prev.next.data != data:
+            prev = prev.next
+            if prev is self.tail:
+                return False            # 转了一整圈没找到
+        if prev.next is self.tail:
+            self.tail = prev            # 删的是尾结点：尾指针前移
+        prev.next = prev.next.next
+        self.size -= 1
+        if self.size == 0:
+            self.tail = None
+        return True`, 0.5, 1.05, 6.0, 2.75, { fontSize: 8.6, lang: "py", hl: [4, 7, 9, 10] });
+  consoleBlock(s, "1 2 3 删 3 2 2 9 5 1 1 4：\n1 2 / 1 / NOT FOUND ×3 / EMPTY ×2\n1 删 9 88 1 23：NOT FOUND ×2 /（删空不输出）/ EMPTY", 0.5, 3.95, 6.0, 1.15, 8.5);
+  callout(s, "为什么从 tail 出发", "循环表没有「表头的前驱」这个特殊情况：tail 就是它。于是删表头和删中间是同一段代码，不必像 2.3.1 那样另加头结点。", 6.7, 1.05, 2.8, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "三个返回值", "None → EMPTY；False → NOT FOUND；True → 打印剩余（删空则什么都不打）。区分「空表」和「找不到」靠的是先判 size。", 6.7, 2.75, 2.8, 1.45, { fontSize: 9.5 });
+  callout(s, "⚠ 尾指针", "删到尾结点、删到只剩 0 个，两处都要改 tail。", 6.7, 4.3, 2.8, 0.82, { fontSize: 9.5, fill: "FDF0EE", tcolor: C.bad });
+}
+
+// A.F3 004 插入链表元素 + Python 对应
+{
+  const s = content("A.F", "附录A · 程序填空（补充） · 004 插入链表元素", "快慢指针找中点：在正中插入 6（偶数个取靠后）");
+  codeBlock(s, `def insert_cat(head, x=6):              # 插到正中，偶数个时取靠后的位置
+    slow, fast = head, head.next
+    while fast and fast.next:           # fast 每次两步，slow 一步
+        slow, fast = slow.next, fast.next.next
+    slow.next = Node(x, slow.next)      # 插在 slow 之后
+    return head`, 0.5, 1.05, 5.6, 1.6, { fontSize: 8.6, lang: "py", hl: [2, 5] });
+  table(s, [
+    ["原链表", "长度", "插入后"],
+    [{ t: "8 1 0 9 7 5", mono: true }, "6", { t: "8 1 0 6 9 7 5", mono: true }],
+    [{ t: "1 2 3", mono: true }, "3", { t: "1 2 6 3", mono: true }],
+    [{ t: "4", mono: true }, "1", { t: "4 6", mono: true }],
+  ], 0.5, 2.8, 5.6, [2.2, 0.8, 2.6], { fontSize: 9.5, rowH: 0.32, tight: true });
+  callout(s, "fast 从 head.next 起步", "这样 slow 停在「前一半的最后一个」，插在它后面正好是题目要的位置；和 E234 找中点是同一个模板，只是起点差一格。", 0.5, 4.2, 5.6, 0.9, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "Python 里各用什么", 6.3, 1.05, 3.2, 0.3, { fontSize: 10.5, bold: true, color: C.dark, margin: 0 });
+  table(s, [
+    ["需要", "Python"],
+    ["顺序表、栈", { t: "list", mono: true }],
+    ["队列、双端队列", { t: "collections.deque", mono: true }],
+    ["中间 O(1) 增删", "手写 Node"],
+  ], 6.3, 1.4, 3.2, [1.4, 1.8], { fontSize: 9.5, rowH: 0.36, tight: true });
+  callout(s, "OJ 的程序填空题", "题目给好框架，只让补一个方法：先读懂已有字段（head 还是 tail、有没有 size）再动手，**不要改框架**。", 6.3, 3.0, 3.2, 2.1, { fontSize: 9.5 });
 }
 
 // ---------------- 附录小结 ----------------
