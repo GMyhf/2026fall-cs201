@@ -45,8 +45,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第12章  高级数据结构",
   subtitle: "把「存储、查找、回收」推到更复杂的对象上",
-  topics: "多维数组的地址公式 · 三角 / 对称矩阵压缩 · 稀疏矩阵十字链表\n广义表与共享 · 引用计数 · 可利用空间表 · 三种顺序适配 · 标记–清除\nTrie 与 Patricia：按字符 / 按位分支，公共前缀只存一次\n最佳 BST 的动态规划 · AVL 四种旋转 · 伸展树的均摊平衡",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "多维数组的地址公式 · 三角 / 对称矩阵压缩 · 稀疏矩阵十字链表\n广义表与共享 · 引用计数 · 可利用空间表 · 三种顺序适配 · 标记–清除\nTrie 与 Patricia：按字符 / 按位分支，公共前缀只存一次\n最佳 BST 的动态规划 · AVL 四种旋转 · 伸展树的均摊平衡\n补充：前缀和 · 树状数组 · 线段树与 Lazy 标记",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -1617,6 +1617,211 @@ RL（右左）：先在 C 上右旋，再在 A 上左旋
   ], 0.5, 1.05, 9.0, [1.3, 2.4, 2.75, 2.55], { fontSize: 11, rowH: 0.48 });
   callout(s, "红黑树（第 11 章）", "平衡要求比 AVL 更低；n 个内部结点的红黑树最大树高 **2 log₂(n+1) + 1**（原书口径，数到外部空叶；只数内部结点为 2 log₂(n+1)），最坏情况比同规模 AVL 高。AVL、伸展树适合**检索较多**；插入删除频繁常用红黑树。", 0.5, 3.6, 4.4, 1.5, { fontSize: 9.5 });
   callout(s, "内存 vs 外存", "BST（红黑树、AVL、伸展树）适合**内存中小规模**的目录；外存文件若以结点为交换单位，找到关键码前平均要访问外存 log₂n 次——文件索引用 **B 树 / B+ 树**。", 5.1, 3.6, 4.4, 1.5, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+}
+
+// ---------------- 补充（取材 2026spring-cs201 讲义 W02 树状数组、W06-08 线段树）：区间查询 ----------------
+sectionSlide("12.5 · 补充", "区间查询", "前缀和 → 树状数组 → 线段树：数组会变，还要随时问一段的和 / 最值\n前缀和 · 树状数组（lowbit）· 迭代线段树 · Lazy 标记");
+
+// 12.5 prefix sums
+{
+  const s = content("12.5", "12.5 区间查询 · 前缀和 · 补充", "前缀和：查询 O(1)，但改一个数要重算 O(n)");
+  codeBlock(s, `from itertools import accumulate
+
+a = [5, 1, 4, 2, 7, 3, 6, 8]
+P = [0, *accumulate(a)]          # P[i] = a[0] + ... + a[i-1]
+print(P[7] - P[2])               # [2, 7) 的和：4+2+7+3+6 = 22
+
+# 二维：S[i][j] = 左上角 i×j 子矩阵的和
+M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+S = [[0] * 4 for _ in range(4)]
+for i in range(3):
+    for j in range(3):
+        S[i+1][j+1] = M[i][j] + S[i][j+1] + S[i+1][j] - S[i][j]
+# 行 [1,3)、列 [1,3) 的和：容斥
+print(S[3][3] - S[1][3] - S[3][1] + S[1][1])   # 5+6+8+9 = 28`, 0.5, 1.05, 5.6, 3.3, { fontSize: 9, lang: "py", hl: [4, 12, 14] });
+  card(s, 0.5, 4.5, 5.6, 0.6, C.dark);
+  text(s, "半开区间 [l, r) 的和 = P[r] − P[l]：和 bisect、本书的 range_sum 是同一套约定。", 0.65, 4.5, 5.4, 0.6, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  table(s, [
+    ["方法", "区间查询", "单点修改"],
+    ["原数组逐个加", "O(n)", { t: "O(1)", color: C.ok }],
+    ["前缀和数组", { t: "O(1)", color: C.ok }, { t: "O(n)", color: C.bad }],
+    [{ t: "树状数组", bold: true }, { t: "O(log n)", bold: true }, { t: "O(log n)", bold: true }],
+    [{ t: "线段树", bold: true }, { t: "O(log n)", bold: true }, { t: "O(log n)", bold: true }],
+  ], 6.3, 1.05, 3.2, [1.2, 1.0, 1.0], { fontSize: 10, rowH: 0.4 });
+  callout(s, "要的是两头折中", "查询多、修改少：前缀和。两者都多（LC 307、OJ 动态区间和）：把 O(1)/O(n) 拉平成 **O(log n)/O(log n)**。", 6.3, 3.2, 3.2, 1.9, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// 12.5 Fenwick structure
+{
+  const s = content("12.5", "12.5 区间查询 · 树状数组 · 补充", "树状数组：C[i] 管 lowbit(i) 个元素，即 (i − lowbit(i), i]");
+  const X0 = 1.2, CW = 0.62, A = [5, 1, 4, 2, 7, 3, 6, 8], T = [5, 6, 4, 12, 7, 10, 6, 36];
+  for (let i = 1; i <= 8; i++) text(s, String(i), X0 + (i - 1) * CW, 1.05, CW, 0.22, { fontSize: 8.5, color: C.muted, align: "center", margin: 0 });
+  text(s, "A", 0.6, 1.28, 0.5, 0.36, { fontSize: 11, bold: true, color: C.dark, valign: "middle", margin: 0 });
+  cells(s, X0, 1.28, A, { cw: CW, ch: 0.36, fs: 10.5 });
+  const lb = (i) => i & -i;
+  const lvl = { 1: 0, 2: 1, 4: 2, 8: 3 };
+  for (let i = 1; i <= 8; i++) {
+    const L = lb(i), y = 1.85 + lvl[L] * 0.44;
+    const x = X0 + (i - L) * CW, w = L * CW;
+    const hot = [7, 6, 4].includes(i) ? "F9D5D0" : [3, 4, 8].includes(i) ? "D6E9F8" : C.cream;
+    s.addShape(pres.shapes.RECTANGLE, { x: x + 0.03, y, w: w - 0.06, h: 0.34, fill: { color: i === 4 ? "E8D9EE" : hot }, line: { color: C.green, width: 0.75 } });
+    text(s, `C[${i}] = ${T[i - 1]}`, x + 0.03, y, w - 0.06, 0.34, { fontSize: 9, bold: true, color: C.dark, align: "center", valign: "middle", margin: 0 });
+  }
+  text(s, "lowbit = 1", 6.25, 1.85, 1.0, 0.34, { fontSize: 8.5, color: C.muted, valign: "middle", margin: 0 });
+  text(s, "2", 6.25, 2.29, 1.0, 0.34, { fontSize: 8.5, color: C.muted, valign: "middle", margin: 0 });
+  text(s, "4", 6.25, 2.73, 1.0, 0.34, { fontSize: 8.5, color: C.muted, valign: "middle", margin: 0 });
+  text(s, "8", 6.25, 3.17, 1.0, 0.34, { fontSize: 8.5, color: C.muted, valign: "middle", margin: 0 });
+  card(s, 0.5, 3.7, 4.35, 1.4, "FDF0EE");
+  text(s, "查前 7 个：减法往下拆", 0.65, 3.75, 4.1, 0.3, { fontSize: 11, bold: true, color: C.bad, margin: 0 });
+  text(s, "7 → 7−1 = 6 → 6−2 = 4 → 4−4 = 0\nC[7] + C[6] + C[4] = 6 + 10 + 12 = **28**\n(6,7]、(4,6]、(0,4] 不重不漏", 0.65, 4.08, 4.1, 1.0, { fontSize: 10, margin: 0, lsm: 1.15 });
+  card(s, 5.15, 3.7, 4.35, 1.4, "EAF1F8");
+  text(s, "改 A[3]：加法往上找", 5.3, 3.75, 4.1, 0.3, { fontSize: 11, bold: true, color: C.green, margin: 0 });
+  text(s, "3 → 3+1 = 4 → 4+4 = 8 → 16 > n 停\n只有 C[3]、C[4]、C[8] 的区间盖住了 3\n每步 lowbit 至少翻倍：≤ log₂ n + 1 步", 5.3, 4.08, 4.1, 1.0, { fontSize: 10, margin: 0, lsm: 1.15 });
+  callout(s, "lowbit(i) = i & −i", "补码里 −i = ~i + 1：最右边的 1 保留，其左各位全反，一与只剩它。12 = 1100₂ → 4；6 = 110₂ → 2。", 7.15, 1.05, 2.35, 2.5, { fontSize: 9.5 });
+}
+
+// 12.5 Fenwick code
+{
+  const s = content("12.5", "12.5 树状数组 · code/ch12/fenwick/modern.py（节选） · 补充", "add 沿 +lowbit 上行，prefix_sum 沿 −lowbit 回退");
+  codeBlock(s, `class FenwickTree:
+    def __init__(self, size):
+        self.tree = [0] * (size + 1)    # 内部 1 起始，tree[0] 不用
+
+    @staticmethod
+    def lowbit(i):
+        return i & -i
+
+    def add(self, index, delta):        # 公共接口 0 起始
+        i = index + 1
+        while i < len(self.tree):
+            self.tree[i] += delta
+            i += self.lowbit(i)         # 加法：往上找管着 i 的块
+
+    def prefix_sum(self, end):          # [0, end) 的和
+        result, i = 0, end
+        while i:
+            result += self.tree[i]
+            i -= self.lowbit(i)         # 减法：拆成不相交的块
+        return result
+
+    def range_sum(self, left, right):   # [left, right)
+        return self.prefix_sum(right) - self.prefix_sum(left)
+
+f = FenwickTree(8)
+for i, v in enumerate([5, 1, 4, 2, 7, 3, 6, 8]):
+    f.add(i, v)
+print(f.tree[1:], f.range_sum(2, 7))    # [5, 6, 4, 12, 7, 10, 6, 36] 22`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.3, lang: "py", hl: [13, 19] });
+  callout(s, "下标为什么从 1 起", "lowbit(0) = 0，`i += lowbit(i)` 会原地不动。本书接口仍是 0 起始，进门时 +1。", 6.7, 1.05, 2.8, 1.25, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "正确性两句话", [
+    "上行：i + lowbit(i) 是**第一个**覆盖区间包住 i 的块；",
+    "回退：(i−lowbit(i), i] 与下一段首尾相接，直到 0。",
+  ], 6.7, 2.45, 2.8, 1.45, { fontSize: 9.5 });
+  callout(s, "完整版", "仓库里的 modern.py 另有 `set`、`value_at`、越界检查；与 C++ 版共读 `cases.tsv` 对拍。", 6.7, 4.05, 2.8, 1.05, { fontSize: 9.5 });
+}
+
+// 12.5 Fenwick application: inversions
+{
+  const s = content("12.5", "12.5 树状数组 · 应用 · 补充", "离散化 + 树状数组数逆序对（对照第 8 章归并法）");
+  codeBlock(s, `def count_inversions(a):
+    rank = {v: r + 1 for r, v in enumerate(sorted(set(a)))}   # 离散化：值 → 名次
+    tree = [0] * (len(rank) + 1)
+    inv = 0
+    for seen, v in enumerate(a):        # seen = 已扫过的个数
+        i, le = rank[v], 0
+        while i:                        # 已扫过的数里 <= v 的个数
+            le += tree[i]
+            i -= i & -i
+        inv += seen - le                # 其余的都 > v：与 v 构成逆序对
+        i = rank[v]
+        while i < len(tree):
+            tree[i] += 1
+            i += i & -i
+    return inv
+
+print(count_inversions([9, 1, 0, 5, 4]))   # 6（OJ 02299 样例）
+print(count_inversions([3, 1, 3, 2]))      # 3：相等的两个 3 不算`, 0.5, 1.05, 6.0, 3.3, { fontSize: 8.6, lang: "py", hl: [2, 10] });
+  card(s, 0.5, 4.5, 6.0, 0.6, C.dark);
+  text(s, "树状数组里存的是「每个名次出现了几次」：前缀和 = 不超过 v 的个数。", 0.65, 4.5, 5.8, 0.6, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  table(s, [
+    ["", "归并（8.5）", "树状数组"],
+    ["时间", "O(n log n)", "O(n log n)"],
+    ["要离散化", "不要", "要"],
+    ["序列追加", "重算", { t: "接着扫", color: C.ok, bold: true }],
+  ], 6.7, 1.05, 2.8, [0.8, 1.0, 1.0], { fontSize: 9.5, rowH: 0.38 });
+  callout(s, "为什么要离散化", "值可能是 10⁹ 或负数，不能直接当下标；只关心**大小次序**，换成 1..k 的名次即可。", 6.7, 2.75, 2.8, 1.3, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "春季讲义练习：M20018 蚂蚁王国的越野跑（同一题型）。", 6.7, 4.2, 2.8, 0.6, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// 12.5 iterative segment tree
+{
+  const s = content("12.5", "12.5 区间查询 · 迭代线段树 · 补充", "线段树：2n 个格子，叶子在 [n, 2n)，父亲 = i // 2");
+  codeBlock(s, `class SegmentTree:
+    def __init__(self, data, func=lambda x, y: x + y, default=0):
+        self.n, self.func, self.default = len(data), func, default
+        self.tree = [default] * self.n + list(data)   # 叶子在 [n, 2n)
+        for i in range(self.n - 1, 0, -1):            # 自底向上建
+            self.tree[i] = func(self.tree[2 * i], self.tree[2 * i + 1])
+
+    def update(self, p, value):         # a[p] = value
+        p += self.n
+        self.tree[p] = value
+        while p > 1:
+            self.tree[p >> 1] = self.func(self.tree[p], self.tree[p ^ 1])
+            p >>= 1                     # p ^ 1 是兄弟结点
+
+    def query(self, l, r):              # [l, r)
+        res, l, r = self.default, l + self.n, r + self.n
+        while l < r:
+            if l & 1:                   # l 是右孩子：父结点超出区间，单独计入
+                res = self.func(res, self.tree[l]); l += 1
+            if r & 1:                   # r 是右孩子：r-1 是左孩子，计入
+                r -= 1; res = self.func(res, self.tree[r])
+            l >>= 1; r >>= 1
+        return res
+
+st = SegmentTree([5, 1, 4, 2, 7, 3, 6, 8])
+print(st.query(2, 7))                                    # 22
+print(SegmentTree([5, 1, 4, 2], max, float('-inf')).query(1, 4))   # 4`, 0.5, 1.05, 6.2, 4.05, { fontSize: 7.9, lang: "py", hl: [12, 18, 20] });
+  callout(s, "比树状数组多了什么", "func 只要满足**结合律**：和、max、min、gcd 都行。树状数组靠「前缀相减」，只适合有逆运算的和 / 异或。", 6.9, 1.05, 2.6, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "query 的奇偶判断", "l 为奇数：它是右孩子，父结点还管着左边不要的那格，只能单拿它；r 同理。两端一起往上爬，**每层至多取两个**。", 6.9, 2.8, 2.6, 1.6, { fontSize: 9.5 });
+  text(s, "取自春季讲义 A1（GeeksforGeeks 的 2n 迭代写法）。", 6.9, 4.55, 2.6, 0.5, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// 12.5 lazy tag
+{
+  const s = content("12.5", "12.5 区间查询 · 递归线段树与 Lazy 标记 · 补充", "区间整体加：只在完全覆盖的结点记账，下次路过再下传");
+  codeBlock(s, `def _apply(self, k, lo, hi, v):     # 整段加 v：只改本结点
+    self.sum[k] += v * (hi - lo + 1)
+    self.tag[k] += v                # 「子树里每个数都还欠加 tag」
+
+def _push(self, k, lo, hi):         # 要往下走时才把账交给孩子
+    if self.tag[k]:
+        mid = (lo + hi) // 2
+        self._apply(2 * k, lo, mid, self.tag[k])
+        self._apply(2 * k + 1, mid + 1, hi, self.tag[k])
+        self.tag[k] = 0
+
+def add(self, l, r, v, k=1, lo=0, hi=None):    # 闭区间 [l, r]
+    hi = self.n - 1 if hi is None else hi
+    if r < lo or hi < l:
+        return                      # 不相交
+    if l <= lo and hi <= r:
+        self._apply(k, lo, hi, v); return      # 完全覆盖：记账即走
+    self._push(k, lo, hi)
+    mid = (lo + hi) // 2
+    self.add(l, r, v, 2 * k, lo, mid)
+    self.add(l, r, v, 2 * k + 1, mid + 1, hi)
+    self.sum[k] = self.sum[2 * k] + self.sum[2 * k + 1]
+# query 结构相同：完全覆盖直接返回 sum[k]，否则先 _push 再分两半`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.1, lang: "py", hl: [3, 16, 17] });
+  consoleBlock(s, "[5,1,4,2,7,3,6,8]\nadd(1, 5, 10)\nquery(2, 6) → 62\nquery(0, 7) → 86", 6.6, 1.05, 2.9, 1.25, 9);
+  table(s, [
+    ["", "树状数组", "迭代线段树", "递归 + Lazy"],
+    ["空间", "n", "2n", "4n"],
+    ["运算", "可减", "结合律", "结合律"],
+    ["区间修改", "差分技巧", "难", { t: "✓", color: C.ok, bold: true }],
+    ["代码量", "最短", "短", "长"],
+  ], 6.6, 2.45, 2.9, [0.75, 0.65, 0.75, 0.75], { fontSize: 8.5, rowH: 0.32, tight: true });
+  text(s, "单点修改首选前两者；区间加 / 区间赋值才上 Lazy。Python 递归深 log n，不怕栈。", 6.6, 4.2, 2.9, 0.9, { fontSize: 9.5, margin: 0 });
 }
 
 // Exercises
