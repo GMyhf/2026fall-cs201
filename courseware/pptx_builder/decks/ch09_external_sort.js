@@ -81,7 +81,7 @@ titleSlide({
   title: "第九章  文件管理与外部排序",
   subtitle: "数据大到内存装不下：数页 I/O，而不是数比较",
   topics: "主存与外存 · 按页存取 · 页 I/O 成本模型\n文件组织：顺序 / 散列 / 索引 / 倒排 · 记录装页 · C++ 流文件\n外排序两阶段：顺串生成 + 归并 · 置换选择（平均 2M）\n二路归并趟数 · 多路归并 · 赢者树 / 败者树 · 稳定性与常见错误",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -245,6 +245,32 @@ sectionSlide("Part 1 · 9.1", "主存储器和外存储器", "外存慢在「定
   text(s, "任何「把全部记录放进数组再排序」的内部排序都不成立。外排序必须让**大部分记录始终留在外存**，内存里只保存**少量缓冲页和当前候选**。", 5.3, 3.7, 4.05, 1.3, { fontSize: 11.5, margin: 0, lsm: 1.2 });
 }
 
+// ---- 补充（取材 2026spring-cs201 · MOOC 第九章）：随机寻道的平均距离 ----
+{
+  const s = content("9.1", "9.1 主存储器和外存储器 · 补充", "随机挑两个磁道，平均相距约 N/3");
+  card(s, 0.5, 1.05, 4.6, 2.5, C.dark);
+  text(s, "把磁道号看成 [0, N] 上独立均匀的两点 x、y", 0.7, 1.15, 4.3, 0.3, { fontSize: 11, color: C.mint, margin: 0 });
+  text(s, "E|x − y| = (1/N²) ∬ |x − y| dx dy", 0.7, 1.6, 4.3, 0.4, { fontSize: 14, bold: true, color: C.white, margin: 0 });
+  text(s, "= (2/N²) ∫₀ᴺ ∫₀ˣ (x − y) dy dx", 0.95, 2.05, 4.1, 0.4, { fontSize: 14, color: C.white, margin: 0 });
+  text(s, "= (2/N²) ∫₀ᴺ x²/2 dx = N/3", 0.95, 2.5, 4.1, 0.4, { fontSize: 14, bold: true, color: C.gold, margin: 0 });
+  text(s, "离散版：E|X − Y| = (N² − 1)/(3N) ≈ N/3", 0.7, 3.05, 4.3, 0.35, { fontSize: 10.5, color: C.mint, margin: 0 });
+  // number line
+  card(s, 5.35, 1.05, 4.15, 2.5, C.code);
+  text(s, "直观：0 到 N 的一条数轴", 5.5, 1.12, 3.9, 0.3, { fontSize: 11, bold: true, color: C.dark, margin: 0 });
+  s.addShape(pres.shapes.LINE, { x: 5.7, y: 2.2, w: 3.5, h: 0, line: { color: C.dark, width: 2 } });
+  [[5.7, "0"], [6.87, "N/3"], [8.03, "2N/3"], [9.2, "N"]].forEach(([x, t]) => {
+    s.addShape(pres.shapes.LINE, { x, y: 2.1, w: 0, h: 0.2, line: { color: C.dark, width: 1.5 } });
+    text(s, t, x - 0.4, 2.35, 0.8, 0.28, { fontSize: 10, color: C.dark, align: "center", margin: 0 });
+  });
+  s.addShape(pres.shapes.LINE, { x: 5.7, y: 1.8, w: 1.17, h: 0, line: { color: C.bad, width: 3, beginArrowType: "triangle", endArrowType: "triangle" } });
+  text(s, "平均一次寻道", 5.7, 1.5, 2.0, 0.28, { fontSize: 9.5, bold: true, color: C.bad, margin: 0 });
+  text(s, "两点都在中间时近，一头一尾时远；平均下来是全程的三分之一。", 5.5, 2.75, 3.9, 0.7, { fontSize: 10.5, margin: 0 });
+  callout(s, "这对外排序意味着什么", [
+    "**随机**读一页，平均要扫过三分之一个盘面再等转动——这是「定位」那一大段红条的来源。",
+    "**顺序**读下一页，磁头几乎不动；所以外排序要把访问组织成**成批的顺序读写**，算法里数的是页 I/O 和趟数，不是比较次数。",
+  ], 0.5, 3.7, 9.0, 1.15, { fontSize: 10.5 });
+}
+
 // 9.1 figure 9.1
 {
   const s = content("9.1", "9.1 主存储器和外存储器", "图 9.1：输入缓冲、内存工作区、输出缓冲分开");
@@ -376,6 +402,21 @@ sectionSlide("Part 2 · 9.2", "文件的组织和管理", "记录与文件 · �
   ], 5.15, 2.45, 4.35, [0.95, 0.85, 2.55], { fontSize: 9.5, rowH: 0.36 });
   text(s, "第 10 章闭散列的墓碑是同一种矛盾，只是搬动单位从数组槽变成了**页块**。", 5.15, 3.72, 4.35, 0.4, { fontSize: 9, color: C.muted, margin: 0 });
   callout(s, "逻辑顺序与物理位置分开", "是后面**索引**章节的入口：索引保存「关键码 → 页/槽」的映射，主文件不必为每次插入整体移动。**外排序则反过来**：趁批处理窗口一次性重写主文件，用顺序 I/O 换取之后更快的扫描。", 0.5, 4.2, 9.0, 0.9, { fontSize: 10.5, tsize: 11, fill: C.mint, tcolor: C.dark, lsm: 1.05 });
+}
+
+// ---- 补充（取材 2026spring-cs201 · MOOC 第九章）：一块能放几条记录 ----
+{
+  const s = content("9.2", "9.2 记录怎样装进页 · 补充", "算一算：2048 字节的块能放几条 68 字节的记录？");
+  text(s, "块 P = 2048 字节；记录 R = 68 字节（数据 64 + 关键码 4）；磁盘指针 4 字节。", 0.5, 1.02, 9.0, 0.32, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  table(s, [
+    ["块里存什么", "不等式", "最多几条"],
+    ["只放记录（顺序文件的一页）", { t: "68n ≤ 2048", mono: true }, { t: "⌊2048/68⌋ = 30", bold: true, color: C.ok }],
+    ["记录 + 1 个「下一块」指针（链接的块）", { t: "68n + 4 ≤ 2048", mono: true }, { t: "30（2044 ≤ 2048）", bold: true, color: C.ok }],
+    ["每条记录带 1 个指针（如散列溢出链）", { t: "72n ≤ 2048", mono: true }, { t: "28", bold: true }],
+    ["B 树结点：n 条记录 + n+1 个子指针", { t: "68n + 4(n+1) ≤ 2048", mono: true }, { t: "28（第 11 章）", bold: true }],
+  ], 0.5, 1.45, 9.0, [3.9, 2.7, 2.4], { fontSize: 11, rowH: 0.44 });
+  callout(s, "读题先问「块里还要放什么」", "MOOC 题的标准答案是 **30**：块内只放记录，或只多一个块尾指针都不改变结果。题目里给了「磁盘指针」，是在提醒你：组织方式不同，同一块的容量就不同。", 0.5, 3.8, 5.6, 1.3, { fontSize: 10.5 });
+  callout(s, "向下取整", "记录不能跨块（定长记录的通常约定），剩下的 8 字节浪费掉；变长记录才需要上一页的槽目录。", 6.3, 3.8, 3.2, 1.3, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
 }
 
 // 9.2.2 streams
@@ -859,6 +900,51 @@ sectionSlide("Part 4 · 9.3.2 / 9.3.3", "归并：二路与多路", "二路外�
   callout(s, "对照图 9.4", "L[1]、L[2] 挂在 B[4]，L[3] 挂在 B[2]，L[4]、L[5] 挂在 B[3]。", 6.05, 4.15, 3.45, 0.95, { fontSize: 10.5 });
 }
 
+// ---- 补充（取材 2026spring-cs201 · MOOC 第九章）：六路赢者树 ----
+{
+  const s = content("9.3.3", "9.3.3 赢者树 · 课堂例题 · 补充", "六路归并：首键 22 6 12 84 10 9，n 不是 2 的幂");
+  table(s, [
+    ["量", "n = 6"],
+    ["s = ⌊log₂(n−1)⌋", "2，最底层最左内部结点 B[4]"],
+    ["LowExt = 2(n − 2^s)", "4：L[1]～L[4] 在最底层"],
+    ["offset = 2^(s+1) − 1", "7"],
+  ], 0.5, 1.05, 4.5, [2.0, 2.5], { fontSize: 10, rowH: 0.32, tight: true });
+  table(s, [
+    ["L[i]", "1", "2", "3", "4", "5", "6"],
+    ["键", "22", "6", "12", "84", "10", "9"],
+    ["挂在", "B[4]", "B[4]", "B[5]", "B[5]", "B[3]", "B[3]"],
+  ], 0.5, 2.45, 4.5, [0.72, 0.63, 0.63, 0.63, 0.63, 0.63, 0.63], { fontSize: 10, rowH: 0.3, align: "center", tight: true });
+  text(s, "L[1..4]：p = ⌊(i + 7)/2⌋；L[5..6]：p = ⌊(i − 4 + 5)/2⌋", 0.5, 3.4, 4.5, 0.3, { fontSize: 9.5, color: C.muted, margin: 0 });
+  table(s, [
+    ["结点", "比赛", "胜者"],
+    ["B[4]", "L1(22) vs L2(6)", { t: "2", bold: true }],
+    ["B[5]", "L3(12) vs L4(84)", { t: "3", bold: true }],
+    ["B[3]", "L5(10) vs L6(9)", { t: "6", bold: true }],
+    ["B[2]", "B4→2(6) vs B5→3(12)", { t: "2", bold: true }],
+    ["B[1]", "B2→2(6) vs B3→6(9)", { t: "2", bold: true, color: C.bad }],
+  ], 0.5, 3.75, 4.5, [0.7, 2.9, 0.9], { fontSize: 9, rowH: 0.22, tight: true });
+  // tree drawing
+  card(s, 5.25, 1.05, 4.25, 3.0, C.code);
+  const N = {
+    B1: [7.6, 1.6, "2"], B2: [6.6, 2.15, "2"], B3: [8.6, 2.15, "6"], B4: [6.05, 2.7, "2"], B5: [7.15, 2.7, "3"],
+    L5: [8.25, 2.7, "10"], L6: [8.95, 2.7, "9"], L1: [5.75, 3.3, "22"], L2: [6.35, 3.3, "6"], L3: [6.85, 3.3, "12"], L4: [7.45, 3.3, "84"],
+  };
+  [["B1", "B2"], ["B1", "B3"], ["B2", "B4"], ["B2", "B5"], ["B3", "L5"], ["B3", "L6"], ["B4", "L1"], ["B4", "L2"], ["B5", "L3"], ["B5", "L4"]].forEach(([a, b]) => {
+    const [x1, y1] = N[a], [x2, y2] = N[b];
+    s.addShape(pres.shapes.LINE, { x: x1, y: y1, w: x2 - x1, h: y2 - y1, line: { color: C.green, width: 1.25 } });
+  });
+  Object.entries(N).forEach(([k, [x, y, v]]) => {
+    const leaf = k[0] === "L";
+    if (leaf) s.addShape(pres.shapes.RECTANGLE, { x: x - 0.22, y: y - 0.16, w: 0.44, h: 0.32, fill: { color: C.white }, line: { color: C.dark, width: 1 } });
+    else s.addShape(pres.shapes.OVAL, { x: x - 0.2, y: y - 0.2, w: 0.4, h: 0.4, fill: { color: k === "B1" ? C.cream : C.mint }, line: { color: C.dark, width: 1 } });
+    text(s, v, x - 0.22, y - 0.16, 0.44, 0.32, { fontSize: 10, bold: true, color: C.dark, align: "center", valign: "middle", margin: 0 });
+    text(s, leaf ? k.replace("L", "L[") + "]" : k.replace("B", "B[") + "]", x - 0.35, y + (leaf ? 0.17 : -0.42), 0.7, 0.22, { fontSize: 7.5, color: C.muted, align: "center", margin: 0 });
+  });
+  text(s, "圆：内部结点（写胜者的顺串号）；方：外部结点（首键）", 5.35, 3.78, 4.05, 0.25, { fontSize: 8.5, color: C.muted, margin: 0 });
+  card(s, 5.25, 4.2, 4.25, 0.9, C.dark);
+  text(s, "广度优先读内部结点 B[1..5]：", 5.4, 4.25, 4.0, 0.3, { fontSize: 10.5, color: C.mint, margin: 0 });
+  text(s, "2  2  6  2  3", 5.4, 4.55, 4.0, 0.45, { fontSize: 18, bold: true, color: C.gold, margin: 0 });
+}
 // 9.3.3 winner tree replay
 {
   const s = content("9.3.3", "9.3.3 多路归并——选择树 · 赢者树", "8 路归并：输出冠军后只沿一条路径重赛");
