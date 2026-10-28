@@ -482,7 +482,7 @@ sectionSlide("Part 3 · 9.3 / 9.3.1", "外排序：顺串生成", "外排序两�
   card(s, 0.5, 1.1, 4.35, 1.7, C.dark);
   text(s, "m 个初始顺串，每次归并 k 个", 0.7, 1.2, 4, 0.3, { fontSize: 11.5, color: C.mint, margin: 0 });
   text(s, "归并趟数 = ⌈log_k m⌉", 0.7, 1.6, 4, 0.5, { fontSize: 22, bold: true, color: C.gold, margin: 0 });
-  text(s, "每一趟都要**读完整文件再写完整文件**", 0.7, 2.2, 4, 0.4, { fontSize: 11, color: C.white, margin: 0 });
+  text(s, "每趟通常**读写全文件**；轮空顺串可直接复用", 0.7, 2.2, 4, 0.4, { fontSize: 11, color: C.white, margin: 0 });
   text(s, "为了减少趟数，从两个方向着手：", 5.15, 1.1, 4.3, 0.35, { fontSize: 12.5, bold: true, color: C.dark });
   const dirs = [["减少初始顺串数 m", "9.3.1 置换选择排序", C.green], ["增加归并路数 k", "9.3.3 多路归并（选择树）", C.goldText]];
   dirs.forEach((d, i) => {

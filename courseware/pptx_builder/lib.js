@@ -44,7 +44,6 @@ const pres = new pptxgen();
 pres.layout = "LAYOUT_16x9"; // 10 x 5.625 英寸——所有坐标都按这个画布
 pres.title = title;
 pres.author = author;
-let pageNo = 0;
 const imageFiles = {};
 
 // 负宽/负高的形状（例如从左下画到右上的线：h < 0）会被 pptxgenjs 原样写成 <a:ext cy="-…">。
@@ -57,9 +56,6 @@ pres.addSlide = (...args) => {
   slide.addShape = (type, o = {}) => addShape(type, normalizeBox(o));
   return slide;
 };
-
-
-
 
 // ---------- rich text: **bold**, `code` ----------
 // `**粗体**` 里可以嵌 `代码`；字符串里的 "\n" 拆成「行末 run + breakLine」，
@@ -150,7 +146,6 @@ function titleSlide({ kicker, title, subtitle, topics, footer }) {
 function sectionSlide(label, title, sub) {
   const s = pres.addSlide();
   darkBg(s);
-  pageNo++;
   text(s, label, 0.7, 1.7, 6, 0.35, { fontSize: 13, bold: true, color: C.gold });
   text(s, title, 0.7, 2.05, 7, 0.8, { fontSize: 34, bold: true, color: C.white });
   text(s, sub, 0.7, 2.95, 6.3, 1.0, { fontSize: 13, color: C.mint, lsm: 1.3 });
@@ -159,13 +154,12 @@ function sectionSlide(label, title, sub) {
 
 function content(badge, kicker, title) {
   const s = pres.addSlide();
-  pageNo++;
   s.background = { color: C.white };
   s.addShape(pres.shapes.OVAL, { x: 0.4, y: 0.28, w: 0.52, h: 0.52, fill: { color: C.dark }, line: { type: "none" } });
   text(s, badge, 0.4, 0.28, 0.52, 0.52, { fontSize: badge.length > 3 ? 9 : 11, bold: true, color: C.gold, align: "center", valign: "middle", margin: 0 });
   text(s, kicker, 1.05, 0.24, 7.5, 0.25, { fontSize: 9, bold: true, color: C.green, margin: 0 });
   text(s, title, 1.05, 0.46, 8.5, 0.42, { fontSize: 20, bold: true, color: C.dark, margin: 0 });
-  text(s, String(pageNo + 1), 9.3, 5.28, 0.5, 0.25, { fontSize: 9, color: C.muted, align: "right", margin: 0 });
+  text(s, String(pres.slides.length), 9.3, 5.28, 0.5, 0.25, { fontSize: 9, color: C.muted, align: "right", margin: 0 });
   return s;
 }
 
