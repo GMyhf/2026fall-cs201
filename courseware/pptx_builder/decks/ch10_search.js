@@ -35,7 +35,7 @@ titleSlide({
   title: "第10章  检索",
   subtitle: "Search：比较着找，还是直接算出地址",
   topics: "平均检索长度 ASL · 顺序检索与监视哨 · 二分检索（半开区间）与决策树 · 分块检索\n集合的数学特性 · IntSet 接口 · 位向量求交并差\n散列函数：除余 / 乘余取整 / 平方取中 / 折叠 / ELFhash · 开散列（拉链）\n闭散列：线性 / 二次 / 随机 / 双散列探查 · 墓碑删除 · 负载因子与效率",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -172,7 +172,7 @@ int main() {
 }
 
 // ============================ PART 1 ============================
-sectionSlide("10.1", "基于线性表的检索", "数据放在数组或链表里，逐个与给定值 K 比较\n顺序检索 · 二分检索 · 分块检索");
+sectionSlide("10.1", "基于线性表的检索", "数据放在数组或链表里，逐个与给定值 K 比较\n顺序检索 · 二分检索（含 Python bisect） · 分块检索");
 
 // 10.1.1 sequential concept
 {
@@ -427,6 +427,38 @@ inline std::optional<std::size_t> sequential_search(const std::vector<int>& valu
   card(s, 0.5, 3.85, 9.0, 1.25, C.dark);
   text(s, "所以", 0.75, 3.95, 3, 0.3, { fontSize: 11, bold: true, color: C.gold, margin: 0 });
   text(s, "二分检索特别适用于那种**一经建立就很少改动、而又需要经常检索**的线性表。", 0.75, 4.28, 8.5, 0.7, { fontSize: 16, bold: true, color: C.white, margin: 0 });
+}
+
+// ---- 补充（取材 2026spring-cs201 讲义）：Python 的 bisect ----
+{
+  const s = content("10.1.2", "10.1 线性表 · 二分检索 · Python · 补充", "bisect：标准库里的二分，也是半开区间");
+  codeBlock(s, `import bisect
+
+a = [1, 3, 3, 3, 7, 9]
+bisect.bisect_left(a, 3)     # 1：第一个 >= 3 的位置
+bisect.bisect_right(a, 3)    # 4：第一个 >  3 的位置
+bisect.bisect_left(a, 4)     # 4：不存在时就是插入点
+
+# 3 出现了几次：右界 − 左界
+bisect.bisect_right(a, 3) - bisect.bisect_left(a, 3)   # 3
+
+# 查找 x 是否存在
+def contains(a, x):
+    i = bisect.bisect_left(a, x)
+    return i < len(a) and a[i] == x
+
+bisect.insort(a, 5)          # 保持有序地插入：找位置 O(log n)，挪动 O(n)`, 0.5, 1.05, 5.9, 3.2, { fontSize: 9, lang: "py", hl: [4, 5, 13, 14] });
+  cells(s, 0.75, 4.7, [1, 3, 3, 3, 7, 9], { cw: 0.5, ch: 0.32, fs: 10, idx: false, fills: [C.white, C.cream, C.cream, C.cream, C.white, C.white] });
+  text(s, "↓ left = 1", 1.32, 4.38, 1.0, 0.25, { fontSize: 9, bold: true, color: C.green, margin: 0 });
+  text(s, "↓ right = 4", 2.82, 4.38, 1.0, 0.25, { fontSize: 9, bold: true, color: C.bad, margin: 0 });
+  text(s, "[left, right) 正是所有 3", 3.85, 4.7, 2.6, 0.32, { fontSize: 10, valign: "middle", margin: 0 });
+  table(s, [
+    ["Python", "C++", "含义"],
+    [{ t: "bisect_left", mono: true }, { t: "lower_bound", mono: true }, "第一个 ≥ x"],
+    [{ t: "bisect_right", mono: true }, { t: "upper_bound", mono: true }, "第一个 > x"],
+  ], 6.6, 1.05, 2.9, [1.05, 1.05, 0.8], { fontSize: 9, rowH: 0.36, tight: true });
+  callout(s, "与 binary_search 同一不变量", "搜索区间都是 **[lo, hi)**，循环结束时 lo == hi 就是答案位置；找不到时它就是**插入点**，不需要再写 −1 的特判。", 6.6, 2.3, 2.9, 1.5, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "二分答案", "OJ 里常把「答案 x 是否可行」写成单调的判定函数，再对 x 二分——要求的仍是**单调性**这一条硬约束。", 6.6, 3.95, 2.9, 1.15, { fontSize: 9.5 });
 }
 
 // 10.1.3 block concept
@@ -737,7 +769,7 @@ private:
 }
 
 // ============================ PART 3 ============================
-sectionSlide("10.3", "散列方法", "不比较，直接根据关键码算出存储地址\n散列函数 · 开散列 · 闭散列与墓碑 · 效率分析");
+sectionSlide("10.3", "散列方法", "不比较，直接根据关键码算出存储地址\n散列函数 · 开散列 · 闭散列与墓碑 · 效率分析\n补充：手算造表 · 扩表再散列 · OJ 17968 / 17975");
 
 // why hashing
 {
@@ -934,6 +966,33 @@ inline std::size_t elf_hash(const std::string& text) {
   callout(s, "测试守着的一条", "按无符号读得到 `0xF02D`；按有符号 `char` 读会被符号扩展，得 `0x0FFF00DD`（32 位中间值，本机实测）。两者天差地别，这一条能把两种写法分开。", 5.6, 4.08, 3.9, 1.07, { fontSize: 9.5 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义 · Hash Table）：Python 字符串散列 ----
+{
+  const s = content("10.3.1", "10.3 散列 · 散列函数 · Python · 补充", "字符串散列：从「字符相加」到 ELFhash");
+  codeBlock(s, `def sum_hash(s, m):
+    return sum(ord(c) for c in s) % m
+
+def weighted_hash(s, m):                # 位置当权重
+    return sum((i + 1) * ord(c) for i, c in enumerate(s)) % m
+
+def elf_hash(s):
+    h = 0
+    for c in s:
+        h = (h << 4) + ord(c)
+        x = h & 0xF0000000              # 取最高 4 位
+        if x:
+            h ^= x >> 24                # 折回低位
+        h &= ~x                         # 清掉最高 4 位：结果 < 2^28
+    return h
+
+print(sum_hash("abba", 11), sum_hash("baba", 11))          # 5 5
+print(weighted_hash("abba", 11), weighted_hash("baba", 11))  # 7 6
+print(elf_hash("Hello World"))                              # 18131988`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.6, lang: "py", hl: [4, 5, 14] });
+  callout(s, "异序词全撞车", "字符相加与次序无关：abba、baba、aabb 永远同址。乘上位置权重，次序就进了散列值。", 6.7, 1.05, 2.8, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "Python 不用 uint32 也对", "每步都清掉第 28–31 位，h 始终 < 2²⁸，左移 4 位也到不了第 32 位——与 C++ 的 32 位版结果相同。", 6.7, 2.55, 2.8, 1.35, { fontSize: 9.5 });
+  callout(s, "⚠ 讲义里的输出写错了", "春季讲义注释写 186219373；实测（Python 与 32 位 C 版一致）是 **18131988**。", 6.7, 4.05, 2.8, 1.05, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
 // evaluating hash functions
 {
   const s = content("10.3.1", "10.3 散列 · 散列函数", "怎样评价一个散列函数");
@@ -983,6 +1042,33 @@ inline std::size_t elf_hash(const std::string& text) {
   text(s, "图 10.8　B 个存储桶的散列文件组织：h(K) 算出的是**桶号**；目录表存 B 个指针，桶由页块串成。", 5.3, 3.15, 4.2, 0.55, { fontSize: 9.5, color: C.muted, margin: 0 });
   callout(s, "桶式散列的代价按访外次数计", "一次访外读目录表，再逐块查桶；平均访外次数约为桶内页块数的一半——**理想是每个桶只有一个页块**。文件增长后要重新组织、改散列函数并加长目录表。", 0.5, 3.35, 4.6, 1.75, { fontSize: 10.5 });
   callout(s, "拉链法的风险", "从「表满」变成「**某条链过长**」：分布不均或攻击者构造同址键时，单链退化成长度 n，查找回到 O(n)。工程库会**随机化散列种子**，或链过长时改用平衡树。", 5.3, 3.8, 4.2, 1.3, { fontSize: 10, fill: RED, tcolor: C.bad });
+}
+
+// ---- 补充（取材 2026spring-cs201 讲义 · Hash Table）：链地址法例题 ----
+{
+  const s = content("10.3.2", "10.3 散列 · 开散列 · 手算 · 补充", "例：12 个关键码、H(key) = key mod 13，拉链法造表");
+  text(s, "关键码 (19, 14, 23, 1, 68, 20, 84, 27, 55, 11, 10, 79)，新结点接在链尾", 0.5, 1.02, 9.0, 0.3, { fontSize: 11.5, margin: 0 });
+  const chains = { 1: [14, 1, 27, 79], 3: [68, 55], 6: [19, 84], 7: [20], 10: [23, 10], 11: [11] };
+  for (let a = 0; a < 13; a++) {
+    const y = 1.4 + a * 0.28;
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.6, y, w: 0.45, h: 0.28, fill: { color: chains[a] ? C.mint : C.white }, line: { color: C.green, width: 0.75 } });
+    text(s, String(a), 0.6, y, 0.45, 0.28, { fontSize: 9, bold: true, color: C.dark, align: "center", valign: "middle", margin: 0 });
+    (chains[a] || []).forEach((v, j) => {
+      const x = 1.35 + j * 0.8;
+      s.addShape(pres.shapes.LINE, { x: x - 0.3, y: y + 0.14, w: 0.28, h: 0, line: { color: C.green, width: 1, endArrowType: "triangle" } });
+      s.addShape(pres.shapes.RECTANGLE, { x, y: y + 0.02, w: 0.5, h: 0.24, fill: { color: C.white }, line: { color: C.dark, width: 0.75 } });
+      text(s, String(v), x, y + 0.02, 0.5, 0.24, { fontSize: 9, bold: true, color: C.dark, align: "center", valign: "middle", margin: 0 });
+    });
+  }
+  table(s, [
+    ["第几个结点", "1", "2", "3", "4"],
+    ["结点数", "6", "4", "1", "1"],
+  ], 5.0, 1.4, 4.5, [1.3, 0.8, 0.8, 0.8, 0.8], { fontSize: 10, rowH: 0.32, align: "center" });
+  card(s, 5.0, 2.2, 4.5, 1.15, C.dark);
+  text(s, "成功检索 ASL（等概率）", 5.15, 2.25, 4.2, 0.3, { fontSize: 10.5, color: C.mint, margin: 0 });
+  text(s, "(1×6 + 2×4 + 3×1 + 4×1) / 12 = 21/12 = 1.75", 5.15, 2.6, 4.25, 0.6, { fontSize: 12.5, bold: true, color: C.gold, valign: "middle", margin: 0 });
+  callout(s, "不成功检索", "按 13 个地址等概率，要比到链尾：(4+2+2+1+2+1)/13 = **12/13 ≈ 0.92** 次（空链 0 次）。", 5.0, 3.5, 4.5, 0.85, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  text(s, "同义词都挂在自己的链上，**不会挤占别人的地址**——这就是拉链法没有聚集的原因。", 5.0, 4.5, 4.5, 0.6, { fontSize: 10, margin: 0 });
 }
 
 // 10.3.3 closed hashing concept
@@ -1074,6 +1160,33 @@ inline std::size_t elf_hash(const std::string& text) {
     "能够探查散列表中的**所有槽**；",
     "两个关键码的基地址或中间序列偶然会合时，最终**也能岔开**。",
   ], 5.15, 3.55, 4.35, 1.55, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+}
+
+// ---- 补充（取材 2026spring-cs201 讲义 · Hash Table）：手算三种探查 ----
+{
+  const s = content("10.3.3", "10.3 散列 · 闭散列 · 手算 · 补充", "同一个 38，三种探查各放到哪");
+  text(s, "表长 11，H(key) = key mod 11；表中已有 60（地址 5）、17（6）、29（7）。插入 38：H(38) = **5**，冲突。", 0.5, 1.02, 9.0, 0.32, { fontSize: 11.5, margin: 0 });
+  const base = ["", "", "", "", "", "60", "17", "29", "", "", ""];
+  const rows = [
+    ["线性探查 dᵢ = 1, 2, 3 …", "5 → 6 → 7 → **8**：连撞两次", 8],
+    ["二次探查 dᵢ = 1², −1², 2² …", "5 → 6 → **4**：第二次就找到", 4],
+    ["伪随机探查（设 d₁ = 9）", "(5 + 9) mod 11 = **3**", 3],
+  ];
+  for (let i = 0; i < 11; i++) text(s, String(i), 3.6 + i * 0.5, 1.45, 0.5, 0.22, { fontSize: 8.5, color: C.muted, align: "center", margin: 0 });
+  rows.forEach((r, k) => {
+    const y = 1.72 + k * 0.72;
+    text(s, r[0], 0.5, y, 3.0, 0.34, { fontSize: 10.5, bold: true, color: C.dark, valign: "middle", margin: 0 });
+    text(s, r[1], 0.5, y + 0.34, 3.0, 0.3, { fontSize: 9.5, color: C.muted, margin: 0 });
+    const vals = base.slice(); vals[r[2]] = "38";
+    const fills = vals.map((v, i) => (i === r[2] ? C.cream : v ? C.mint : C.white));
+    cells(s, 3.6, y + 0.05, vals, { cw: 0.5, ch: 0.42, fs: 10.5, fills, colors: vals.map((v, i) => (i === r[2] ? C.bad : C.dark)) });
+  });
+  card(s, 0.5, 3.95, 4.35, 1.15, C.code);
+  text(s, "线性探查的毛病", 0.65, 4.0, 4.1, 0.3, { fontSize: 11, bold: true, color: C.bad, margin: 0 });
+  text(s, "5、6、7 连成一片后，基地址落在 5～8 的关键码都要排到 8 去——**聚集**越滚越大。二次与随机探查一下跳开，不往这一片里挤。", 0.65, 4.32, 4.1, 0.75, { fontSize: 10, margin: 0 });
+  card(s, 5.15, 3.95, 4.35, 1.15, C.cream);
+  text(s, "笔试题：双散列查 38 要比较几次？", 5.3, 4.0, 4.1, 0.3, { fontSize: 11, bold: true, color: C.goldText, margin: 0 });
+  text(s, "h = key mod 13，步长 H2 = key mod 3。表：0:26 1:38 4:17 7:33 9:48 12:25。h(38) = 12 → 25，比 1 次；步长 2，(12+2) mod 13 = 1 → 38，**共 2 次**。", 5.3, 4.32, 4.1, 0.75, { fontSize: 9.5, margin: 0 });
 }
 
 // deletion problem
@@ -1430,6 +1543,40 @@ void test_tombstone_reuse_does_not_duplicate_keys() {
   text(s, "散列法的重要特征：平均检索长度**不依赖于结点个数**，随 α 增大而增加；安排得好可以小于 1.5。", 0.7, 4.05, 4.65, 1.0, { fontSize: 11.5, color: C.white, valign: "middle", margin: 0 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义 · Hash Table）：扩表再散列与公共溢出区 ----
+{
+  const s = content("10.3.5", "10.3 散列 · 效率 · 补充", "α 超过阈值就扩表：所有关键码重新散列");
+  codeBlock(s, `def is_prime(x):
+    return x >= 2 and all(x % d for d in range(2, int(x ** 0.5) + 1))
+
+class Table:
+    def __init__(self, m=7):
+        self.slots = [None] * m
+        self.count = 0
+
+    def put(self, key):
+        if (self.count + 1) / len(self.slots) > 0.5:
+            self._grow()                # 插入后 α 会超过 0.5：先扩表
+        i = key % len(self.slots)
+        while self.slots[i] is not None and self.slots[i] != key:
+            i = (i + 1) % len(self.slots)
+        if self.slots[i] is None:
+            self.count += 1
+        self.slots[i] = key
+
+    def _grow(self):
+        m = 2 * len(self.slots) + 1
+        while not is_prime(m):          # 新表长取 > 2m 的素数
+            m += 1
+        old = [k for k in self.slots if k is not None]
+        self.slots, self.count = [None] * m, 0
+        for k in old:                   # 地址随表长变：全部重新散列
+            self.put(k)`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.1, lang: "py", hl: [10, 11, 25, 26] });
+  consoleBlock(s, "插 17 60 29：表长 7\n插 38：α 将到 4/7 → 扩到 17\n17→0 60→9 29→12 38→4", 6.6, 1.05, 2.9, 1.15, 9);
+  callout(s, "为什么不能只把数组变长", "地址是 key mod m，**m 一变，每个关键码的位置都变**；墓碑也在这一步被清掉。单次 O(n)，但表长翻倍，摊到每次插入仍是 O(1)。", 6.6, 2.35, 2.9, 1.5, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "另一种：公共溢出区", "基本表放不下的同义词统统放进一张**溢出表**，查找时基本表没找到再顺序扫它。实现简单，溢出多了就退化。", 6.6, 4.0, 2.9, 1.1, { fontSize: 9.5 });
+}
+
 // 10.3.6 applications
 {
   const s = content("10.3.6", "10.3 散列 · 应用", "散列方法的应用");
@@ -1462,6 +1609,47 @@ void test_tombstone_reuse_does_not_duplicate_keys() {
   callout(s, "散列值不能代替关键码相等判断", "缓存还要处理容量淘汰；去重还要保存原始键，以确认「散列值相同但键不同」的碰撞。散列值只是**候选地址或摘要**。", 0.5, 4.0, 9.0, 1.1, { fontSize: 11.5 });
 }
 
+// ---- 补充（取材 2026spring-cs201 讲义 · Hash Table）：OJ 17968 / 17975 ----
+{
+  const s = content("10.3", "10.3 散列 · 上机 · 补充", "OJ 17968 线性探查 · OJ 17975 二次探查");
+  codeBlock(s, `# 17968 整型关键字的散列映射
+import sys
+data = sys.stdin.read().split()         # 输入可能跨行：整体读入
+n, m = int(data[0]), int(data[1])
+table = [None] * m
+out = []
+for key in map(int, data[2:2 + n]):
+    i = key % m
+    while table[i] is not None and table[i] != key:
+        i = (i + 1) % m                 # 线性探查
+    table[i] = key                      # 重复关键字：返回同一位置
+    out.append(i)
+print(*out)`, 0.5, 1.05, 4.45, 2.85, { fontSize: 8, lang: "py", hl: [9, 11] });
+  codeBlock(s, `# 17975 用二次探查法建立散列表
+import sys
+
+def offsets(m):                         # 0, 1, -1, 4, -4, ...
+    yield 0
+    for k in range(1, m // 2 + 1):
+        yield k * k
+        yield -k * k
+
+data = sys.stdin.read().split()
+n, m = int(data[0]), int(data[1])
+table = [None] * m
+out = []
+for key in map(int, data[2:2 + n]):
+    base = key % m
+    for d in offsets(m):
+        i = (base + d) % m              # 负数取模仍非负
+        if table[i] is None or table[i] == key:
+            table[i] = key
+            out.append(i)
+            break
+print(*out)`, 5.05, 1.05, 4.45, 4.05, { fontSize: 7.6, lang: "py", hl: [6, 7, 8, 17] });
+  consoleBlock(s, "17968：4 5 / 24 13 66 77 → 4 3 1 2\n17975：5 11 / 24 13 35 15 14 → 2 3 1 4 7", 0.5, 4.0, 4.45, 0.62, 8.5);
+  text(s, "两题都要 `sys.stdin.read()` 整体读：OJ 数据不一定按题面分行。重复关键字要给出**同一个位置**。", 0.5, 4.68, 4.45, 0.45, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+}
 // exercises
 {
   const s = content("练", "课后练习 · 选讲", "几道代表性习题");
