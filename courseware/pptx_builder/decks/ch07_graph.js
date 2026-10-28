@@ -51,8 +51,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第七章  图",
   subtitle: "Graph：前驱和后继都不加限制的结构",
-  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 拓扑排序与环检测\nDijkstra · Floyd · MST 性质 · Prim · Kruskal",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 判环（并查集 / parent / 三色）· 两种拓扑排序\nKosaraju · 关键路径 · Dijkstra · Floyd · Bellman-Ford · Prim · Kruskal",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -84,14 +84,14 @@ titleSlide({
   const s = content("≡", "本章导引", "内容地图");
   const cols = [
     ["概念与 ADT", ["7.1 定义：有向 / 无向 / 带权", "度、路径、连通分量、强连通", "生成树、网络、有向树", "选算法之前先分清题目", "7.2 图 ADT 与接口约定"]],
-    ["存储与周游", ["7.3.1 相邻矩阵", "7.3.2 邻接表：实测对比", "7.3.3 十字链表", "7.4.1 深度优先 DFS", "7.4.2 广度优先 BFS", "7.4.3 拓扑排序"]],
-    ["最短路与 MST", ["7.5.1 Dijkstra（+ pre 取路径）", "7.5.2 Floyd", "7.6 MST 性质", "7.6.1 Prim", "7.6.2 Kruskal", "本章小结"]],
+    ["存储与周游", ["7.3.1 相邻矩阵", "7.3.2 邻接表：实测对比", "7.3.3 十字链表", "7.4.1 深度优先 DFS", "7.4.2 广度优先 BFS", "7.4.3 拓扑排序（Kahn）", "7.4.4 判环：无向 / 有向", "7.4.5 DFS 拓扑排序", "7.4.6 Kosaraju · 7.4.7 关键路径"]],
+    ["最短路与 MST", ["7.5.1 Dijkstra（+ pre 取路径）", "7.5.2 Floyd", "7.5.3 负权边：Bellman-Ford", "7.6 MST 性质", "7.6.1 Prim", "7.6.2 Kruskal", "本章小结"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
     card(s, x, 1.15, 2.85, 3.9, i === 0 ? C.cream : C.code);
     text(s, c[0], x + 0.2, 1.3, 2.5, 0.45, { fontSize: 20, bold: true, color: C.dark, margin: 0 });
-    bullets(s, c[1], x + 0.15, 1.9, 2.6, 3.0, { fontSize: 12, gap: 8 });
+    bullets(s, c[1], x + 0.15, 1.85, 2.6, 3.15, { fontSize: 11, gap: 4 });
   });
 }
 
@@ -802,7 +802,7 @@ struct VexNode {
 
 
 // ============================ PART 4 ============================
-sectionSlide("Part 4 · 7.4", "图的周游", "每个顶点访问且只访问一次：靠 seen 数组防止绕回\n深度优先 DFS · 广度优先 BFS · 拓扑排序（顺便检测环）");
+sectionSlide("Part 4 · 7.4", "图的周游", "每个顶点访问且只访问一次：靠 seen 数组防止绕回\nDFS · BFS · 拓扑排序（Kahn / DFS）· 判环（无向 / 有向）\nKosaraju 两次 DFS 求强连通分量 · 关键路径（AOE 网）");
 
 // 7.4.1 DFS concept
 {
@@ -1039,8 +1039,409 @@ void visit_depth_first(std::size_t from, std::vector<bool>& seen,
   ], 7.1, 1.02, 2.4, 4.08, { fontSize: 10 });
 }
 
+// ---------------- 补充（取材 2026spring-cs201 讲义 W09-12 Graph）：环检测 · DFS 拓扑排序 · Kosaraju · 关键路径 ----------------
+// 7.4.4 cycle detection overview
+{
+  const s = content("7.4.4", "7.4.4 环检测 · 补充", "判环：先看是无向图还是有向图");
+  table(s, [
+    ["图", "方法", "核心逻辑", "时间"],
+    ["无向", "**并查集**", "逐条加边：两端**已在同一集合** → 这条边成环", "O(E·α(V))"],
+    ["无向", "**DFS + parent**", "碰到已访问的邻居，且它**不是父结点** → 有环", "O(V+E)"],
+    ["有向", "**Kahn（入度）**", "反复摘入度 0 的点，摘不完 → 剩下的点在环上", "O(V+E)"],
+    ["有向", "**DFS 三色标记**", "碰到**灰色**（还在递归栈上）的点 → 回边 → 有环", "O(V+E)"],
+  ], 0.5, 1.05, 9.0, [0.6, 1.75, 5.3, 1.35], { fontSize: 11, rowH: 0.46 });
+  callout(s, "为什么要分开讲", [
+    "无向图里每条边**存两次**（u→v 与 v→u），沿原边退回父结点不算环——所以要记 **parent**。",
+    "有向图里「见过」≠「成环」：0→1→2 加一条 0→2，从 0 再看到 2 时 2 已访问，但**没有环**——所以要分清**灰**与**黑**。",
+  ], 0.5, 3.5, 5.6, 1.6, { fontSize: 10.5 });
+  callout(s, "Kahn 前面已讲", "7.4.3 的 `topological_sort` 输出不足 V 个即有环：环上每个点入度至少为 1，**永远等不到入度归 0**。", 6.3, 3.5, 3.2, 1.6, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+}
+
+// 7.4.4 undirected: union-find
+{
+  const s = content("7.4.4", "7.4.4 环检测 · 无向图（一）", "并查集：边的两端早已连通，再连就成环");
+  codeBlock(s, `class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+
+    def find(self, x):
+        while self.parent[x] != x:
+            self.parent[x] = self.parent[self.parent[x]]  # 路径减半
+            x = self.parent[x]
+        return x
+
+    def union(self, a, b):
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb:
+            return False                # 早已连通：再加这条边就成环
+        self.parent[ra] = rb
+        return True
+
+def has_cycle_union_find(n, edges):
+    uf = UnionFind(n)
+    for u, v in edges:
+        if not uf.union(u, v):
+            return True
+    return False`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.8, lang: "py", hl: [13, 14] });
+  card(s, 6.6, 1.05, 2.9, 1.75, C.code);
+  text(s, "边 (0,1) (1,2) (2,0)", 6.75, 1.1, 2.6, 0.26, { fontSize: 10, bold: true, color: C.dark, margin: 0 });
+  const P = { 0: [8.05, 1.62], 1: [7.35, 2.45], 2: [8.75, 2.45] };
+  gedge(s, P[0], P[1], "", { directed: false, color: C.ok, width: 2 });
+  gedge(s, P[1], P[2], "", { directed: false, color: C.ok, width: 2 });
+  gedge(s, P[2], P[0], "", { directed: false, color: C.bad, width: 2.25, dash: true });
+  Object.entries(P).forEach(([k, p]) => gnode(s, k, p[0], p[1], { r: 0.18, fs: 10 }));
+  text(s, "前两条边把 0、1、2 并成一个集合；(2,0) 的两端 find 到同一个根 → **成环**。", 6.6, 2.9, 2.9, 0.75, { fontSize: 10, margin: 0 });
+  callout(s, "适合什么场景", "边是**动态一条条加进来**的（Kruskal 判环就是它），不必先建邻接表；只适用于**无向图**。", 6.6, 3.75, 2.9, 1.35, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// 7.4.4 undirected: dfs parent
+{
+  const s = content("7.4.4", "7.4.4 环检测 · 无向图（二）", "DFS + parent：绕回老地方，又不是来时的路");
+  codeBlock(s, `def has_cycle_undirected(graph):
+    visited = set()
+
+    def dfs(u, parent):
+        visited.add(u)
+        for v in graph[u]:
+            if v not in visited:
+                if dfs(v, u):           # 告诉 v：我是你的 parent
+                    return True
+            elif v != parent:           # 见过、又不是来时那条边
+                return True
+        return False
+
+    for u in graph:                     # 森林：每棵树都要查
+        if u not in visited and dfs(u, -1):
+            return True
+    return False
+
+print(has_cycle_undirected({0: [1, 2], 1: [0, 2], 2: [0, 1]}))  # True
+print(has_cycle_undirected({0: [1], 1: [0, 2], 2: [1], 3: []}))  # False`, 0.5, 1.05, 6.1, 3.3, { fontSize: 8.8, lang: "py", hl: [10, 11] });
+  card(s, 0.5, 4.5, 6.1, 0.6, C.dark);
+  text(s, "**v == parent**：沿刚走过的那条边回头看——无向边存了两次，**正常**；**v ≠ parent 又见过**：从另一条路绕回来了。", 0.65, 4.5, 5.85, 0.6, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  callout(s, "visited", "保证每个点只完整搜一遍，总代价 O(V+E)。外层 for 处理**不连通**的图。", 6.8, 1.05, 2.7, 1.15, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 重边会漏判", "u–v 之间有**两条**平行边也是环（长度 2），但两次都碰到 parent 被放过。有重边时改记「来时的**边编号**」而不是父顶点。", 6.8, 2.35, 2.7, 1.6, { fontSize: 10, fill: RED, tcolor: C.bad });
+  callout(s, "自环", "u–u 一条边：v = u 已访问且不是 parent → 判为环，正确。", 6.8, 4.1, 2.7, 1.0, { fontSize: 10 });
+}
+
+// 7.4.4 directed: three colors
+{
+  const s = content("7.4.4", "7.4.4 环检测 · 有向图", "DFS 三色染色：撞上灰点才是环");
+  const GRAY = "C9D1CD";
+  const legend = [["白", C.white, C.dark, "未访问"], ["灰", GRAY, C.dark, "正在访问：还在递归栈上"], ["黑", C.dark, C.white, "访问完毕：后代全部查完"]];
+  legend.forEach((l, i) => {
+    const y = 1.1 + i * 0.5;
+    gnode(s, l[0], 0.75, y + 0.18, { r: 0.18, fs: 10, fill: l[1], color: l[2] });
+    text(s, l[3], 1.1, y, 2.6, 0.36, { fontSize: 11, valign: "middle", margin: 0 });
+  });
+  // 左图：无环，碰到黑点
+  card(s, 3.85, 1.05, 2.75, 2.25, C.code);
+  text(s, "0→1→2，再加 0→2", 3.95, 1.1, 2.6, 0.26, { fontSize: 10, bold: true, color: C.dark, margin: 0 });
+  const A = { 0: [4.4, 2.7], 1: [5.2, 1.7], 2: [6.0, 2.7] };
+  gedge(s, A[0], A[1], "", { r: 0.18 });
+  gedge(s, A[1], A[2], "", { r: 0.18 });
+  gedge(s, A[0], A[2], "", { r: 0.18, color: C.ok, width: 2.25, dash: true });
+  gnode(s, "0", A[0][0], A[0][1], { r: 0.18, fs: 10, fill: GRAY });
+  gnode(s, "1", A[1][0], A[1][1], { r: 0.18, fs: 10, fill: C.dark, color: C.white });
+  gnode(s, "2", A[2][0], A[2][1], { r: 0.18, fs: 10, fill: C.dark, color: C.white });
+  text(s, "回到 0 再看 2：**黑** → 不是环", 3.95, 2.98, 2.6, 0.28, { fontSize: 9.5, color: C.ok, align: "center", margin: 0 });
+  // 右图：有环，碰到灰点
+  card(s, 6.75, 1.05, 2.75, 2.25, RED);
+  text(s, "0→1→2→0", 6.85, 1.1, 2.6, 0.26, { fontSize: 10, bold: true, color: C.dark, margin: 0 });
+  const B = { 0: [7.3, 2.7], 1: [8.1, 1.7], 2: [8.9, 2.7] };
+  gedge(s, B[0], B[1], "", { r: 0.18 });
+  gedge(s, B[1], B[2], "", { r: 0.18 });
+  gedge(s, B[2], B[0], "", { r: 0.18, color: C.bad, width: 2.25, dash: true });
+  ["0", "1", "2"].forEach((k) => gnode(s, k, B[k][0], B[k][1], { r: 0.18, fs: 10, fill: GRAY }));
+  text(s, "在 2 上看 0：**灰** → 回边 → 有环", 6.85, 2.98, 2.6, 0.28, { fontSize: 9.5, color: C.bad, align: "center", margin: 0 });
+  callout(s, "只用 visited 为什么不够", "黑点是**别的分支已经查完**的点，从它出发回不到当前路径；只有灰点（当前路径上的祖先）才能和 u→v 合成一个环。", 0.5, 2.75, 3.15, 1.75, { fontSize: 10.5 });
+  card(s, 3.85, 3.45, 5.65, 1.05, C.mint);
+  text(s, "规则只有一条", 4.0, 3.52, 5.4, 0.3, { fontSize: 12, bold: true, color: C.dark, margin: 0 });
+  text(s, "DFS 检查弧 u→v 时：v **白** → 递归下去；v **灰** → **有环**；v **黑** → 跳过。\n同一套染色顺手就能出**拓扑序**：按变黑的先后倒过来排（7.4.5）。", 4.0, 3.82, 5.4, 0.65, { fontSize: 10.5, margin: 0, lsm: 1.2 });
+}
+
+// 7.4.4 directed: code
+{
+  const s = content("7.4.4", "7.4.4 环检测 · 有向图 · Python", "has_cycle_directed：进门染灰，出门染黑");
+  codeBlock(s, `def has_cycle_directed(graph):
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph}
+
+    def dfs(u):
+        color[u] = GRAY                 # 进入：u 在递归栈上
+        for v in graph[u]:
+            if color[v] == GRAY:        # 回边：v 是 u 的祖先
+                return True
+            if color[v] == WHITE and dfs(v):
+                return True
+        color[u] = BLACK                # 离开：u 的后代全部查完
+        return False
+
+    return any(color[u] == WHITE and dfs(u) for u in graph)
+
+print(has_cycle_directed({0: [1, 2], 1: [2], 2: []}))   # False
+print(has_cycle_directed({0: [1], 1: [2], 2: [0]}))     # True`, 0.5, 1.05, 6.0, 3.4, { fontSize: 9, lang: "py", hl: [6, 8, 9, 12] });
+  card(s, 0.5, 4.55, 6.0, 0.55, C.dark);
+  text(s, "灰色集合 = 当前递归栈。用 set 存「栈上的点」也行，但数组染色更省。", 0.65, 4.55, 5.8, 0.55, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  callout(s, "any(...) 的外层循环", "图可能不连通：每个仍是白色的点都要起一次 DFS。any 一旦碰到 True 就停。", 6.7, 1.05, 2.8, 1.35, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 不能照搬无向图的 parent", "有向图 0→1、1→0 是长度 2 的环；按「v ≠ parent 才算环」会**漏掉**它。", 6.7, 2.55, 2.8, 1.35, { fontSize: 10, fill: RED, tcolor: C.bad });
+  callout(s, "代价", "每个点染色三次、每条弧看一次：O(V+E)。", 6.7, 4.05, 2.8, 1.05, { fontSize: 10 });
+}
+
+// 7.4.5 DFS topo concept + trace
+{
+  const s = content("7.4.5", "7.4.5 拓扑排序的第二种做法 · 补充", "DFS 拓扑排序：按结束时间递减排列");
+  bullets(s, [
+    "对图做 DFS，记下每个顶点**结束访问**（变黑：所有后继都处理完）的先后。",
+    "把顶点按**结束时间递减**排列就是一个拓扑序列——实现上就是把「结束顺序」**倒过来**。",
+    "DFS 途中撞上灰点 = 有环，没有拓扑序（上一页的三色染色）。",
+  ], 0.5, 1.05, 4.6, 1.75, { fontSize: 11.5, gap: 6 });
+  callout(s, "为什么对：任取一条弧 u→v", [
+    "检查到它时 v 是**白**：v 在 u 的递归里访问，**先于 u 结束**；",
+    "v 是**黑**：v **早就结束**了；",
+    "v 是**灰**：v 是 u 的祖先，u→v 合成环——DAG 里不会发生。",
+    "总有 finish(v) < finish(u)，递减排列时 **u 在 v 前**。",
+  ], 0.5, 2.9, 4.6, 2.2, { fontSize: 10.5 });
+  codeBlock(s, `进 c0
+  进 c2
+    进 c3
+      进 c5  完 c5 ①
+      进 c6  完 c6 ②
+    完 c3 ③
+  完 c2 ④
+  进 c7
+    进 c8  完 c8 ⑤
+  完 c7 ⑥
+完 c0 ⑦
+进 c1（c2 c3 已黑，跳过）
+  进 c4  完 c4 ⑧
+完 c1 ⑨`, 5.3, 1.05, 2.4, 2.95, { fontSize: 8.5, lang: "text" });
+  card(s, 7.85, 1.05, 1.65, 2.95, C.code);
+  image(s, "fig-7-17", 7.9, 1.1, 1.55, 2.4);
+  text(s, "图 7.17，邻接点按编号从小到大", 7.9, 3.45, 1.55, 0.5, { fontSize: 8.5, color: C.muted, align: "center", margin: 0 });
+  card(s, 5.3, 4.1, 4.2, 1.0, C.dark);
+  text(s, "结束顺序：c₅ c₆ c₃ c₂ c₈ c₇ c₀ c₄ c₁", 5.45, 4.15, 4.0, 0.4, { fontSize: 11, color: C.white, valign: "middle", margin: 0 });
+  text(s, "倒过来：c₁ c₄ c₀ c₇ c₈ c₂ c₃ c₆ c₅", 5.45, 4.55, 4.0, 0.45, { fontSize: 12, bold: true, color: C.gold, valign: "middle", margin: 0 });
+}
+
+// 7.4.5 DFS topo code
+{
+  const s = content("7.4.5", "7.4.5 DFS 拓扑排序 · Python", "dfs_topo_sort：三色标记 + 结束顺序取逆");
+  codeBlock(s, `def dfs_topo_sort(graph):
+    # 0 = 未访问(白)，1 = 正在访问(灰)，2 = 访问完毕(黑)
+    state = {v: 0 for v in graph}
+    finish_order = []                   # 先结束的在前
+
+    def dfs(u):
+        state[u] = 1
+        for v in graph[u]:
+            if state[v] == 1:           # 撞上灰点：回边 → 有环
+                return False
+            if state[v] == 0 and not dfs(v):
+                return False
+        state[u] = 2
+        finish_order.append(u)          # 结束时刻记下 u
+        return True
+
+    for u in graph:                     # 非连通：每个白点都要起一次
+        if state[u] == 0 and not dfs(u):
+            return None                 # 有环，没有拓扑序
+    return finish_order[::-1]           # 结束时间递减 = 逆序
+
+g = {0: [2, 7], 1: [2, 3, 4], 2: [3], 3: [5, 6], 4: [5],
+     5: [], 6: [], 7: [8], 8: [6]}
+print(dfs_topo_sort(g))`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.6, lang: "py", hl: [9, 14, 20] });
+  consoleBlock(s, "[1, 4, 0, 7, 8, 2, 3, 6, 5]", 6.7, 1.05, 2.8, 0.7, 10);
+  table(s, [
+    ["", "Kahn", "DFS"],
+    ["驱动", "队列 + 入度表", "递归栈 + 三色"],
+    ["产出", "正序逐个输出", "结束后整体取逆"],
+    ["判环", "输出不足 V 个", "撞上灰点"],
+    ["时间", "O(V+E)", "O(V+E)"],
+  ], 6.7, 1.9, 2.8, [0.6, 1.1, 1.1], { fontSize: 9, rowH: 0.36 });
+  callout(s, "⚠ 递归深度", "Python 默认递归上限约 1000；长链 DAG 要 `sys.setrecursionlimit`，或改写成显式栈。", 6.7, 3.85, 2.8, 1.25, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
+// 7.4.6 Kosaraju concept
+{
+  const s = content("7.4.6", "7.4.6 两次 DFS · 强连通分量 · 补充", "Kosaraju：两次 DFS 求强连通分量");
+  const steps = [
+    "**第一次 DFS（在 G 上）**：每个顶点**结束时压栈**，栈顶是结束最晚的点——就是 7.4.5 的「结束时间递减」次序。",
+    "**转置**：所有弧反向得 Gᵀ。SCC 内部仍互相可达；SCC 之间的弧**全部掉头**。",
+    "**第二次 DFS（在 Gᵀ 上）**：按出栈次序取未访问的点作起点，每次走到的点**恰好是一个 SCC**。",
+  ];
+  steps.forEach((t, i) => {
+    const y = 1.08 + i * 0.78;
+    numCircle(s, i + 1, 0.5, y + 0.12, 0.4, C.dark);
+    text(s, t, 1.05, y, 3.95, 0.7, { fontSize: 10.5, valign: "middle", margin: 0 });
+  });
+  callout(s, "为什么会被「困住」", "第一次 DFS 中结束最晚的点，落在缩点 DAG 的**源头** SCC 里；在 Gᵀ 上源头变成**汇点**，从它出发走不出自己的 SCC。剥掉它，再取下一个……总代价 **O(V+E)**。", 0.5, 3.5, 4.5, 1.6, { fontSize: 10.5 });
+  card(s, 5.25, 1.1, 1.65, 1.75, C.cream);
+  card(s, 5.25, 3.05, 1.65, 0.75, GREENBG);
+  card(s, 7.5, 1.1, 0.8, 1.75, "E8EEF6");
+  const N = { 0: [5.65, 1.5], 1: [6.5, 1.5], 2: [6.5, 2.45], 3: [5.65, 2.45], 4: [7.9, 1.5], 5: [7.9, 2.45], 6: [5.65, 3.42], 7: [6.5, 3.42] };
+  const E = (a, b, o = {}) => gedge(s, a, b, "", { r: 0.18, width: 1.25, ...o });
+  E(N[0], N[1]); E(N[1], N[2]); E(N[2], N[3]); E(N[3], N[0]);
+  E(N[1], N[4]); E(N[2], N[5]); E(N[3], N[6]);
+  E([N[4][0] - 0.07, N[4][1]], [N[5][0] - 0.07, N[5][1]]); E([N[5][0] + 0.07, N[5][1]], [N[4][0] + 0.07, N[4][1]]);
+  E([N[6][0], N[6][1] - 0.07], [N[7][0], N[7][1] - 0.07]); E([N[7][0], N[7][1] + 0.07], [N[6][0], N[6][1] + 0.07]);
+  E(N[7], N[5]);
+  Object.entries(N).forEach(([k, p]) => gnode(s, k, p[0], p[1], { r: 0.18, fs: 10 }));
+  [["{0,1,2,3}", C.cream], ["{4,5}", "E8EEF6"], ["{6,7}", GREENBG]].forEach(([t, f], i) => {
+    const y = 1.2 + i * 0.42;
+    s.addShape(pres.shapes.RECTANGLE, { x: 8.5, y: y + 0.06, w: 0.2, h: 0.2, fill: { color: f }, line: { color: C.muted, width: 0.5 } });
+    text(s, t, 8.78, y, 0.75, 0.32, { fontSize: 9, bold: true, color: C.dark, valign: "middle", margin: 0 });
+  });
+  text(s, "三个 SCC", 8.5, 2.5, 1.0, 0.3, { fontSize: 9, color: C.muted, margin: 0 });
+  card(s, 5.25, 4.0, 4.25, 1.1, C.dark);
+  text(s, "第一次 DFS 后的栈（底→顶）：4 5 7 6 3 2 1 0", 5.4, 4.05, 4.0, 0.35, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  text(s, "Gᵀ 上依次弹出：0 → {0,3,2,1}；6 → {6,7}；5 → {5,4}", 5.4, 4.45, 4.0, 0.55, { fontSize: 10.5, bold: true, color: C.gold, valign: "middle", margin: 0 });
+}
+
+// 7.4.6 Kosaraju code
+{
+  const s = content("7.4.6", "7.4.6 Kosaraju · Python", "kosaraju：G 上压栈，Gᵀ 上按栈顶分块");
+  codeBlock(s, `def kosaraju(n, adj):
+    visited = [False] * n
+    stack = []
+    def dfs1(u):                        # 第一次 DFS：在 G 上
+        visited[u] = True
+        for v in adj[u]:
+            if not visited[v]:
+                dfs1(v)
+        stack.append(u)                 # 结束时压栈
+    for i in range(n):
+        if not visited[i]:
+            dfs1(i)
+    radj = [[] for _ in range(n)]       # 转置图 G^T
+    for u in range(n):
+        for v in adj[u]:
+            radj[v].append(u)
+    def dfs2(u, comp):                  # 第二次 DFS：在 G^T 上
+        visited[u] = True
+        comp.append(u)
+        for v in radj[u]:
+            if not visited[v]:
+                dfs2(v, comp)
+    visited, sccs = [False] * n, []
+    while stack:                        # 按结束时间递减取起点
+        u = stack.pop()
+        if not visited[u]:
+            sccs.append([])
+            dfs2(u, sccs[-1])
+    return sccs`, 0.5, 1.05, 5.9, 4.05, { fontSize: 7.9, lang: "py", hl: [9, 16, 25] });
+  codeBlock(s, `adj = [[1], [2, 4], [3, 5], [0, 6],
+       [5], [4], [7], [5, 6]]
+print(kosaraju(8, adj))`, 6.6, 1.05, 2.9, 0.85, { fontSize: 7.6, lang: "py" });
+  consoleBlock(s, "[[0, 3, 2, 1], [6, 7], [5, 4]]", 6.6, 2.0, 2.9, 0.7, 9);
+  callout(s, "两遍都是 O(V+E)", "两次 DFS + 一次转置，每个点、每条弧都只处理常数次。", 6.6, 2.85, 2.9, 1.05, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "另一种：Tarjan", "只要**一次 DFS**：用 dfn / low 时间戳找 SCC 的根，不必建转置图。", 6.6, 4.05, 2.9, 1.05, { fontSize: 10 });
+}
+
+// 7.4.7 critical path concept
+{
+  const s = content("7.4.7", "7.4.7 关键路径 · AOE 网 · 补充", "关键路径：AOE 网上从源点到汇点的最长路径");
+  bullets(s, [
+    "**AOE 网**：**边**是活动、边权是耗时；**顶点**是事件（「进入它的活动都已完成」那一刻）。必须是 DAG。",
+    "**总工期** = 源点到汇点的**最长**路径长；这条路径叫**关键路径**，上面的活动叫**关键活动**。",
+  ], 0.5, 1.05, 4.5, 1.5, { fontSize: 11, gap: 6 });
+  table(s, [
+    ["量", "含义", "怎么算"],
+    ["ve(v)", "事件最早发生时间", "拓扑序：ve(v) = max{ve(u) + w}"],
+    ["vl(u)", "事件最迟发生时间", "逆拓扑序：vl(u) = min{vl(v) − w}"],
+    ["e, l", "活动 <u,v> 最早 / 最迟开始", "e = ve(u)，l = vl(v) − w"],
+    ["关键活动", "没有机动时间", "**l − e = 0**"],
+  ], 0.5, 2.4, 4.5, [0.8, 1.5, 2.2], { fontSize: 9.5, rowH: 0.48 });
+  card(s, 5.25, 1.05, 4.25, 2.35, C.code);
+  const V = { 0: [5.65, 2.2], 1: [6.75, 1.45], 2: [6.75, 3.0], 3: [7.9, 2.2], 4: [8.2, 1.45], 5: [9.15, 2.2] };
+  const crit = new Set(["0-2", "2-3", "3-5"]);
+  [[0, 1, 3], [0, 2, 2], [1, 3, 2], [1, 4, 3], [2, 3, 4], [2, 5, 1], [3, 5, 2], [4, 5, 1]].forEach(([u, v, w]) => {
+    const c = crit.has(u + "-" + v);
+    const off = (u === 2 && v === 5) ? 0.16 : (u === 1 && v === 3) ? 0.16 : -0.16;
+    gedge(s, V[u], V[v], w, { r: 0.2, color: c ? C.bad : C.green, width: c ? 2.25 : 1.25, off, lcolor: c ? C.bad : C.goldText });
+  });
+  Object.entries(V).forEach(([k, p]) => gnode(s, k, p[0], p[1], { fill: [0, 2, 3, 5].includes(+k) ? RED : C.white }));
+  table(s, [
+    ["事件", "0", "1", "2", "3", "4", "5"],
+    ["ve", { t: "0", bold: true }, "3", { t: "2", bold: true }, { t: "6", bold: true }, "6", { t: "8", bold: true }],
+    ["vl", { t: "0", bold: true }, "4", { t: "2", bold: true }, { t: "6", bold: true }, "7", { t: "8", bold: true }],
+  ], 5.25, 3.55, 4.25, [0.65, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], { fontSize: 10, rowH: 0.3, align: "center" });
+  text(s, "红色：关键路径 0 → 2 → 3 → 5，总工期 **8**；ve = vl 的事件都在上面。", 5.25, 4.55, 4.25, 0.55, { fontSize: 10.5, margin: 0 });
+}
+
+// 7.4.7 critical path trace
+{
+  const s = content("7.4.7", "7.4.7 关键路径 · 手算 trace", "拓扑序求 ve → 逆拓扑序求 vl → 逐条活动比 e 与 l");
+  table(s, [
+    ["拓扑序出队", "更新 ve（取 max）"],
+    ["0", "ve₁ = 3，ve₂ = 2"],
+    ["1", "ve₃ = 3+2 = 5，ve₄ = 3+3 = 6"],
+    ["2", "ve₃ = max(5, 2+4) = **6**，ve₅ = 3"],
+    ["4", "ve₅ = max(3, 6+1) = 7"],
+    ["3", "ve₅ = max(7, 6+2) = **8** = 总工期"],
+  ], 0.5, 1.05, 4.4, [1.1, 3.3], { fontSize: 9.5, rowH: 0.3, tight: true });
+  table(s, [
+    ["逆序处理", "更新 vl（初值 8，取 min）"],
+    ["5, 3", "vl₃ = 8−2 = 6"],
+    ["4", "vl₄ = 8−1 = 7"],
+    ["2", "vl₂ = min(6−4, 8−1) = **2**"],
+    ["1", "vl₁ = min(6−2, 7−3) = 4"],
+    ["0", "vl₀ = min(4−3, 2−2) = **0**"],
+  ], 0.5, 3.15, 4.4, [1.1, 3.3], { fontSize: 9.5, rowH: 0.3, tight: true });
+  const R = (a, w, e, l, k) => {
+    const c = k ? { bold: true, color: C.bad } : {};
+    return [{ t: a, ...c }, String(w), String(e), String(l), { t: String(l - e), ...c }];
+  };
+  table(s, [
+    ["活动 <u,v>", "w", "e = ve(u)", "l = vl(v)−w", "l − e"],
+    R("<0,1>", 3, 0, 1, false), R("<0,2>", 2, 0, 0, true), R("<1,3>", 2, 3, 4, false), R("<1,4>", 3, 3, 4, false),
+    R("<2,3>", 4, 2, 2, true), R("<2,5>", 1, 2, 7, false), R("<3,5>", 2, 6, 6, true), R("<4,5>", 1, 6, 7, false),
+  ], 5.1, 1.05, 4.4, [1.05, 0.45, 0.95, 1.15, 0.8], { fontSize: 9.5, rowH: 0.3, tight: true, align: "center" });
+  card(s, 5.1, 4.0, 4.4, 1.1, C.dark);
+  text(s, "关键活动 <0,2> <2,3> <3,5>：2 + 4 + 2 = 8", 5.25, 4.05, 4.15, 0.4, { fontSize: 11, bold: true, color: C.gold, valign: "middle", margin: 0 });
+  text(s, "0→1→4→5 只要 7，各活动有 1 的机动时间；<2,5> 可以拖 5 而不影响工期。", 5.25, 4.45, 4.15, 0.6, { fontSize: 10, color: C.white, valign: "middle", margin: 0 });
+}
+
+// 7.4.7 critical path code
+{
+  const s = content("7.4.7", "7.4.7 关键路径 · Python", "critical_path：一次 Kahn 求 ve，倒着扫一遍求 vl");
+  codeBlock(s, `from collections import deque
+def critical_path(n, edges):
+    # edges = [(u, v, w), ...]：活动 <u, v> 耗时 w
+    adj = [[] for _ in range(n)]
+    indeg = [0] * n
+    for u, v, w in edges:
+        adj[u].append((v, w))
+        indeg[v] += 1
+    # 1. 拓扑序 + 最早发生时间 ve：取 max
+    q = deque(i for i in range(n) if indeg[i] == 0)
+    order, ve = [], [0] * n
+    while q:
+        u = q.popleft()
+        order.append(u)
+        for v, w in adj[u]:
+            ve[v] = max(ve[v], ve[u] + w)
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    if len(order) < n:
+        return None                     # 有环：不是 AOE 网
+    total = max(ve)
+    # 2. 逆拓扑序 + 最迟发生时间 vl：取 min
+    vl = [total] * n
+    for u in reversed(order):
+        for v, w in adj[u]:
+            vl[u] = min(vl[u], vl[v] - w)
+    # 3. 关键活动：e == l
+    crit = [(u, v) for u, v, w in edges if ve[u] == vl[v] - w]
+    return total, ve, vl, crit`, 0.5, 1.05, 5.9, 4.05, { fontSize: 7.9, lang: "py", hl: [16, 27, 29] });
+  consoleBlock(s, "8\nve = [0, 3, 2, 6, 6, 8]\nvl = [0, 4, 2, 6, 7, 8]\n[(0, 2), (2, 3), (3, 5)]", 6.6, 1.05, 2.9, 1.3, 9);
+  callout(s, "max 与 min", "ve 取 **max**：事件要等**所有**前驱活动做完；vl 取 **min**：不能耽误**任何**后继活动。", 6.6, 2.5, 2.9, 1.25, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 关键路径可能不止一条", "缩短某个关键活动不一定缩短工期：另一条关键路径照样要 8。练习：sy404、sy406。", 6.6, 3.9, 2.9, 1.2, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
 // ============================ PART 5 ============================
-sectionSlide("Part 5 · 7.5", "最短路径", "单源最短路：Dijkstra（贪心）· 用 pre 取出路径\n每对顶点：Floyd（动态规划）");
+sectionSlide("Part 5 · 7.5", "最短路径", "单源最短路：Dijkstra（贪心）· 用 pre 取出路径\n每对顶点：Floyd（动态规划）\n负权边：Bellman-Ford（V−1 轮松弛 · 查负环）");
 
 // 7.5 intro + dijkstra idea
 {
@@ -1270,6 +1671,94 @@ sectionSlide("Part 5 · 7.5", "最短路径", "单源最短路：Dijkstra（贪�
   text(s, "⚠ **中转点 via 必须在最外层**，否则 adj⁽ᵏ⁾ 还没算完就被拿去用了。", 0.62, 4.62, 5.2, 0.5, { fontSize: 10.5, color: C.bad, valign: "middle", margin: 0 });
   card(s, 6.1, 4.62, 3.4, 0.5, C.mint);
   text(s, "测试：五个源点的 Dijkstra 与 Floyd 逐项对拍。", 6.22, 4.62, 3.2, 0.5, { fontSize: 10, valign: "middle", margin: 0 });
+}
+
+// ---------------- 补充（取材 2026spring-cs201 讲义 W09-12 Graph）：负权边 · Bellman-Ford ----------------
+// 7.5.3 why Dijkstra fails + idea
+{
+  const s = content("7.5.3", "7.5.3 负权边 · Bellman-Ford · 补充", "有负权边时 Dijkstra 会算错");
+  card(s, 0.5, 1.05, 4.35, 2.45, C.code);
+  text(s, "边 <0,1> 4，<0,2> 5，<2,1> −3，<1,3> 2", 0.65, 1.1, 4.1, 0.28, { fontSize: 10, bold: true, color: C.dark, margin: 0 });
+  const P = { 0: [1.05, 2.3], 1: [2.5, 1.65], 2: [2.5, 3.0], 3: [4.0, 1.65] };
+  gedge(s, P[0], P[1], 4, {});
+  gedge(s, P[0], P[2], 5, { off: -0.16 });
+  gedge(s, P[2], P[1], "−3", { color: C.bad, width: 2.25, lcolor: C.bad, off: 0.24 });
+  gedge(s, P[1], P[3], 2, {});
+  Object.entries(P).forEach(([k, p]) => gnode(s, k, p[0], p[1]));
+  table(s, [
+    ["顶点", "Dijkstra(0)", "真实最短"],
+    ["1", { t: "4（最先被选进 S）", color: C.bad }, { t: "2 = 5 − 3", bold: true }],
+    ["3", { t: "6", color: C.bad }, { t: "4", bold: true }],
+  ], 0.5, 3.65, 4.35, [0.7, 2.0, 1.65], { fontSize: 10, rowH: 0.42 });
+  callout(s, "贪心为什么失效", "Dijkstra 在 D[1] = 4 时就把 v₁ 移进 S，认定「再绕道只会更长」。但绕 v₂ 走 5 + (−3) = 2 更短——**非负权**一破，「当前最近 = 永久最近」就不成立。", 5.15, 1.05, 4.35, 1.7, { fontSize: 10.5, fill: RED, tcolor: C.bad });
+  callout(s, "Bellman-Ford：不挑点，每轮把所有边都松弛一遍", [
+    "无负环时最短路是简单路径，至多 **V−1** 条边；",
+    "**动态规划**：dp[k][v] = 至多 k 条边到 v 的最短长，dp[k][v] = min(dp[k−1][v], dp[k−1][u] + w(u,v))；第 k 轮结束后 dist[v] ≤ dp[k][v]；",
+    "跑满 V−1 轮还能松弛 → 源点可达一个**负权回路**，最短路无定义。",
+  ], 5.15, 2.9, 4.35, 2.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// 7.5.3 trace
+{
+  const s = content("7.5.3", "7.5.3 Bellman-Ford · 手算 trace", "边序 <0,1> <0,2> <1,3> <2,1>，每轮按同一次序松弛");
+  table(s, [
+    ["轮", "这一轮松弛成功的边（按边序）", "dist[0..3]"],
+    ["初", "—", { t: "0  ∞  ∞  ∞", mono: true }],
+    ["1", "<0,1>：4　<0,2>：5　<1,3>：4+2 = 6　<2,1>：5−3 = **2**", { t: "0  2  5  6", mono: true }],
+    ["2", "<1,3>：2+2 = **4**（把第 1 轮的改进传下去）", { t: "0  2  5  4", mono: true }],
+    ["3", "无 → 提前结束", { t: "0  2  5  4", mono: true, bold: true }],
+  ], 0.5, 1.05, 9.0, [0.55, 6.35, 2.1], { fontSize: 10.5, rowH: 0.4 });
+  callout(s, "读这张表", [
+    "第 1 轮 <1,3> 用的还是 dist[1] = 4，<2,1> 之后才变成 2，所以要第 2 轮。",
+    "把 <2,1> 排在 <1,3> 前面，1 轮就够——**轮数随边序变，上界 V−1 不变**。",
+    "一整轮没有任何改动，后面也不会再变，可以**提前退出**。",
+  ], 0.5, 3.25, 4.35, 1.85, { fontSize: 10 });
+  card(s, 5.15, 3.25, 4.35, 1.85, RED);
+  text(s, "再加 <3,2> −4：环 2→1→3→2 = −5", 5.3, 3.3, 4.1, 0.3, { fontSize: 11, bold: true, color: C.bad, margin: 0 });
+  table(s, [
+    ["轮", "dist[0..3]"],
+    ["1 / 2 / 3", { t: "0 2 2 6 → 0 −1 0 4 → 0 −3 −3 1", mono: true }],
+    ["第 4 轮检查", "<1,3>、<2,1> 仍可松弛 → **有负环**"],
+  ], 5.3, 3.68, 4.05, [1.05, 3.0], { fontSize: 9, rowH: 0.36, tight: true });
+}
+
+// 7.5.3 code + compare
+{
+  const s = content("7.5.3", "7.5.3 Bellman-Ford · Python", "bellman_ford：V−1 轮松弛 + 第 V 轮查负环");
+  codeBlock(s, `def bellman_ford(n, edges, source):
+    # edges = [(u, v, w), ...]，w 可以是负数
+    INF = float('inf')
+    dist = [INF] * n
+    dist[source] = 0
+    for _ in range(n - 1):              # 最短路至多 n-1 条边
+        changed = False
+        for u, v, w in edges:
+            if dist[u] != INF and dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                changed = True
+        if not changed:                 # 一整轮没改动：提前收敛
+            break
+    for u, v, w in edges:               # 第 n 轮还能松弛 → 负环
+        if dist[u] != INF and dist[u] + w < dist[v]:
+            return None
+    return dist
+
+edges = [(0, 1, 4), (0, 2, 5), (1, 3, 2), (2, 1, -3)]
+print(bellman_ford(4, edges, 0))                  # [0, 2, 5, 4]
+print(bellman_ford(4, edges + [(3, 2, -4)], 0))   # None`, 0.5, 1.05, 5.75, 4.05, { fontSize: 9, lang: "py", hl: [6, 9, 14, 15] });
+  table(s, [
+    ["", "Dijkstra", "Bellman\nFord", "Floyd"],
+    ["思想", "贪心", "动态规划", "动态规划"],
+    ["负权边", { t: "✗", color: C.bad, bold: true }, { t: "✓", color: C.ok, bold: true }, { t: "✓", color: C.ok, bold: true }],
+    ["负环", "—", "能检测", "对角线 < 0"],
+    ["时间", "O(V²) / O(E log V)", "O(VE)", "O(V³)"],
+    ["求的是", "单源", "单源", "每对顶点"],
+  ], 6.4, 1.05, 3.1, [0.55, 1.15, 0.75, 0.65], { fontSize: 8.5, rowH: 0.36, tight: true });
+  callout(s, "SPFA 与应用", [
+    "**SPFA**：只把 dist 刚变小的点放进队列，再松弛它的出边；平均快很多，最坏仍 O(VE)。",
+    "`dist[u] != INF`：从源点到不了的点不参与松弛，也不会被误判成负环。",
+    "OJ 01860 Currency Exchange：汇率套利就是找**正环**。",
+  ], 6.4, 3.35, 3.1, 1.75, { fontSize: 9, gap: 3 });
 }
 
 // ============================ PART 6 ============================
@@ -1516,8 +2005,8 @@ sectionSlide("Part 6 · 7.6", "最小生成树", "MST 性质 · Prim：从点出
   summarySlide("本章小结", [
     ["概念", "有向 / 无向 / 带权；度与入度出度；**连通分量与强连通分量**；生成树有 n−1 条边。"],
     ["三种存储", "矩阵 V²、O(1) 判边，适合稠密图；邻接表 V+E，适合稀疏图；十字链表合并出边与入边。"],
-    ["周游与拓扑", "DFS ≈ 先根周游、BFS ≈ 层次周游（队列）；拓扑排序反复摘入度 0 的点，**顺便查环**。"],
-    ["最短路径", "Dijkstra 是**贪心**，要求边权非负；Floyd 是**动态规划**，中转点在最外层。"],
+    ["周游与拓扑", "无向判环：并查集 / parent；有向判环：Kahn / **三色**；拓扑序：Kahn 或 **DFS 结束逆序**；Kosaraju 两次 DFS；关键路径 ve / vl。"],
+    ["最短路径", "Dijkstra **贪心**、要求非负权；Floyd **DP**、中转点在最外层；**Bellman-Ford** V−1 轮松弛，能处理负权、查负环。"],
     ["MST", "Prim 从点长树（稠密图），Kruskal 从边合并森林（稀疏图）；复杂度由**算法 + 存储结构**一起决定。"],
   ]);
 
