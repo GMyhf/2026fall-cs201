@@ -1839,7 +1839,7 @@ n=5（奇）  t=0: slow=1, fast=1
 // A.F1 仅设尾指针的循环链表
 {
   const s = content("A.F", "附录A · 程序填空（补充） · 循环链表", "只存尾指针：tail.next 就是表头，两端插入都是 O(1)");
-  codeBlock(s, `class CircleList:                       # 只存尾指针；Node 同 A.1
+  codeBlock(s, `class CircleList:                       # Node(data, next)，同 P0020 框架
     def __init__(self):
         self.tail, self.size = None, 0
 
