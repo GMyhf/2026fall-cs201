@@ -43,8 +43,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第五章  二叉树",
   subtitle: "Binary Tree：递归定义，递归算法",
-  topics: "定义与五种基本形态 · 满 / 完全 / 扩充二叉树 · 三条性质\n前序 / 中序 / 后序 / 层次周游 · 表达式树 · 由周游序列重建\n二叉链表 · 完全二叉树进数组 · 二叉搜索树的查找、插入、删除\n最小堆 · 建堆 O(n) · 优先队列与对顶堆 · Huffman 树与前缀编码",
-  footer: "Compiled by Hongfei Yan · Updated 2026-09-21 · github.com/GMyhf/dsa-modernization",
+  topics: "定义与五种基本形态 · 满 / 完全 / 扩充二叉树 · 三条性质\n前序 / 中序 / 后序 / 层次周游 · 表达式树 · 由周游序列重建\n二叉链表 · 完全二叉树进数组 · 二叉搜索树的查找、插入、删除\n最小堆 · 建堆 O(n) · 优先队列与对顶堆 · Huffman 树与前缀编码\n附录：6 道上机题（扩展二叉树 · 前中序建树 · 队列表达式 · BST 层次 · 剪绳子）",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -79,7 +79,7 @@ titleSlide({
   const cols = [
     ["概念与周游", ["5.1 定义、术语、五种基本形态", "满 / 完全 / 扩充二叉树；三条性质", "5.2 二叉树 ADT", "前序 / 中序 / 后序（递归）", "表达式树；由周游序列重建", "层次周游：队列"]],
     ["存储与 BST", ["5.3 二叉链表、三叉链表", "完全二叉树的顺序存储", "教学版完整实现：三法则、后序释放", "5.4 二叉搜索树：查找、插入", "删除：中序前驱顶替"]],
-    ["堆与 Huffman", ["5.5 最小堆：上浮、下沉", "建堆为什么是 O(n)", "优先队列；对顶堆求中位数", "5.6 Huffman 树与 WPL", "前缀码：编码与译码", "5.6a 进阶：迭代释放与深拷贝"]],
+    ["堆与 Huffman", ["5.5 最小堆：上浮、下沉", "建堆为什么是 O(n)", "优先队列；对顶堆求中位数", "5.6 Huffman 树与 WPL", "前缀码：编码与译码", "5.6a 进阶：迭代释放与深拷贝", "附录 A：6 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -2019,6 +2019,179 @@ void inorder_iterative(Visitor&& visit) const {
     pill(s, e[0], 0.65, y + 0.17, 1.15, 0.36, C.dark, C.gold, 10.5);
     text(s, e[1], 2.0, y, 7.4, 0.7, { fontSize: 11, valign: "middle", margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 讲义 W06-08（二叉树、表达式树、BST、堆、Huffman）的上机题；Python 代码逐题跑过样例。
+sectionSlide("附录 A", "编程练习", "6 道上机题：把本章的性质、周游、BST、堆与 Huffman 用到题里\n27638 高度与叶子 · 08581 扩展二叉树 · 22158 前中序建树\n25140 队列表达式 · 05455 BST 层次遍历 · 18164 剪绳子");
+
+// A.1 27638
+{
+  const s = content("A.1", "附录 A · OJ 27638 求二叉树的高度和叶子数目", "输入是孩子下标表：先找根，再递归");
+  codeBlock(s, `n = int(input())
+left, right = [0] * n, [0] * n
+is_child = [False] * n
+for i in range(n):
+    left[i], right[i] = map(int, input().split())
+    for c in (left[i], right[i]):
+        if c != -1:
+            is_child[c] = True
+root = is_child.index(False)            # 没当过孩子的就是根
+
+def height(u):                          # 高度按边数：空树 -1，叶 0
+    if u == -1:
+        return -1
+    return max(height(left[u]), height(right[u])) + 1
+
+leaves = sum(1 for i in range(n) if left[i] == right[i] == -1)
+print(height(root), leaves)`, 0.5, 1.05, 5.9, 3.35, { fontSize: 9, lang: "py", hl: [9, 11] });
+  consoleBlock(s, "3 / -1 -1 / 0 2 / -1 -1 → 1 2", 0.5, 4.5, 5.9, 0.6, 9);
+  const T = { b: ["1", 8.05, 1.45, HL], a: ["0", 7.45, 2.1], c: ["2", 8.65, 2.1] };
+  card(s, 6.6, 1.05, 2.9, 1.5, C.code);
+  drawTree(s, T, [["b", "a"], ["b", "c"]]);
+  callout(s, "根不一定是 0 号", "样例里 1 号才是根：先标记所有当过孩子的结点，剩下的那个就是根。", 6.6, 2.7, 2.9, 1.15, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "高度的口径", "本题按**边数**：只有根时高度 0。题面若按结点数算，空树返回 0 即可——先读清定义。", 6.6, 4.0, 2.9, 1.1, { fontSize: 9.5 });
+}
+
+// A.1b 08581
+{
+  const s = content("A.1", "附录 A · OJ 08581 扩展二叉树", "空位补「.」之后，一个先序序列就能唯一还原");
+  codeBlock(s, `def build(s, i):                # 返回 (子树, 下一个位置)
+    if s[i] == '.':
+        return None, i + 1      # 外部结点：空子树
+    left, i2 = build(s, i + 1)
+    right, i3 = build(s, i2)
+    return (s[i], left, right), i3
+
+def inorder(t):
+    if t is None:
+        return ''
+    return inorder(t[1]) + t[0] + inorder(t[2])
+
+def postorder(t):
+    if t is None:
+        return ''
+    return postorder(t[1]) + postorder(t[2]) + t[0]
+
+tree, _ = build(input().strip(), 0)
+print(inorder(tree))
+print(postorder(tree))`, 0.5, 1.05, 5.6, 3.5, { fontSize: 9, lang: "py", hl: [3, 4, 5] });
+  consoleBlock(s, "ABD..EF..G..C.. → DBFEGAC / DFGEBCA", 0.5, 4.65, 5.6, 0.45, 8.5);
+  const T = { A: ["A", 7.9, 1.35, HL], B: ["B", 7.25, 1.9], C: ["C", 8.55, 1.9], D: ["D", 6.85, 2.45], E: ["E", 7.65, 2.45], F: ["F", 7.3, 3.0], G: ["G", 8.0, 3.0] };
+  card(s, 6.3, 1.05, 3.2, 2.25, C.code);
+  drawTree(s, T, [["A", "B"], ["A", "C"], ["B", "D"], ["B", "E"], ["E", "F"], ["E", "G"]]);
+  callout(s, "「.」= 5.1.2 的外部结点", "补全之后每个位置是内部还是外部都写明了，所以只要先序就够；不补「.」时一个序列对应很多棵树。", 6.3, 3.45, 3.2, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+// A.2 22158
+{
+  const s = content("A.2", "附录 A · OJ 22158 根据二叉树前中序序列建树", "不建树也行：前序定根，中序分左右，直接拼出后序");
+  codeBlock(s, `import sys
+
+def post(pre, ino):                     # 不建树，直接拼出后序
+    if not pre:
+        return ''
+    root = pre[0]
+    k = ino.index(root)                 # 左子树有 k 个结点
+    return (post(pre[1:k + 1], ino[:k])         # 左子树
+            + post(pre[k + 1:], ino[k + 1:])    # 右子树
+            + root)
+
+lines = sys.stdin.read().split()
+for pre, ino in zip(lines[0::2], lines[1::2]):
+    print(post(pre, ino))`, 0.5, 1.05, 5.9, 2.5, { fontSize: 9, lang: "py", hl: [7, 8, 9] });
+  consoleBlock(s, "DURPA / RUDPA → RUAPD\nXTCNB / CTBNX → CBNTX", 0.5, 3.7, 5.9, 0.75, 9.5);
+  text(s, "多组数据、组数不给：整体读入后两两配对。", 0.5, 4.55, 5.9, 0.4, { fontSize: 10, color: C.goldText, bold: true, margin: 0 });
+  const T = { D: ["D", 8.0, 1.35, HL], U: ["U", 7.3, 1.95], P: ["P", 8.7, 1.95], R: ["R", 6.9, 2.55], A: ["A", 9.1, 2.55] };
+  card(s, 6.6, 1.05, 2.9, 1.95, C.code);
+  drawTree(s, T, [["D", "U"], ["D", "P"], ["U", "R"], ["P", "A"]]);
+  callout(s, "和 5.2.2 的推演同一个递归", "正文用后序 + 中序，根在**末尾**；这里根在前序**开头**。切片版每层复制 O(n)，最坏 O(n²)——n ≤ 26 无所谓；正文工程版用位置表 + 下标区间做到 O(n)。", 6.6, 3.15, 2.9, 1.95, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+}
+
+// A.3 25140
+{
+  const s = content("A.3", "附录 A · OJ 25140 根据后序表达式建立队列表达式", "后序 → 表达式树（栈），层次周游（队列）再颠倒");
+  codeBlock(s, `from collections import deque
+
+def queue_expr(postfix):
+    stack = []
+    for ch in postfix:                  # 小写 = 操作数，大写 = 运算符
+        if ch.islower():
+            stack.append((ch, None, None))
+        else:
+            right, left = stack.pop(), stack.pop()
+            stack.append((ch, left, right))
+    q, order = deque([stack[0]]), []
+    while q:                            # 层次周游
+        v, l, r = q.popleft()
+        order.append(v)
+        for c in (l, r):
+            if c:
+                q.append(c)
+    return ''.join(reversed(order))     # 颠倒层次序 = 队列表达式
+
+for _ in range(int(input())):
+    print(queue_expr(input().strip()))`, 0.5, 1.05, 5.9, 3.3, { fontSize: 8.6, lang: "py", hl: [9, 18] });
+  consoleBlock(s, "xyPzwIM → wzyxIPM\nabcABdefgCDEF → gfCecbDdAaEBF", 0.5, 4.42, 5.9, 0.7, 8.5);
+  const T = { M: ["M", 8.05, 1.35, HL], P: ["P", 7.35, 1.9], I: ["I", 8.75, 1.9], x: ["x", 7.0, 2.45], y: ["y", 7.7, 2.45], z: ["z", 8.4, 2.45], w: ["w", 9.1, 2.45] };
+  card(s, 6.6, 1.05, 2.9, 1.75, C.code);
+  drawTree(s, T, [["M", "P"], ["M", "I"], ["P", "x"], ["P", "y"], ["I", "z"], ["I", "w"]]);
+  callout(s, "为什么是颠倒的层次序", "队列表达式从左扫：遇运算符就从队头取两个、结果入队尾——**最深的一层最先被用掉**。层次序是从根往下，倒过来正好是从最底层往上。", 6.6, 2.95, 2.9, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "层次序 M P I x y z w → 颠倒 w z y x I P M", 6.6, 4.7, 2.9, 0.4, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.4 05455
+{
+  const s = content("A.4", "附录 A · OJ 05455 二叉搜索树的层次遍历", "按输入次序插入 BST，再用队列一层层输出");
+  codeBlock(s, `from collections import deque
+
+def insert(t, v):                       # t = [val, left, right]
+    if t is None:
+        return [v, None, None]
+    i = 1 if v < t[0] else 2
+    t[i] = insert(t[i], v)
+    return t
+
+root, seen = None, set()
+for v in map(int, input().split()):
+    if v not in seen:                   # 重复值只计一次
+        seen.add(v)
+        root = insert(root, v)
+
+q, out = deque([root]), []
+while q:
+    v, l, r = q.popleft()
+    out.append(v)
+    q.extend(c for c in (l, r) if c)
+print(*out)`, 0.5, 1.05, 5.6, 3.45, { fontSize: 9, lang: "py", hl: [6, 12] });
+  consoleBlock(s, "51 45 59 86 45 4 15 76 … → 51 45 59 4 50 86 2 15 76 97 …（与样例一致）", 0.5, 4.6, 5.6, 0.5, 8);
+  callout(s, "形状由插入次序决定", "同一组数换个次序插入，树形和层次序都会变；BST 唯一保证的是**中序**有序。", 6.3, 1.05, 3.2, 1.3, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "用列表代替结点类", "`[val, left, right]` 可原地改孩子；下标 1 / 2 由一次比较选出，插入就只剩一行递归。", 6.3, 2.5, 3.2, 1.3, { fontSize: 9.5 });
+  callout(s, "⚠ 递归深度", "有序输入会让树退化成链：n 上千就要 `sys.setrecursionlimit`，或改成循环插入。", 6.3, 3.95, 3.2, 1.15, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+}
+
+// A.5 18164
+{
+  const s = content("A.5", "附录 A · OJ 18164 剪绳子", "倒过来看：剪 = 合并，最小开销就是 Huffman 树的 WPL");
+  codeBlock(s, `import heapq
+
+n = int(input())
+heap = list(map(int, input().split()))
+heapq.heapify(heap)                     # O(n) 建堆（5.5.1a 的筛选法）
+cost = 0
+while len(heap) > 1:
+    a = heapq.heappop(heap)             # 取两个最短的
+    b = heapq.heappop(heap)
+    cost += a + b                       # 合并一次的开销 = 一次剪断的开销
+    heapq.heappush(heap, a + b)
+print(cost)`, 0.5, 1.05, 5.6, 2.45, { fontSize: 9.2, lang: "py", hl: [8, 9, 10] });
+  consoleBlock(s, "3 / 2 3 5 → 15", 0.5, 3.6, 5.6, 0.6, 9.5);
+  const T = { r: ["10", 8.0, 1.4, HL], a: ["5", 7.3, 2.0], b: ["5", 8.7, 2.0], c: ["2", 6.95, 2.6], d: ["3", 7.65, 2.6] };
+  card(s, 6.3, 1.05, 3.2, 1.95, C.code);
+  drawTree(s, T, [["r", "a"], ["r", "b"], ["a", "c"], ["a", "d"]]);
+  text(s, "开销 10 + 5 = 15 = 2×2 + 3×2 + 5×1", 6.3, 3.05, 3.2, 0.3, { fontSize: 9.5, bold: true, color: C.dark, align: "center", margin: 0 });
+  callout(s, "为什么是 WPL", "每段绳子被剪的次数 = 它在树里的**深度**；每次剪的开销是当前那段的长度，总和 = Σ 长度 × 深度。和 5.6 节的构造一字不差。", 0.5, 4.35, 5.6, 0.8, { fontSize: 9, fill: C.mint, tcolor: C.dark, tsize: 10 });
+  callout(s, "heapq 是最小堆", "要最大堆就存负数；heapify 是 O(n)，每次 pop / push O(log n)，总共 O(n log n)。同题：OJ 05333 Fence Repair。", 6.3, 3.45, 3.2, 1.67, { fontSize: 9.5 });
 }
 
   summarySlide("本章小结", [
