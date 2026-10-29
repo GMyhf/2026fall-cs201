@@ -51,8 +51,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第七章  图",
   subtitle: "Graph：前驱和后继都不加限制的结构",
-  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 判环（并查集 / parent / 三色）· 两种拓扑排序\nKosaraju · 关键路径 · Dijkstra · Floyd · Bellman-Ford · Prim · Kruskal",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 判环（并查集 / parent / 三色）· 两种拓扑排序\nKosaraju / Tarjan · 关键路径 · Dijkstra · Floyd · Bellman-Ford · Prim · Kruskal",
+  footer: "Compiled by Hongfei Yan · Updated 2026-10-29 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -84,7 +84,7 @@ titleSlide({
   const s = content("≡", "本章导引", "内容地图");
   const cols = [
     ["概念与 ADT", ["7.1 定义：有向 / 无向 / 带权", "度、路径、连通分量、强连通", "生成树、网络、有向树", "选算法之前先分清题目", "7.2 图 ADT 与接口约定"]],
-    ["存储与周游", ["7.3.1 相邻矩阵", "7.3.2 邻接表：实测对比", "7.3.3 十字链表", "7.4.1 深度优先 DFS", "7.4.2 广度优先 BFS", "7.4.3 拓扑排序（Kahn）", "7.4.4 判环：无向 / 有向", "7.4.5 DFS 拓扑排序", "7.4.6 Kosaraju · 7.4.7 关键路径"]],
+    ["存储与周游", ["7.3.1 相邻矩阵", "7.3.2 邻接表：实测对比", "7.3.3 十字链表", "7.4.1 深度优先 DFS", "7.4.2 广度优先 BFS", "7.4.3 拓扑排序（Kahn）", "7.4.4 判环：无向 / 有向", "7.4.5 DFS 拓扑排序", "7.4.6 Kosaraju / Tarjan", "7.4.7 关键路径"]],
     ["最短路与 MST", ["7.5.1 Dijkstra（+ pre 取路径）", "7.5.2 Floyd", "7.5.3 负权边：Bellman-Ford", "7.6 MST 性质", "7.6.1 Prim", "7.6.2 Kruskal", "本章小结"]],
   ];
   cols.forEach((c, i) => {
@@ -802,7 +802,7 @@ struct VexNode {
 
 
 // ============================ PART 4 ============================
-sectionSlide("Part 4 · 7.4", "图的周游", "每个顶点访问且只访问一次：靠 seen 数组防止绕回\nDFS · BFS · 拓扑排序（Kahn / DFS）· 判环（无向 / 有向）\nKosaraju 两次 DFS 求强连通分量 · 关键路径（AOE 网）");
+sectionSlide("Part 4 · 7.4", "图的周游", "每个顶点访问且只访问一次：靠 seen 数组防止绕回\nDFS · BFS · 拓扑排序（Kahn / DFS）· 判环（无向 / 有向）\n强连通分量：Kosaraju 两次 DFS / Tarjan 一次 DFS · 关键路径（AOE 网）");
 
 // 7.4.1 DFS concept
 {
@@ -1039,7 +1039,7 @@ void visit_depth_first(std::size_t from, std::vector<bool>& seen,
   ], 7.1, 1.02, 2.4, 4.08, { fontSize: 10 });
 }
 
-// ---------------- 补充（取材 2026spring-cs201 讲义 W09-12 Graph）：环检测 · DFS 拓扑排序 · Kosaraju · 关键路径 ----------------
+// ---------------- 补充（取材 2026spring-cs201 讲义 W09-12 Graph）：环检测 · DFS 拓扑排序 · Kosaraju · Tarjan · 关键路径 ----------------
 // 7.4.4 cycle detection overview
 {
   const s = content("7.4.4", "7.4.4 环检测 · 补充", "判环：先看是无向图还是有向图");
@@ -1335,7 +1335,118 @@ print(dfs_topo_sort(g))`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.6, lang: "py", hl:
 print(kosaraju(8, adj))`, 6.6, 1.05, 2.9, 0.85, { fontSize: 7.6, lang: "py" });
   consoleBlock(s, "[[0, 3, 2, 1], [6, 7], [5, 4]]", 6.6, 2.0, 2.9, 0.7, 9);
   callout(s, "两遍都是 O(V+E)", "两次 DFS + 一次转置，每个点、每条弧都只处理常数次。", 6.6, 2.85, 2.9, 1.05, { fontSize: 10, fill: C.mint, tcolor: C.dark });
-  callout(s, "另一种：Tarjan", "只要**一次 DFS**：用 dfn / low 时间戳找 SCC 的根，不必建转置图。", 6.6, 4.05, 2.9, 1.05, { fontSize: 10 });
+  callout(s, "另一种：Tarjan", "只要**一次 DFS**：用 dfn / low 时间戳找 SCC 的根，不必建转置图（接下来三页）。", 6.6, 4.05, 2.9, 1.05, { fontSize: 10 });
+}
+
+// 7.4.6 Tarjan concept
+{
+  const s = content("7.4.6", "7.4.6 一次 DFS · 强连通分量 · 补充", "Tarjan：一次 DFS，用 dfn / low 找出每个 SCC 的根");
+  bullets(s, [
+    "**dfn[u]**：u 是第几个被访问的（时间戳），定下就不变。",
+    "**low[u]**：从 u 的 DFS 子树出发，经一条指向**仍在栈中**的点的弧，能回到的**最小 dfn**。",
+    "访问一个点就**压栈**；栈里是「已访问、还没归入任何 SCC」的点。",
+  ], 0.5, 1.05, 4.5, 1.45, { fontSize: 10.5, gap: 4 });
+  table(s, [
+    ["扫到弧 u→v 时", "low[u] 怎么更新"],
+    ["v 未访问（树边）", "先 dfs(v)，回来后 low[u] = min(low[u], **low[v]**)"],
+    ["v 已访问且**在栈中**", "low[u] = min(low[u], **dfn[v]**)"],
+    ["v 已出栈", "**忽略**：v 已属于另一个确定的 SCC"],
+  ], 0.5, 2.45, 4.5, [1.45, 3.05], { fontSize: 9.5, rowH: 0.4 });
+  card(s, 0.5, 4.3, 4.5, 0.8, C.dark);
+  text(s, "判根：回溯到 u 时若 **low[u] == dfn[u]**，u 就是 SCC 的根——弹栈直到弹出 u，弹出的点恰好构成一个 SCC。", 0.65, 4.33, 4.25, 0.74, { fontSize: 10.5, color: C.white, valign: "middle", margin: 0 });
+  card(s, 5.25, 1.05, 4.25, 2.55, RED);
+  text(s, "⚠ 为什么只认「在栈中」的点", 5.4, 1.12, 4.0, 0.3, { fontSize: 11, bold: true, color: C.bad, margin: 0 });
+  const M = { 0: [5.75, 1.85], 1: [5.75, 3.05], 2: [6.65, 3.05] };
+  gedge(s, M[0], M[1], "", { r: 0.18, width: 1.25 });
+  gedge(s, M[0], M[2], "", { r: 0.18, width: 1.25 });
+  gedge(s, M[2], M[1], "", { r: 0.18, width: 1.25, color: C.bad, dash: true });
+  Object.entries(M).forEach(([k, p]) => gnode(s, k, p[0], p[1], { r: 0.18, fs: 10 }));
+  text(s, "dfn 0", 5.98, 1.75, 0.6, 0.2, { fontSize: 8, color: C.muted, margin: 0 });
+  text(s, "dfn 1", 5.5, 3.27, 0.6, 0.2, { fontSize: 8, color: C.muted, margin: 0 });
+  text(s, "dfn 2", 6.4, 3.27, 0.6, 0.2, { fontSize: 8, color: C.muted, margin: 0 });
+  text(s, "DFS 先走 0→1：1 没有出弧，**{1}** 成块出栈；再走 0→2，看到 2→1。\n若照样用 dfn[1]，low[2] = 1 ≠ 2，2 判不成根，最后被错并成 {2, 0}。\n只认栈中点：**{1}、{2}、{0}** 各自成块 ✓", 7.05, 1.45, 2.35, 2.1, { fontSize: 9.5, margin: 0, valign: "top" });
+  callout(s, "和 Kosaraju 比", [
+    "**一次 DFS**，不建转置图 Gᵀ；仍是 **O(V+E)**。",
+    "代价：多了 dfn / low / 在栈标记三个数组。",
+    "SCC 按缩点 DAG 的**逆拓扑序**产出（下一页）。",
+  ], 5.25, 3.75, 4.25, 1.35, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+}
+
+// 7.4.6 Tarjan trace
+{
+  const s = content("7.4.6", "7.4.6 Tarjan · 手算 trace", "同一张图跑 Tarjan：结点旁标 dfn / low");
+  card(s, 0.6, 1.08, 2.15, 2.12, C.cream);
+  card(s, 3.45, 1.08, 1.3, 2.12, "E8EEF6");
+  card(s, 0.6, 3.48, 2.15, 1.02, GREENBG);
+  const N = { 0: [1.0, 1.6], 1: [2.2, 1.6], 2: [2.2, 2.8], 3: [1.0, 2.8], 4: [3.9, 1.6], 5: [3.9, 2.8], 6: [1.0, 3.95], 7: [2.2, 3.95] };
+  const E = (a, b, o = {}) => gedge(s, a, b, "", { r: 0.2, width: 1.25, ...o });
+  E(N[0], N[1]); E(N[1], N[2]); E(N[2], N[3]); E(N[3], N[0]);
+  E(N[1], N[4]); E(N[2], N[5]); E(N[3], N[6]);
+  E([N[4][0] - 0.07, N[4][1]], [N[5][0] - 0.07, N[5][1]]); E([N[5][0] + 0.07, N[5][1]], [N[4][0] + 0.07, N[4][1]]);
+  E([N[6][0], N[6][1] - 0.07], [N[7][0], N[7][1] - 0.07]); E([N[7][0], N[7][1] + 0.07], [N[6][0], N[6][1] + 0.07]);
+  E(N[7], N[5]);
+  Object.entries(N).forEach(([k, p]) => gnode(s, k, p[0], p[1]));
+  const DL = { 0: "0/0", 1: "1/0", 2: "2/0", 3: "3/0", 4: "7/6", 5: "6/6", 6: "4/4", 7: "5/4" };
+  Object.entries(DL).forEach(([k, t]) => {
+    const [cx, cy] = N[k];
+    const below = k === "6" || k === "7";
+    text(s, t, below ? cx - 0.3 : cx + 0.17, below ? cy + 0.22 : cy - 0.42, 0.6, 0.22, { fontSize: 9, bold: true, color: C.goldText, align: below ? "center" : "left", margin: 0 });
+  });
+  text(s, "标注为 dfn / low。DFS 访问次序 0 1 2 3 6 7 5 4，即 dfn 0–7。", 0.5, 4.65, 4.3, 0.45, { fontSize: 10, margin: 0, valign: "middle" });
+  table(s, [
+    ["回溯到", "dfn", "low", "发生了什么"],
+    ["4", "7", "6", "4→5：5 在栈中，low = dfn[5] = 6"],
+    [{ t: "5", bold: true, color: C.bad }, "6", "6", "low = dfn → 弹出 **{4, 5}**"],
+    ["7", "5", "4", "7→5 树边，low[5] = 6 不更小；7→6 在栈 → 4"],
+    [{ t: "6", bold: true, color: C.bad }, "4", "4", "low = dfn → 弹出 **{7, 6}**"],
+    ["3", "3", "0", "3→0：0 在栈中 → 0；子树 6 的 low 4 不更小"],
+    ["2", "2", "0", "继承 low[3] = 0；2→5：5 已出栈，忽略"],
+    ["1", "1", "0", "继承 low[2] = 0；1→4：4 已出栈，忽略"],
+    [{ t: "0", bold: true, color: C.bad }, "0", "0", "low = dfn → 弹出 **{3, 2, 1, 0}**"],
+  ], 4.95, 1.05, 4.55, [0.7, 0.45, 0.45, 2.95], { fontSize: 9, rowH: 0.3, tight: true });
+  card(s, 4.95, 3.95, 4.55, 1.15, C.dark);
+  text(s, "产出顺序：{4, 5} → {7, 6} → {3, 2, 1, 0}", 5.1, 4.0, 4.3, 0.38, { fontSize: 11, bold: true, color: C.gold, valign: "middle", margin: 0 });
+  text(s, "先成块的在缩点 DAG 的**下游**——正好是**逆拓扑序**；Kosaraju 的产出 {0,3,2,1} → {6,7} → {5,4} 是拓扑序。", 5.1, 4.4, 4.3, 0.65, { fontSize: 10, color: C.white, valign: "middle", margin: 0 });
+}
+
+// 7.4.6 Tarjan code
+{
+  const s = content("7.4.6", "7.4.6 Tarjan · Python", "tarjan：访问即入栈，low == dfn 时整块弹出");
+  codeBlock(s, `def tarjan(n, adj):
+    dfn, low = [-1] * n, [0] * n        # dfn = -1 表示未访问
+    on_stk = [False] * n
+    stk, sccs = [], []
+    t = 0
+    def dfs(u):
+        nonlocal t
+        dfn[u] = low[u] = t
+        t += 1
+        stk.append(u)                   # 访问即入栈
+        on_stk[u] = True
+        for v in adj[u]:
+            if dfn[v] == -1:            # 树边：先递归
+                dfs(v)
+                low[u] = min(low[u], low[v])
+            elif on_stk[v]:             # 指回栈中的点
+                low[u] = min(low[u], dfn[v])
+        if low[u] == dfn[u]:            # u 是 SCC 的根
+            comp = []
+            while True:
+                v = stk.pop()
+                on_stk[v] = False
+                comp.append(v)
+                if v == u: break
+            sccs.append(comp)
+    for i in range(n):
+        if dfn[i] == -1:
+            dfs(i)
+    return sccs`, 0.5, 1.05, 5.9, 4.05, { fontSize: 7.9, lang: "py", hl: [15, 17, 18] });
+  codeBlock(s, `adj = [[1], [2, 4], [3, 5], [0, 6],
+       [5], [4], [7], [5, 6]]
+print(tarjan(8, adj))`, 6.6, 1.05, 2.9, 0.85, { fontSize: 7.6, lang: "py" });
+  consoleBlock(s, "[[4, 5], [7, 6], [3, 2, 1, 0]]", 6.6, 2.0, 2.9, 0.7, 9);
+  callout(s, "O(V+E)", "每个点入栈、出栈各一次，每条弧只看一次。", 6.6, 2.85, 2.9, 0.95, { fontSize: 10, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 递归深度", "和 Kosaraju 一样是递归 DFS；链长上千要 `sys.setrecursionlimit`，或改写成显式栈。", 6.6, 3.95, 2.9, 1.15, { fontSize: 9.5, fill: RED, tcolor: C.bad });
 }
 
 // 7.4.7 critical path concept
@@ -2005,7 +2116,7 @@ sectionSlide("Part 6 · 7.6", "最小生成树", "MST 性质 · Prim：从点出
   summarySlide("本章小结", [
     ["概念", "有向 / 无向 / 带权；度与入度出度；**连通分量与强连通分量**；生成树有 n−1 条边。"],
     ["三种存储", "矩阵 V²、O(1) 判边，适合稠密图；邻接表 V+E，适合稀疏图；十字链表合并出边与入边。"],
-    ["周游与拓扑", "无向判环：并查集 / parent；有向判环：Kahn / **三色**；拓扑序：Kahn 或 **DFS 结束逆序**；Kosaraju 两次 DFS；关键路径 ve / vl。"],
+    ["周游与拓扑", "无向判环：并查集 / parent；有向判环：Kahn / **三色**；拓扑序：Kahn 或 **DFS 结束逆序**；SCC：Kosaraju 两次 DFS / Tarjan 一次 DFS；关键路径 ve / vl。"],
     ["最短路径", "Dijkstra **贪心**、要求非负权；Floyd **DP**、中转点在最外层；**Bellman-Ford** V−1 轮松弛，能处理负权、查负环。"],
     ["MST", "Prim 从点长树（稠密图），Kruskal 从边合并森林（稀疏图）；复杂度由**算法 + 存储结构**一起决定。"],
   ]);
