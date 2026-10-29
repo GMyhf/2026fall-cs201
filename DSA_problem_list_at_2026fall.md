@@ -23,7 +23,7 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 11 | 05442: 兔子与星空 | MST   | Medium    | http://cs101.openjudge.cn/practice/05442/      |
 | 11 | 01258: Agri-Net   | MST    | Medium    | http://cs101.openjudge.cn/practice/01258/      |
 | 11 | 05443: 兔子与樱花 | dijkstra, Floyd-Warshall      | Medium | http://cs101.openjudge.cn/practice/05443/          |
-| 110 | 3629.通过质数传送到达终点的最少跳跃次数      | bfs, hash table, number theory       | Medium | https://leetcode.cn/problems/minimum-jumps-to-reach-end-via-prime-teleportation/          |
+| 11 | 3629.通过质数传送到达终点的最少跳跃次数      | bfs, hash table, number theory       | Medium | https://leetcode.cn/problems/minimum-jumps-to-reach-end-via-prime-teleportation/          |
 | 11 | 3660.跳跃游戏 IX   | greedy, graph   | Medium | https://leetcode.cn/problems/jump-game-ix/          |
 | 11 | 30669: 地铁换乘    | LCA, binary lifting   | Tough | http://cs101.openjudge.cn/practice/30669/          |
 | 11 | M30720: 败方树的构建与维护    | tree       | Medium | http://cs101.openjudge.cn/practice/30720/          |
