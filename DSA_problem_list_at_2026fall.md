@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-10-29 18:21 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-11-01 18:21 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -15,6 +15,9 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |       |       | Medium |          |
+| 11 | M02524:宗教信仰      | dsu      | Medium | http://cs101.openjudge.cn/pctbook/M02524/         |
+| 11 | 01703:发现它，抓住它 | dsu      | Medium | http://cs101.openjudge.cn/practice/01703/         |
+| 11 | 04081:树的转换     | tree       | Medium | http://cs101.openjudge.cn/practice/04081/          |
 | 11 | P1262 [POI 1996 R3] 间谍网络  | SCC      | 绿色 普及+/提高 | https://www.luogu.com.cn/problem/P1262          |
 | 11 | P3387 【模板】缩点 | SCC      | 绿色 普及+/提高 | https://www.luogu.com.cn/problem/P3387          |
 | 11 | 427C. Checkposts   | SCC/dfs and similar, graphs, two pointers  | 1700 | https://codeforces.com/problemset/problem/427/C          |
