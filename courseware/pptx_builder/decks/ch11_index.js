@@ -41,8 +41,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第11章  索引技术",
   subtitle: "Indexing：关键码到记录位置的查找表",
-  topics: "线性索引：稠密 / 稀疏 · 多级索引 · 静态多分树与扇出\n倒排索引：有序表求交 · 短语查询\nB 树：插入分裂 · 删除借位与合并 · B+ 树与叶链范围扫描\n位图索引与尾部掩码 · 游程压缩 · 签名文件 · 红黑树（对照）",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "线性索引：稠密 / 稀疏 · 多级索引 · 静态多分树与扇出\n倒排索引：有序表求交 · 短语查询\nB 树：插入分裂 · 删除借位与合并 · B+ 树与叶链范围扫描\n位图索引与尾部掩码 · 游程压缩 · 签名文件 · 红黑树（对照）\n附录：8 道上机题 · 多级索引 · 倒排表建立与求交 · 范围计数 · 位图",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -77,7 +77,7 @@ titleSlide({
     ["11.2", "静态多分树", ["多分降树高", "扇出是算出来的", "批量装入 bulk_load", "溢出区与重组"]],
     ["11.3", "倒排索引", ["属性倒排 / 正文倒排", "双指针求交 O(n+m)", "交 / 并 / 差", "短语查询靠位置"]],
     ["11.4", "动态索引", ["B 树定义与访外", "插入—分裂", "交换—删除—借—合并", "B+ 树与叶链", "性能分析 · 静态 vs 动态"]],
-    ["11.5", "位索引技术", ["位图与按位运算", "尾部掩码", "游程压缩 · 签名", "红黑树（对照）"]],
+    ["11.5", "位索引技术", ["位图与按位运算", "尾部掩码", "游程压缩 · 签名", "红黑树（对照）", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 1.82;
@@ -1446,6 +1446,206 @@ int main() {
     text(s, e[1], 1.85, y + 0.05, 5.0, 0.82, { fontSize: 10, valign: "middle", margin: 0 });
     text(s, e[2], 7.0, y + 0.05, 2.4, 0.82, { fontSize: 9.5, color: C.goldText, valign: "middle", margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 cs101.openjudge.cn 题库（倒排索引、集合运算、位图）与 LeetCode 的索引类题；
+// OJ 题跑过本地测试数据，LeetCode 题与暴力解随机对拍。
+sectionSlide("附录 A", "编程练习", "8 道上机题：把多级索引、倒排表、有序表求交、位图用到题里\nLC74 · LC981 · 06640 倒排索引 · 31193 倒排文档\n04088 集合运算 · LC2080 · LC729 · 30061 春游集合");
+
+// A.1 LC74
+{
+  const s = content("A.1", "附录 A · LeetCode 74 搜索二维矩阵", "两级索引：先在「每行首元素」里二分，再进那一行");
+  codeBlock(s, `from bisect import bisect_right
+
+class Solution:
+    def searchMatrix(self, matrix: list[list[int]], target: int) -> bool:
+        firsts = [row[0] for row in matrix]     # 一级索引：每行的首元素
+        r = bisect_right(firsts, target) - 1    # 首元素 <= target 的最后一行
+        if r < 0:
+            return False
+        row = matrix[r]                         # 二级：只在这一行里找
+        c = bisect_right(row, target) - 1
+        return c >= 0 and row[c] == target`, 0.5, 1.05, 5.9, 2.0, { fontSize: 8.6, lang: "py", hl: [5, 6, 9] });
+  table(s, [
+    ["一级索引 firsts", "1", "10", "23"],
+    ["第 0 行", "1  3  5  7", "", ""],
+    ["第 1 行", "", "10  11  16  20", ""],
+    ["第 2 行", "", "", "23  30  34  60"],
+  ], 0.5, 3.2, 5.9, [1.5, 1.45, 1.5, 1.45], { fontSize: 9, rowH: 0.28, tight: true });
+  text(s, "找 16：firsts 里首元素 ≤ 16 的最后一个是 10 → 只进第 1 行再二分。两次二分，共 O(log mn)。", 0.5, 4.45, 5.9, 0.65, { fontSize: 9.5, margin: 0 });
+  callout(s, "这就是 11.1 的稀疏索引", "每行（一「块」）只留**首关键码**做索引项；索引有序就能二分。行数再多，就给 firsts 再建一层——多级索引。", 6.6, 1.05, 2.9, 1.85, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么用 bisect_right − 1", "要的是「最后一个 ≤ target」的块：块首等于 target 时也得进这一块。", 6.6, 3.05, 2.9, 1.2, { fontSize: 9.5 });
+  text(s, "整体看成一个长 m·n 的有序表二分也行；分两级更贴近外存：索引一页、数据一页。", 6.6, 4.4, 2.9, 0.7, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.2 LC981
+{
+  const s = content("A.2", "附录 A · LeetCode 981 基于时间的键值存储", "每个 key 一张按时间有序的表：查「不晚于 t 的最后一条」");
+  codeBlock(s, `from bisect import bisect_right
+from collections import defaultdict
+
+class TimeMap:
+    def __init__(self):
+        self.times = defaultdict(list)          # key → 时间戳（递增）
+        self.vals = defaultdict(list)           # key → 对应的值
+
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        self.times[key].append(timestamp)       # 题目保证时间戳递增：
+        self.vals[key].append(value)            # 追加即有序，不必插入
+
+    def get(self, key: str, timestamp: int) -> str:
+        i = bisect_right(self.times[key], timestamp)   # 第一个 > t
+        return self.vals[key][i - 1] if i else ""      # 它前一个`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.6, lang: "py", hl: [10, 14, 15] });
+  consoleBlock(s, "set(foo, bar, 1)  get(foo, 1) → bar   get(foo, 3) → bar\nset(foo, bar2, 4) get(foo, 4) → bar2  get(foo, 5) → bar2", 0.5, 3.95, 5.9, 0.75, 8.8);
+  text(s, "get(foo, 0) → \"\"：bisect_right 返回 0，表示没有不晚于 0 的版本。", 0.5, 4.8, 5.9, 0.3, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "两层：散列 + 有序表", "第一层按 key 散列，O(1) 找到这个 key 的表；第二层表内按时间有序，二分 O(log n)。和「索引项 → 数据块」同一个结构。", 6.6, 1.05, 2.9, 1.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "只追加，不插入", "时间戳递增，append 就保持有序——像日志型存储，写入 O(1)。如果允许乱序写，就得 insort（O(n)）或换平衡树。", 6.6, 3.0, 2.9, 1.5, { fontSize: 9.5 });
+}
+
+// A.3 06640
+{
+  const s = content("A.3", "附录 A · OJ 06640 倒排索引", "建倒排表：按文档号顺序扫一遍，每个词的表天然有序");
+  codeBlock(s, `import sys
+from collections import defaultdict
+
+lines = sys.stdin.read().split('\\n')
+n = int(lines[0])
+index = defaultdict(list)               # 词 → 文档号表（倒排表）
+for doc in range(1, n + 1):
+    words = lines[doc].split()[1:]      # 第一个数是词数
+    for w in set(words):                # 同一文档只记一次
+        index[w].append(doc)            # 按文档号顺序扫：表天然有序
+
+m = int(lines[n + 1])
+for q in lines[n + 2:n + 2 + m]:
+    docs = index.get(q.strip())
+    print(' '.join(map(str, docs)) if docs else "NOT FOUND")`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.8, lang: "py", hl: [6, 9, 10] });
+  table(s, [
+    ["词", "hello", "world", "great", "pku"],
+    ["倒排表", "1", "1 2", "2 3", "NOT FOUND"],
+  ], 0.5, 3.95, 5.9, [1.1, 1.2, 1.2, 1.2, 1.2], { fontSize: 9.5, rowH: 0.3, tight: true });
+  text(s, "样例：文档 1 = hello world，2 = the world is great，3 = great news。", 0.5, 4.65, 5.9, 0.45, { fontSize: 9.5, color: C.muted, margin: 0 });
+  callout(s, "正排 vs 倒排", "输入是**正排**：文档 → 词。倒过来存成词 → 文档号表，查一个词就是一次散列 + 读一张表，不必扫所有文档。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 用 set(words)", "同一文档里一个词出现多次，倒排表里只能有一个文档号；否则会输出 2 2。", 6.6, 2.95, 2.9, 1.25, { fontSize: 9.5, fill: "FDF0EE", tcolor: C.bad });
+  text(s, "表有序是后面求交（A.5、04093）能用双指针的前提。", 6.6, 4.35, 2.9, 0.75, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.4 31193
+{
+  const s = content("A.4", "附录 A · OJ 31193 倒排文档", "一遍扫描，同时建倒排表和词频表");
+  codeBlock(s, `import sys
+from collections import Counter
+
+lines = sys.stdin.read().split('\\n')
+w, n, r = lines[0].strip(), int(lines[1]), int(lines[2])
+postings, freq = [], Counter()
+for no, line in enumerate(lines[3:3 + n], 1):
+    words = line.split()
+    freq.update(words)                  # 词频：全文统计
+    if w in words:
+        postings.append(no)             # 倒排：只记行号
+print(' '.join(map(str, postings)) if postings else -1)
+
+ranked = sorted(freq.items(), key=lambda t: (-t[1], t[0]))
+print(ranked[r - 1][1])                 # 频次降序，同频按字母序`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.8, lang: "py", hl: [9, 11, 14] });
+  consoleBlock(s, "W = I，R = 3\n→ 1 2 3     （I 出现在第 1、2、3 行）\n→ 2         （词频：I 4，Beijing / in / love 各 2，排第 3 的是 in）", 0.5, 3.95, 5.9, 1.15, 8.8);
+  callout(s, "倒排表里还能放什么", "11.3 节的正文倒排只放文档号；实际系统还放**词频、位置**——排序、短语查询都要用。本题的词频就是附加信息。", 6.6, 1.05, 2.9, 1.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "排序键 (−次数, 词)", "频次降序、同频按字母升序：一个元组键就够，不用写比较函数。Counter 的 most_common 同频不按字母序，不能直接用。", 6.6, 3.0, 2.9, 1.6, { fontSize: 9.5 });
+  text(s, "按空格切词：「travelling,」带着逗号算一个词。", 6.6, 4.7, 2.9, 0.4, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.5 04088
+{
+  const s = content("A.5", "附录 A · OJ 04088 集合运算", "两张有序表同步扫：对称差 (A − B) ∪ (B − A)");
+  codeBlock(s, `a = list(map(int, input().split()))[1:]
+b = list(map(int, input().split()))[1:]
+
+out, i, j = [], 0, 0
+while i < len(a) and j < len(b):        # 两张有序表同步扫，O(n + m)
+    if a[i] < b[j]:
+        out.append(a[i]); i += 1
+    elif a[i] > b[j]:
+        out.append(b[j]); j += 1
+    else:                               # 两边都有：对称差里没有它
+        i += 1; j += 1
+out += a[i:] + b[j:]
+print(' '.join(map(str, out)))`, 0.5, 1.05, 5.9, 2.4, { fontSize: 9, lang: "py", hl: [5, 10, 12] });
+  consoleBlock(s, "A = 1 3 5 6 8 10 12 30，B = 1 3 7\n→ 5 6 7 8 10 12 30", 0.5, 3.6, 5.9, 0.75, 9);
+  text(s, "交、并、差、对称差都是同一个循环，只是「相等时」「小的那边」各输出谁不同。", 0.5, 4.5, 5.9, 0.6, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "11.3 的有序表求交", "倒排查询「同时含 a 和 b」就是两张文档号表求交：双指针 O(n + m)，每一步扔掉较小的那个。", 6.6, 1.05, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "题目说 m = O(log n)", "B 很短时另一条路：对每个 b 在 A 里二分，O(m log n)；但输出 C 本身要 O(n)，归并已经最优。", 6.6, 2.8, 2.9, 1.5, { fontSize: 9.5 });
+  text(s, "用 Python 的 set 也能做 (a ^ b)，但要再排序一次。", 6.6, 4.45, 2.9, 0.65, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.6 LC2080
+{
+  const s = content("A.6", "附录 A · LeetCode 2080 区间内查询数字的频率", "值 → 下标的倒排表 + 两次二分 = 范围计数");
+  codeBlock(s, `from bisect import bisect_left, bisect_right
+from collections import defaultdict
+
+class RangeFreqQuery:
+    def __init__(self, arr: list[int]):
+        self.pos = defaultdict(list)            # 值 → 出现的下标（倒排表）
+        for i, x in enumerate(arr):
+            self.pos[x].append(i)               # 顺序扫描：表天然有序
+
+    def query(self, left: int, right: int, value: int) -> int:
+        p = self.pos.get(value, [])     # 只看 value 的倒排表
+        # 表中落在 [left, right] 的下标个数 = 两次二分之差
+        return bisect_right(p, right) - bisect_left(p, left)`, 0.5, 1.05, 5.9, 2.55, { fontSize: 8.8, lang: "py", hl: [6, 13] });
+  consoleBlock(s, "arr = [12, 33, 4, 56, 22, 2, 34, 33, 22, 12, 34, 56]\npos[33] = [1, 7]\nquery(1, 2, 4) → 1    query(0, 11, 33) → 2", 0.5, 3.75, 5.9, 1.0, 8.8);
+  callout(s, "倒排 + 有序", "倒排表把「值 = v」的位置收在一起；表有序，「下标在 [l, r]」就是表里的一段——两次二分夹出来，不必扫。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "和 B+ 树范围扫描同理", "B+ 树先下降找到 l，再沿叶链读到 r；这里只要**个数**，两个端点的位置相减即可。", 6.6, 2.95, 2.9, 1.4, { fontSize: 9.5 });
+  text(s, "建表 O(n)，每次查询 O(log n)；暴力是每次 O(r − l)。", 6.6, 4.5, 2.9, 0.6, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.7 LC729
+{
+  const s = content("A.7", "附录 A · LeetCode 729 我的日程安排表 I", "动态有序表：查得快，插得慢——这就是 B 树要解决的事");
+  codeBlock(s, `from bisect import bisect_right
+
+class MyCalendar:
+    def __init__(self):
+        self.starts, self.ends = [], []         # 按开始时间有序
+
+    def book(self, start: int, end: int) -> bool:
+        i = bisect_right(self.starts, start)    # 新区间该插在 i
+        if i > 0 and self.ends[i - 1] > start:  # 与左邻重叠
+            return False
+        if i < len(self.starts) and self.starts[i] < end:   # 与右邻重叠
+            return False
+        self.starts.insert(i, start)            # 有序表插入：O(n) 搬移
+        self.ends.insert(i, end)
+        return True`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.6, lang: "py", hl: [8, 9, 11, 13] });
+  consoleBlock(s, "book(10, 20) → True   book(15, 25) → False（与 [10,20) 重叠）\nbook(20, 30) → True（半开区间，20 处相接不算重叠）", 0.5, 3.95, 5.9, 0.75, 8.8);
+  callout(s, "只看左右两个邻居", "已有区间互不重叠，按开始时间有序时结束时间也有序。新区间只可能撞上插入点两侧的那两个。", 6.6, 1.05, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ list.insert 是 O(n)", "查找 O(log n)，插入却要搬动后面所有元素：n 次预订最坏 O(n²)。题目 n ≤ 1000 没事；数据一大就该换平衡树或 B 树——11.4 节的动机。", 6.6, 2.8, 2.9, 1.75, { fontSize: 9.5, fill: "FDF0EE", tcolor: C.bad });
+  text(s, "静态索引（11.2）查得快插得慢；动态索引让插删也是 O(log n)。", 0.5, 4.8, 5.9, 0.3, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+}
+
+// A.8 30061
+{
+  const s = content("A.8", "附录 A · OJ 30061 春游集合", "位图：一个整数当集合，求补就是「全集 & ~已到」");
+  codeBlock(s, `n, m = map(int, input().split())
+bits = 0
+for x in map(int, input().split()):
+    bits |= 1 << x                      # 位图：第 x 位置 1 表示 x 到了
+
+missing = ((1 << n) - 1) & ~bits        # 全集 & ~已到 = 没到的集合
+if missing == 0:
+    print(n)
+else:
+    print(' '.join(str(i) for i in range(n) if missing >> i & 1))`, 0.5, 1.05, 5.9, 2.0, { fontSize: 9, lang: "py", hl: [4, 6] });
+  table(s, [
+    ["N = 3，五次都报 0", "位 2", "位 1", "位 0"],
+    ["bits", "0", "0", "1"],
+    ["全集 (1 << 3) − 1", "1", "1", "1"],
+    ["missing = 全集 & ~bits", "1", "1", "0"],
+  ], 0.5, 3.2, 5.9, [2.9, 1.0, 1.0, 1.0], { fontSize: 9, rowH: 0.28, tight: true });
+  text(s, "输出 missing 中为 1 的位：1 2。重复报号只是把同一位再置 1 次，天然去重。", 0.5, 4.45, 5.9, 0.65, { fontSize: 9.5, margin: 0 });
+  callout(s, "11.5 的尾部掩码", "Python 的 ~bits 是**负数**（无限个 1）。和 (1 << n) − 1 相与，才把 n 位以外的「假 1」去掉——讲义里位图求 NOT 要掩尾部，同一回事。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "位图什么时候合适", "取值范围小而稠密（这里 0..N−1）：每个值 1 位，交并差一次按位运算。范围大而稀疏就用散列集合。", 6.6, 3.2, 2.9, 1.5, { fontSize: 9.5 });
 }
 
   summarySlide("本章小结", [
