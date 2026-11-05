@@ -80,8 +80,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第九章  文件管理与外部排序",
   subtitle: "数据大到内存装不下：数页 I/O，而不是数比较",
-  topics: "主存与外存 · 按页存取 · 页 I/O 成本模型\n文件组织：顺序 / 散列 / 索引 / 倒排 · 记录装页 · C++ 流文件\n外排序两阶段：顺串生成 + 归并 · 置换选择（平均 2M）\n二路归并趟数 · 多路归并 · 赢者树 / 败者树 · 稳定性与常见错误",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "主存与外存 · 按页存取 · 页 I/O 成本模型\n文件组织：顺序 / 散列 / 索引 / 倒排 · 记录装页 · C++ 流文件\n外排序两阶段：顺串生成 + 归并 · 置换选择（平均 2M）\n二路归并趟数 · 多路归并 · 赢者树 / 败者树 · 稳定性与常见错误\n附录：8 道上机题 · 置换选择 · 堆做多路归并 · 最佳归并树",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -117,7 +117,7 @@ titleSlide({
     ["9.1 存储器", ["主存 vs 外存", "按页存取与缓冲", "页 I/O 成本模型", "图 9.1 三个缓冲"]],
     ["9.2 文件", ["记录、逻辑文件与物理文件", "9.2.1 四种组织方式", "记录怎样装进页", "9.2.2 C++ 流文件"]],
     ["9.3 顺串", ["外排序两阶段", "趟数 ⌈log_k m⌉", "9.3.1 置换选择：逐步演算", "置换选择代码"]],
-    ["9.3 归并", ["9.3.2 二路外排序", "9.3.3 为什么要选择树", "赢者树 / 败者树", "四路归并演算与代码", "稳定性 · 常见错误"]],
+    ["9.3 归并", ["9.3.2 二路外排序", "9.3.3 为什么要选择树", "赢者树 / 败者树", "四路归并演算与代码", "稳定性 · 常见错误", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 2.3;
@@ -1341,6 +1341,224 @@ private:
     text(s, e[1], 1.95, y + 0.06, 7.45, 0.42, { fontSize: 10.5, margin: 0 });
     text(s, "答：" + e[2], 1.95, y + 0.5, 7.45, 0.38, { fontSize: 10.5, color: C.green, margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 外排序两个阶段在内存里的「小模型」：顺串生成 + 多路归并 + 最佳归并树。
+// OJ 06648 / 14683 跑过 cs101.openjudge.cn 本地测试数据；其余与参考实现或穷举对拍。
+sectionSlide("附录 A", "编程练习", "8 道上机题：把顺串生成、多路归并、最佳归并树搬进内存里练\n置换选择 · LC88 二路归并 · LC373 / LC378 堆做多路归并\n06648 Sequence · LC264 丑数 · 14683 合并果子 · 最佳 k 路归并树");
+
+// A.1 replacement selection
+{
+  const s = content("A.1", "附录 A · 上机 置换选择的 Python 版", "heapq 做活跃堆，冻结区单独放一个列表");
+  codeBlock(s, `import heapq
+
+def replacement_selection(records, M):
+    """置换选择：内存工作区 M 条，返回所有顺串"""
+    it = iter(records)
+    heap = [x for _, x in zip(range(M), it)]    # 先读满 M 条
+    heapq.heapify(heap)
+    frozen, runs, run = [], [], []
+    while heap:
+        x = heapq.heappop(heap)
+        run.append(x)                   # 输出到当前顺串
+        nxt = next(it, None)
+        if nxt is not None:
+            if nxt >= x:
+                heapq.heappush(heap, nxt)   # 还能进当前顺串
+            else:
+                frozen.append(nxt)          # 比刚输出的小：冻结
+        if not heap:                    # 当前顺串结束
+            runs.append(run)
+            run, heap, frozen = [], frozen, []
+            heapq.heapify(heap)         # 冻结区解冻成新堆
+    return runs`, 0.5, 1.05, 5.9, 3.25, { fontSize: 8.2, lang: "py", hl: [14, 15, 17, 18, 21] });
+  consoleBlock(s, "图 9.2，M = 7 → [15 25 30 35 45 49 50 60] [1 16 27]\n课程作业，M = 5 → [2 5 8 10 11 15 20 26] [4 7 13 14 16 21] [6]", 0.5, 4.4, 5.9, 0.7, 8.3);
+  callout(s, "和 9.3.1 的 C++ 版对照", "同两条不变量：只有 `nxt >= x` 才进当前顺串；活跃堆空了才解冻。C++ 版把冻结区放在堆数组尾部，这里分成两个列表，更好读。", 6.6, 1.05, 2.9, 1.85, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "怎么测", "与一个用 min() 逐条挑最小的朴素版本随机对拍 3000 组；并检查每条顺串有序、除最后一条外长度都 ≥ M。", 6.6, 3.05, 2.9, 1.45, { fontSize: 9.5 });
+  text(s, "平均顺串长约 2M：随机输入时可以自己数一数。", 6.6, 4.6, 2.9, 0.5, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.2 LC88
+{
+  const s = content("A.2", "附录 A · LeetCode 88 合并两个有序数组", "二路归并，从尾部往前填：不需要额外缓冲区");
+  codeBlock(s, `class Solution:
+    def merge(self, nums1: list[int], m: int, nums2: list[int], n: int) -> None:
+        i, j, k = m - 1, n - 1, m + n - 1   # 从尾部往前填
+        while j >= 0:                   # nums2 放完就结束
+            if i >= 0 and nums1[i] > nums2[j]:
+                nums1[k] = nums1[i]; i -= 1
+            else:
+                nums1[k] = nums2[j]; j -= 1     # 相等取 nums2：后者在后
+            k -= 1`, 0.5, 1.05, 5.9, 1.9, { fontSize: 8.2, lang: "py", hl: [3, 5, 8] });
+  table(s, [
+    ["nums1（m = 3）", "1", "2", "3", "_", "_", "_"],
+    ["nums2（n = 3）", "2", "5", "6", "", "", ""],
+    ["填完", "1", "2", "2", "3", "5", "6"],
+  ], 0.5, 3.1, 5.9, [1.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7], { fontSize: 9.5, rowH: 0.3, tight: true });
+  text(s, "k 从末尾往前：每步放下两边剩余的最大者。i 永远不会被 k 追上——k − i = j + 1 > 0。", 0.5, 4.2, 5.9, 0.9, { fontSize: 9.5, margin: 0 });
+  callout(s, "9.3.2 的两个输入缓冲", "外存二路归并要「两个输入缓冲 + 一个输出缓冲」。这里 nums1 尾部的空位就是输出区，读写各走一个方向，互不覆盖。", 6.6, 1.05, 2.9, 1.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "稳定性", "相等时先放 nums2（它在后面）：从后往前填，后者落在更后，原有相对次序不变。", 6.6, 3.0, 2.9, 1.25, { fontSize: 9.5 });
+  text(s, "j < 0 就停：nums1 剩下的本来就在原位。", 6.6, 4.4, 2.9, 0.7, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.3 LC373
+{
+  const s = content("A.3", "附录 A · LeetCode 373 查找和最小的 K 对数字", "把 n₁ 条「隐式顺串」交给堆做多路归并");
+  codeBlock(s, `import heapq
+
+class Solution:
+    def kSmallestPairs(self, nums1, nums2, k):
+        # 第 i 路 = nums1[i] 依次配 nums2 的每一项，路内和递增
+        heap = [(nums1[i] + nums2[0], i, 0)
+                for i in range(min(k, len(nums1)))]   # 多于 k 路用不上
+        heapq.heapify(heap)
+        out = []
+        while heap and len(out) < k:
+            _, i, j = heapq.heappop(heap)
+            out.append([nums1[i], nums2[j]])
+            if j + 1 < len(nums2):      # 只把这一路的下一个补进来
+                heapq.heappush(heap, (nums1[i] + nums2[j + 1], i, j + 1))
+        return out`, 0.5, 1.05, 5.9, 2.85, { fontSize: 8.6, lang: "py", hl: [6, 11, 14] });
+  consoleBlock(s, "nums1 = [1, 7, 11]，nums2 = [2, 4, 6]，k = 3\n→ [1, 2] [1, 4] [1, 6]（第 0 路连赢三次）", 0.5, 4.05, 5.9, 0.75, 9);
+  callout(s, "每一路都是一条顺串", "nums1[i] + nums2[0], nums1[i] + nums2[1], … 天然递增：不用真的生成，堆里每路只放**当前头**。", 6.6, 1.05, 2.9, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "堆 = 内存里的选择树", "弹出冠军、补入同一路的下一个——和 9.3.3 赢者树 / 败者树的 replace 是一回事，只是换成 heapq。代价 O(k log k)。", 6.6, 2.85, 2.9, 1.6, { fontSize: 9.5 });
+  text(s, "全部 n₁ × n₂ 对排序是 O(n₁n₂ log)，k 小时远不划算。", 6.6, 4.55, 2.9, 0.55, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.4 LC378
+{
+  const s = content("A.4", "附录 A · LeetCode 378 有序矩阵中第 K 小的元素", "每行一条顺串：n 路归并，弹出 k − 1 次");
+  codeBlock(s, `import heapq
+
+class Solution:
+    def kthSmallest(self, matrix: list[list[int]], k: int) -> int:
+        n = len(matrix)
+        heap = [(matrix[r][0], r, 0) for r in range(min(n, k))]   # 每行一路
+        heapq.heapify(heap)
+        for _ in range(k - 1):          # 弹出 k − 1 个，堆顶就是第 k 小
+            _, r, c = heapq.heappop(heap)
+            if c + 1 < n:
+                heapq.heappush(heap, (matrix[r][c + 1], r, c + 1))
+        return heap[0][0]`, 0.5, 1.05, 5.9, 2.1, { fontSize: 8.8, lang: "py", hl: [6, 8, 10] });
+  const M = [[1, 5, 9], [10, 11, 13], [12, 13, 15]];
+  const order = { "0,0": 1, "0,1": 2, "0,2": 3, "1,0": 4, "1,1": 5, "1,2": 6, "2,0": 7, "2,1": 8 };
+  M.forEach((row, i) => row.forEach((v, j) => {
+    const k = order[i + "," + j];
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.5 + j * 0.6, y: 3.35 + i * 0.45, w: 0.6, h: 0.45, fill: { color: k === 8 ? C.mint : C.white }, line: { color: C.muted, width: 0.75 } });
+    text(s, String(v), 0.5 + j * 0.6, 3.35 + i * 0.45, 0.6, 0.45, { fontSize: 11, bold: k === 8, color: C.dark, align: "center", valign: "middle", margin: 0 });
+  }));
+  text(s, "k = 8：依次弹出 1 5 9 10 11 12 13，第 8 个是 13（右下角 15 之前）。行里有序、列里也有序，但这里只用到「行有序」。", 2.5, 3.35, 3.9, 1.35, { fontSize: 9.5, margin: 0 });
+  callout(s, "堆的大小 = 路数", "外排序 k 路归并时内存里只放 k 个当前记录；这里也只放 min(n, k) 个，与矩阵大小 n² 无关。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "代价 O(k log n)", "每弹一次、补一次，堆高 log n。另一条路是对值域二分 + 数「≤ mid 的个数」，O(n log 值域)。", 6.6, 2.75, 2.9, 1.45, { fontSize: 9.5 });
+  text(s, "列也有序时，可以只从第一列起步，按需往右补——同一思路。", 6.6, 4.35, 2.9, 0.75, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.5 06648
+{
+  const s = content("A.5", "附录 A · OJ 06648 Sequence", "m 个序列各取一个数：逐个两两归并，每次只留最小的 n 个和");
+  codeBlock(s, `import sys, heapq
+
+def merge_smallest(a, b, n):            # a、b 升序：a[i]+b[j] 中最小的 n 个
+    heap = [(a[i] + b[0], i, 0) for i in range(n)]   # 每个 a[i] 一路
+    heapq.heapify(heap)
+    out = []
+    while len(out) < n:
+        s, i, j = heapq.heappop(heap)
+        out.append(s)
+        if j + 1 < n:                   # 这一路的下一个候选
+            heapq.heappush(heap, (a[i] + b[j + 1], i, j + 1))
+    return out
+
+data = list(map(int, sys.stdin.read().split()))
+pos, t = 1, data[0]
+for _ in range(t):
+    m, n = data[pos], data[pos + 1]; pos += 2
+    cur = sorted(data[pos:pos + n]); pos += n
+    for _ in range(m - 1):              # 两两归并，每次只留最小的 n 个
+        cur = merge_smallest(cur, sorted(data[pos:pos + n]), n); pos += n
+    print(' '.join(map(str, cur)))`, 0.5, 1.05, 5.9, 3.3, { fontSize: 8.6, lang: "py", hl: [4, 10, 19, 20] });
+  consoleBlock(s, "m = 2，n = 3：1 2 3 与 2 2 3 → 3 3 4", 0.5, 4.5, 5.9, 0.6, 9);
+  callout(s, "为什么只留 n 个就够", "最终最小的 n 个和，每一个的「前 i 个序列部分和」一定在前 i 个序列的最小 n 个和里——更大的那些凑不进前 n。所以每步截断不丢答案。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "像多趟归并", "m − 1 趟，每趟把「当前结果」和一条新序列归并、截成 n 个——和外排序逐趟合并顺串同构。每趟 O(n log n)。", 6.6, 3.2, 2.9, 1.5, { fontSize: 9.5 });
+}
+
+// A.6 LC264
+{
+  const s = content("A.6", "附录 A · LeetCode 264 丑数 II", "三路归并：三条流都从结果本身生长出来");
+  codeBlock(s, `class Solution:
+    def nthUglyNumber(self, n: int) -> int:
+        ugly = [1]
+        p2 = p3 = p5 = 0                # 三条「流」：ugly×2、×3、×5
+        while len(ugly) < n:
+            a, b, c = ugly[p2] * 2, ugly[p3] * 3, ugly[p5] * 5
+            x = min(a, b, c)            # 三路归并取最小
+            ugly.append(x)
+            if x == a: p2 += 1          # 相等的几路一起前进：去重
+            if x == b: p3 += 1
+            if x == c: p5 += 1
+        return ugly[-1]`, 0.5, 1.05, 5.9, 2.3, { fontSize: 8.8, lang: "py", hl: [6, 7, 9] });
+  table(s, [
+    ["ugly", "1", "2", "3", "4", "5", "6", "8", "9", "10"],
+    ["×2 流", "2", "4", "6", "8", "10", "12", "", "", ""],
+    ["×3 流", "3", "6", "9", "12", "", "", "", "", ""],
+    ["×5 流", "5", "10", "15", "", "", "", "", "", ""],
+  ], 0.5, 3.5, 5.9, [0.9, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55], { fontSize: 9, rowH: 0.27, tight: true });
+  text(s, "6 同时出现在 ×2、×3 两条流里：输出一次，两个指针一起前进。", 0.5, 4.7, 5.9, 0.4, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "三个指针 = 三个输入缓冲", "每条流都是升序的「顺串」：ugly[p]×2、×3、×5。每步取三路最小，和多路归并一样只看各路当前头。", 6.6, 1.05, 2.9, 1.7, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "去重不能只走一路", "x 等于几路的头，就让这几路都前进；只推一路会输出重复的 6、10。", 6.6, 2.9, 2.9, 1.25, { fontSize: 9.5 });
+  text(s, "O(n) 时间：路数固定为 3，不需要堆。", 6.6, 4.3, 2.9, 0.6, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.7 14683
+{
+  const s = content("A.7", "附录 A · OJ 14683 合并果子", "最佳二路归并树：每次合并最短的两条顺串");
+  codeBlock(s, `import heapq
+
+n = int(input())
+heap = list(map(int, input().split()))[:n]
+heapq.heapify(heap)
+cost = 0
+while len(heap) > 1:                    # 每次合并最小的两堆
+    a = heapq.heappop(heap)
+    b = heapq.heappop(heap)
+    cost += a + b
+    heapq.heappush(heap, a + b)
+print(cost)`, 0.5, 1.05, 5.9, 2.1, { fontSize: 9, lang: "py", hl: [7, 8, 10] });
+  consoleBlock(s, "1 2 9：先并 1 + 2 = 3（体力 3），再并 3 + 9 = 12（体力 12）→ 15\n反过来先并 2 + 9 = 11，再并 1 + 11 = 12 → 23", 0.5, 3.3, 5.9, 0.8, 9);
+  text(s, "每堆果子被搬动的次数 = 它在归并树里的深度：总体力 = 带权路径长度 WPL。", 0.5, 4.25, 5.9, 0.6, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "这就是 Huffman", "第 5 章 Huffman 树的建法原样照搬：小的先并，让它们沉到深处；大的留到最后，只搬一次。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "放到外排序里", "顺串长度不等时，按什么次序两两归并，读写的记录总数不同。「果子数」换成「顺串长度」，体力就是总 I/O 量。", 6.6, 2.75, 2.9, 1.6, { fontSize: 9.5 });
+  text(s, "下一页推广到 k 路。", 6.6, 4.5, 2.9, 0.5, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.8 k-way optimal merge tree
+{
+  const s = content("A.8", "附录 A · 上机 最佳 k 路归并树", "k 路 Huffman：先补长度为 0 的虚顺串，再每次并 k 条最短的");
+  codeBlock(s, `import heapq
+
+def k_way_merge_cost(runs, k):          # 最佳 k 路归并树的总读写量
+    heap = list(runs)
+    pad = (k - 1 - (len(heap) - 1) % (k - 1)) % (k - 1)
+    heap += [0] * pad                   # 补长度为 0 的虚顺串
+    heapq.heapify(heap)
+    cost = 0
+    while len(heap) > 1:
+        s = sum(heapq.heappop(heap) for _ in range(k))   # 每次并 k 条最短的
+        cost += s
+        heapq.heappush(heap, s)
+    return cost`, 0.5, 1.05, 5.9, 2.25, { fontSize: 8.8, lang: "py", hl: [5, 6, 10] });
+  table(s, [
+    ["步", "合并的 3 条", "新顺串", "剩下"],
+    ["补虚", "—", "—", "0 2 3 6 9 12 17 18 24"],
+    ["1", "0 2 3", "5", "5 6 9 12 17 18 24"],
+    ["2", "5 6 9", "20", "12 17 18 20 24"],
+    ["3", "12 17 18", "47", "20 24 47"],
+    ["4", "20 24 47", "91", "总读写 5 + 20 + 47 + 91 = 163"],
+  ], 0.5, 3.45, 5.9, [0.6, 1.2, 0.9, 3.2], { fontSize: 8.5, rowH: 0.27, tight: true });
+  callout(s, "为什么要补虚顺串", "每次 k 条并成 1 条，条数少 k − 1。要最后恰好剩 1 条，需 (m − 1) mod (k − 1) = 0；不够就补 0 长度的，让它们占掉最深的位置，不白占浅层。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "怎么测", "与「每步任选 2..k 条合并」的穷举搜索对拍 300 组（k = 2..4），最优值全部一致。", 6.6, 3.2, 2.9, 1.25, { fontSize: 9.5 });
+  text(s, "例：8 条顺串 2 3 6 9 12 17 18 24，k = 3。二路时是 247。", 6.6, 4.6, 2.9, 0.5, { fontSize: 9, color: C.goldText, bold: true, margin: 0 });
 }
 
   summarySlide("本章小结", [
