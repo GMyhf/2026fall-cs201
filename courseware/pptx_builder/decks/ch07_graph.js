@@ -51,8 +51,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第七章  图",
   subtitle: "Graph：前驱和后继都不加限制的结构",
-  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 判环（并查集 / parent / 三色）· 两种拓扑排序\nKosaraju / Tarjan · 关键路径 · Dijkstra · Floyd · Bellman-Ford · Prim · Kruskal",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-29 · github.com/GMyhf/dsa-modernization",
+  topics: "图的定义与术语 · 图 ADT 与接口约定\n相邻矩阵 / 邻接表 / 十字链表 · 实测：存储量差三百多倍\nDFS / BFS 周游 · 判环（并查集 / parent / 三色）· 两种拓扑排序\nKosaraju / Tarjan · 关键路径 · Dijkstra · Floyd · Bellman-Ford · Prim · Kruskal\n附录：8 道上机题 · BFS / DFS / 拓扑 / SCC / 最短路 / MST",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -85,7 +85,7 @@ titleSlide({
   const cols = [
     ["概念与 ADT", ["7.1 定义：有向 / 无向 / 带权", "度、路径、连通分量、强连通", "生成树、网络、有向树", "选算法之前先分清题目", "7.2 图 ADT 与接口约定"]],
     ["存储与周游", ["7.3.1 相邻矩阵", "7.3.2 邻接表：实测对比", "7.3.3 十字链表", "7.4.1 深度优先 DFS", "7.4.2 广度优先 BFS", "7.4.3 拓扑排序（Kahn）", "7.4.4 判环：无向 / 有向", "7.4.5 DFS 拓扑排序", "7.4.6 Kosaraju / Tarjan", "7.4.7 关键路径"]],
-    ["最短路与 MST", ["7.5.1 Dijkstra（+ pre 取路径）", "7.5.2 Floyd", "7.5.3 负权边：Bellman-Ford", "7.6 MST 性质", "7.6.1 Prim", "7.6.2 Kruskal", "本章小结"]],
+    ["最短路与 MST", ["7.5.1 Dijkstra（+ pre 取路径）", "7.5.2 Floyd", "7.5.3 负权边：Bellman-Ford", "7.6 MST 性质", "7.6.1 Prim", "7.6.2 Kruskal", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -2111,6 +2111,302 @@ sectionSlide("Part 6 · 7.6", "最小生成树", "MST 性质 · Prim：从点出
   image(s, "fig-7-29", 7.25, 1.12, 2.15, 2.3);
   text(s, "图 7.29  习题 4 的图例", 7.15, 3.45, 2.35, 0.26, { fontSize: 9.5, color: C.muted, align: "center" });
   text(s, "参考答案见 book/习题与参考答案.md 的同章小节。", 7.15, 3.95, 2.35, 0.8, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 讲义 W09-12（图）的上机题；Python 代码逐题跑过样例与 cs101.openjudge.cn 本地测试数据。
+sectionSlide("附录 A", "编程练习", "8 道上机题：把本章的周游、拓扑排序、SCC、最短路与 MST 用到题里\n28046 词梯 · 28050 骑士周游 · 04084 拓扑排序 · 02186 Popular Cows\n03424 Candies · 01860 Currency Exchange · 05443 兔子与樱花 · 01258 Agri-Net");
+
+// A.1 28046
+{
+  const s = content("A.1", "附录 A · OJ 28046 词梯", "BFS：无权图上第一次到达就是最短");
+  codeBlock(s, `import sys
+from collections import deque
+
+data = sys.stdin.read().split()
+n = int(data[0])
+words, src, dst = data[1:n + 1], data[n + 1], data[n + 2]
+buckets = {}                            # 'f_ol' → [fool, foil, ...]
+for w in words:
+    for i in range(4):
+        buckets.setdefault(w[:i] + '_' + w[i + 1:], []).append(w)
+
+prev = {src: None}                      # 兼作 visited
+q = deque([src])
+while q and dst not in prev:
+    u = q.popleft()
+    for i in range(4):
+        for v in buckets.get(u[:i] + '_' + u[i + 1:], []):
+            if v not in prev:           # 入队时就标记
+                prev[v] = u
+                q.append(v)
+
+if dst not in prev:
+    print("NO")
+else:
+    path = []
+    while dst is not None:
+        path.append(dst); dst = prev[dst]
+    print(' '.join(reversed(path)))`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.3, lang: "py", hl: [10, 18, 19] });
+  consoleBlock(s, "25 个词，fool sage\n→ fool pool poll pole\n  pale sale sage", 6.6, 1.05, 2.9, 1.05, 9);
+  callout(s, "桶 = 不必显式建图", "`fool` 进 `_ool`、`f_ol`、`fo_l`、`foo_` 四个桶，同桶的词恰好差一个字母。n = 4000 时两两比较要 8×10⁶ 次，桶只要 4n 次。", 6.6, 2.25, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "prev 一身两用", "既是 visited（入队时就记），又是回溯路径用的前驱表——即 7.5.1「用 pre 取出路径」。", 6.6, 4.0, 2.9, 1.1, { fontSize: 9.5 });
+}
+
+// A.2 28050
+{
+  const s = content("A.2", "附录 A · OJ 28050 骑士周游", "DFS + 回溯：找一条走遍 n² 个格子的路径");
+  codeBlock(s, `MOVES = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
+
+n = int(input())
+sr, sc = map(int, input().split())
+seen = [[False] * n for _ in range(n)]
+
+def nexts(r, c):                        # 还没走过的邻格
+    out = []
+    for dr, dc in MOVES:
+        nr, nc = r + dr, c + dc
+        if 0 <= nr < n and 0 <= nc < n and not seen[nr][nc]:
+            out.append((nr, nc))
+    return out
+
+def tour(r, c, step):
+    if step == n * n:
+        return True
+    # Warnsdorff：出口最少的格子先走
+    for nr, nc in sorted(nexts(r, c), key=lambda p: len(nexts(*p))):
+        seen[nr][nc] = True
+        if tour(nr, nc, step + 1):
+            return True
+        seen[nr][nc] = False            # 回溯
+    return False
+
+if n % 2 and (sr + sc) % 2:             # 奇数边长：只能从多数色出发
+    print("fail")
+else:
+    seen[sr][sc] = True
+    print("success" if tour(sr, sc, 1) else "fail")`, 0.5, 1.05, 5.9, 4.05, { fontSize: 7.9, lang: "py", hl: [19, 23, 26] });
+  callout(s, "Warnsdorff 规则", "下一步先去**出口最少**的格子：难走的角落趁早走掉，不留到最后被困死。8×8 上几乎不用回溯。", 6.6, 1.05, 2.9, 1.45, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 奇偶剪枝不能省", "马每步换一次格子颜色。n 为奇数时 n² 个格子里 (r+c) 为偶数的多一个，路径只能从这种颜色出发。不剪的话 n = 9、起点 (0,1) 要把走法试遍才答 fail——超时。", 6.6, 2.65, 2.9, 1.75, { fontSize: 9.5, fill: "FDF0EE", tcolor: C.bad });
+  text(s, "Warnsdorff 是启发式，不是保证：个别起点仍会回溯很久。本地 40 组数据全过。", 6.6, 4.5, 2.9, 0.6, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.3 04084
+{
+  const s = content("A.3", "附录 A · OJ 04084 拓扑排序", "同等条件下编号小的在前：Kahn 的队列换成最小堆");
+  codeBlock(s, `import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+v, a = data[0], data[1]
+adj = [[] for _ in range(v + 1)]
+indeg = [0] * (v + 1)
+for i in range(a):
+    x, y = data[2 + 2 * i], data[3 + 2 * i]
+    adj[x].append(y)
+    indeg[y] += 1
+
+heap = [u for u in range(1, v + 1) if indeg[u] == 0]
+heapq.heapify(heap)                     # 队列换成最小堆
+order = []
+while heap:
+    u = heapq.heappop(heap)             # 入度为 0 的里编号最小的
+    order.append('v' + str(u))
+    for w in adj[u]:
+        indeg[w] -= 1
+        if indeg[w] == 0:
+            heapq.heappush(heap, w)
+print(' '.join(order))`, 0.5, 1.05, 5.6, 4.05, { fontSize: 8.6, lang: "py", hl: [13, 16] });
+  const P = { 1: [6.75, 1.75], 3: [7.6, 1.25], 2: [8.6, 1.25], 4: [7.6, 2.55], 5: [8.6, 2.55], 6: [9.3, 1.9] };
+  [[1, 2], [1, 3], [1, 4], [3, 2], [3, 5], [4, 5], [6, 4], [6, 5]].forEach(([a, b]) => gedge(s, P[a], P[b], "", { width: 1.25 }));
+  Object.entries(P).forEach(([k, xy]) => gnode(s, "v" + k, xy[0], xy[1], { fs: 9 }));
+  consoleBlock(s, "v1 v3 v2 v6 v4 v5", 6.3, 2.95, 3.2, 0.65, 10);
+  callout(s, "为什么不是 v1 v2 …", "开始时入度为 0 的是 v1、v6，先出 v1；之后 v3 入度归 0，堆里 {v3, v6}，出 v3；v2 才归 0。堆保证每一步取的都是**当前**可选里最小的。", 6.3, 3.75, 3.2, 1.35, { fontSize: 9, fill: C.mint, tcolor: C.dark });
+}
+
+// A.4 02186
+{
+  const s = content("A.4", "附录 A · OJ 02186 Popular Cows", "求 SCC 再缩点：被所有牛崇拜的，只能在唯一的汇点块里");
+  codeBlock(s, `def kosaraju(n, adj, radj):             # 迭代版：n 可到 1 万
+    seen, order = [False] * (n + 1), []
+    for s in range(1, n + 1):           # 第一遍：G 上记结束顺序
+        if seen[s]: continue
+        seen[s] = True
+        stack = [(s, iter(adj[s]))]
+        while stack:
+            u, it = stack[-1]
+            for v in it:                # 接着上次没扫完的出边
+                if not seen[v]:
+                    seen[v] = True
+                    stack.append((v, iter(adj[v])))
+                    break
+            else:                       # 出边扫完：u 结束
+                stack.pop(); order.append(u)
+    comp, c = [0] * (n + 1), 0
+    for s in reversed(order):           # 第二遍：Gᵀ 上按结束逆序
+        if comp[s]: continue
+        c += 1; comp[s] = c; stack = [s]
+        while stack:
+            u = stack.pop()
+            for v in radj[u]:
+                if not comp[v]:
+                    comp[v] = c; stack.append(v)
+    return comp, c`, 0.5, 1.05, 4.65, 4.05, { fontSize: 7.7, lang: "py", hl: [3, 14, 17] });
+  codeBlock(s, `import sys
+data = list(map(int, sys.stdin.read().split()))
+n, m = data[0], data[1]
+adj = [[] for _ in range(n + 1)]
+radj = [[] for _ in range(n + 1)]
+for i in range(m):
+    a, b = data[2 + 2 * i], data[3 + 2 * i]
+    adj[a].append(b); radj[b].append(a)
+
+comp, c = kosaraju(n, adj, radj)
+out = [0] * (c + 1)                 # 缩点后各块有无出边
+for u in range(1, n + 1):
+    for v in adj[u]:
+        if comp[u] != comp[v]:
+            out[comp[u]] = 1
+sinks = [k for k in range(1, c + 1) if out[k] == 0]
+if len(sinks) == 1:                 # 唯一的汇点块
+    print(comp[1:].count(sinks[0]))
+else:
+    print(0)`, 5.3, 1.05, 4.2, 2.75, { fontSize: 7.6, lang: "py", hl: [10, 17] });
+  callout(s, "缩点后是一张 DAG", "DAG 至少有一个出度为 0 的块。恰好一个：所有牛都能走到它，答案是块里的牛数；两个以上：谁也到不了全部，答 0。样例：1、2 互相崇拜，2 崇拜 3，汇点块只有 {3}，答 1。", 5.3, 3.95, 4.2, 1.15, { fontSize: 9, fill: C.mint, tcolor: C.dark });
+}
+
+// A.5 03424
+{
+  const s = content("A.5", "附录 A · OJ 03424 Candies", "差分约束：x[N] − x[1] 的最大值就是 1 → N 的最短路");
+  codeBlock(s, `import sys, heapq
+
+data = sys.stdin.buffer.read().split()
+n, m = int(data[0]), int(data[1])
+adj = [[] for _ in range(n + 1)]
+for i in range(2, 2 + 3 * m, 3):        # x[B] − x[A] ≤ c ⇒ 边 A → B，权 c
+    adj[int(data[i])].append((int(data[i + 1]), int(data[i + 2])))
+
+INF = float('inf')
+dist = [INF] * (n + 1)
+dist[1] = 0
+pq = [(0, 1)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d > dist[u]:                     # 过期的堆项
+        continue
+    if u == n:
+        break
+    for v, w in adj[u]:
+        if d + w < dist[v]:
+            dist[v] = d + w
+            heapq.heappush(pq, (dist[v], v))
+print(dist[n])                          # max(x[N] − x[1]) = 1 → N 的最短路`, 0.5, 1.05, 5.6, 4.05, { fontSize: 8.4, lang: "py", hl: [6, 15, 20] });
+  callout(s, "不等式 = 松弛", "约束 x[B] − x[A] ≤ c 即 x[B] ≤ x[A] + c，和松弛后的 dist[B] ≤ dist[A] + w 同形。沿 1 → … → N 任一条路把不等式相加，得 x[N] − x[1] ≤ 路长；最紧的那条就是最短路。", 6.3, 1.05, 3.2, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  consoleBlock(s, "2 2 / 1 2 5 / 2 1 4 → 5", 6.3, 2.95, 3.2, 0.65, 9.5);
+  callout(s, "为什么能用 Dijkstra", "c ≥ 0，边权非负。若有负的 c 就得换 Bellman-Ford / SPFA，负环 = 约束无解。", 6.3, 3.75, 3.2, 1.0, { fontSize: 9.5 });
+  text(s, "⚠ N 3×10⁴、M 1.5×10⁵：务必一次读入。", 6.3, 4.8, 3.2, 0.3, { fontSize: 9, color: C.bad, bold: true, margin: 0 });
+}
+
+// A.6 01860
+{
+  const s = content("A.6", "附录 A · OJ 01860 Currency Exchange", "Bellman-Ford 换一种松弛：求最大、按汇率和手续费算");
+  codeBlock(s, `import sys
+
+data = sys.stdin.read().split()
+n, m, s, V = int(data[0]), int(data[1]), int(data[2]), float(data[3])
+edges = []                              # (u, v, 汇率, 手续费)
+for i in range(4, 4 + 6 * m, 6):
+    a, b = int(data[i]), int(data[i + 1])
+    rab, cab, rba, cba = map(float, data[i + 2:i + 6])
+    edges += [(a, b, rab, cab), (b, a, rba, cba)]
+
+best = [0.0] * (n + 1)                  # 每种货币最多能换到多少
+best[s] = V
+for rnd in range(n):                    # 第 n 轮还能变大 ⇒ 有「正环」
+    changed = False
+    for u, v, r, c in edges:
+        x = (best[u] - c) * r
+        if x > best[v] + 1e-9:
+            best[v] = x
+            changed = True
+    if not changed:
+        break
+print("YES" if changed or best[s] > V + 1e-9 else "NO")`, 0.5, 1.05, 5.45, 4.05, { fontSize: 8.6, lang: "py", hl: [16, 17, 22] });
+  table(s, [
+    ["", "7.5.3 最短路", "本题"],
+    ["初值", "dist[s] = 0", "best[s] = V，其余 0"],
+    ["松弛", "dist[u]+w < dist[v]", "(best[u]−c)·r > best[v]"],
+    ["第 n 轮仍更新", "负环", "增益回路 ⇒ YES"],
+  ], 6.15, 1.05, 3.35, [0.75, 1.2, 1.4], { fontSize: 8, rowH: 0.36, tight: true });
+  callout(s, "钱为什么能回到 S", "每个兑换点两个方向都能换，能从 S 走到的货币就能走回 S；有增益回路就能绕到足够多再换回。", 6.15, 2.75, 3.35, 1.3, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "best[u] < c 时 x 为负，不会更新——「账户非负」自动满足。浮点比较留 1e-9 余量。", 6.15, 4.25, 3.35, 0.7, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+}
+
+// A.7 05443
+{
+  const s = content("A.7", "附录 A · OJ 05443 兔子与樱花", "Floyd + 路径：nxt[i][j] 记从 i 去 j 的第一步");
+  codeBlock(s, `p = int(input())
+names = [input().strip() for _ in range(p)]
+idx = {s: i for i, s in enumerate(names)}
+INF = float('inf')
+d = [[0 if i == j else INF for j in range(p)] for i in range(p)]
+nxt = [[j for j in range(p)] for i in range(p)]   # i 去 j 的第一步
+
+for _ in range(int(input())):
+    a, b, w = input().split()
+    u, v, w = idx[a], idx[b], int(w)
+    if w < d[u][v]:
+        d[u][v] = d[v][u] = w
+
+for k in range(p):                      # 中转点在最外层
+    for i in range(p):
+        for j in range(p):
+            if d[i][k] + d[k][j] < d[i][j]:
+                d[i][j] = d[i][k] + d[k][j]
+                nxt[i][j] = nxt[i][k]   # 先往 k 的方向走
+
+for _ in range(int(input())):
+    a, b = input().split()
+    u, v = idx[a], idx[b]
+    out = [names[u]]
+    while u != v:
+        w = nxt[u][v]
+        out.append(f"->({d[u][w]})->{names[w]}")
+        u = w
+    print(''.join(out))`, 0.5, 1.05, 5.9, 4.05, { fontSize: 7.9, lang: "py", hl: [14, 19, 26] });
+  consoleBlock(s, "Uenokouen->(35)->Ginza\n->(80)->Sensouji\n->(60)->Meijishinguu\n->(35)->Yoyogikouen\nMeijishinguu", 6.6, 1.05, 2.9, 1.5, 8.5);
+  callout(s, "nxt 怎么跟着改", "经 k 变短时，i 去 j 的第一步 = i 去 k 的第一步。查询时沿 nxt 一步步走，每段距离就是 d[u][w]。", 6.6, 2.7, 2.9, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么选 Floyd", "P ≤ 30、多次查询：O(P³) 预处理一次，之后每问只走路径。", 6.6, 4.2, 2.9, 0.9, { fontSize: 9.5 });
+}
+
+// A.8 01258
+{
+  const s = content("A.8", "附录 A · OJ 01258 Agri-Net", "完全图上的 MST：矩阵版 Prim，O(V²)");
+  codeBlock(s, `import sys
+
+def prim(g):                            # 矩阵版 O(V²)
+    n = len(g)
+    INF = float('inf')
+    dist, in_tree = [INF] * n, [False] * n
+    dist[0], total = 0, 0
+    for _ in range(n):
+        u = min((i for i in range(n) if not in_tree[i]), key=dist.__getitem__)
+        in_tree[u] = True
+        total += dist[u]
+        for v in range(n):              # 只比「到树」的距离，不累加
+            if not in_tree[v] and g[u][v] < dist[v]:
+                dist[v] = g[u][v]
+    return total
+
+data = list(map(int, sys.stdin.read().split()))
+pos = 0
+while pos < len(data):                  # 多组数据，矩阵可能跨行
+    n = data[pos]; pos += 1
+    g = [data[pos + i * n: pos + (i + 1) * n] for i in range(n)]
+    pos += n * n
+    print(prim(g))`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.4, lang: "py", hl: [9, 13, 14] });
+  consoleBlock(s, "4\n0 4 9 21 / 4 0 8 17\n9 8 0 16 / 21 17 16 0\n→ 28", 6.6, 1.05, 2.9, 1.2, 9);
+  callout(s, "和 Dijkstra 只差一行", "Prim 的 dist 是到**整棵树**的距离，更新用 `g[u][v]`；Dijkstra 是到源点的距离，更新用 `dist[u] + g[u][v]`。", 6.6, 2.4, 2.9, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么不用堆", "E ≈ V²/2 的稠密图，堆版 O(E log V) 反而更慢；Kruskal 要排 V² 条边，也不划算。", 6.6, 3.9, 2.9, 1.2, { fontSize: 9.5 });
 }
 
   summarySlide("本章小结", [
