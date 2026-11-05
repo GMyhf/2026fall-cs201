@@ -45,8 +45,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第12章  高级数据结构",
   subtitle: "把「存储、查找、回收」推到更复杂的对象上",
-  topics: "多维数组的地址公式 · 三角 / 对称矩阵压缩 · 稀疏矩阵十字链表\n广义表与共享 · 引用计数 · 可利用空间表 · 三种顺序适配 · 标记–清除\nTrie 与 Patricia：按字符 / 按位分支，公共前缀只存一次\n最佳 BST 的动态规划 · AVL 四种旋转 · 伸展树的均摊平衡\n补充：前缀和 · 树状数组 · 线段树与 Lazy 标记",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "多维数组的地址公式 · 三角 / 对称矩阵压缩 · 稀疏矩阵十字链表\n广义表与共享 · 引用计数 · 可利用空间表 · 三种顺序适配 · 标记–清除\nTrie 与 Patricia：按字符 / 按位分支，公共前缀只存一次\n最佳 BST 的动态规划 · AVL 四种旋转 · 伸展树的均摊平衡\n补充：前缀和 · 树状数组 · 线段树与 Lazy 标记 · 附录：8 道上机题",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -80,7 +80,7 @@ titleSlide({
     ["12.1 多维数组", ["多维数组的存储：行优先 / 列优先", "特殊矩阵：三角、对称", "稀疏矩阵：三元组、十字链表"], "sparse_matrix"],
     ["12.2 广义表与存储管理", ["广义表：纯表 / 再入表 / 循环表", "共享与引用计数", "可利用空间表（句柄池）", "变长块：三种适配、合并", "无用单元回收：标记–清除"], "gen_list · optimal_bst\nmemory_allocator\nstorage_recovery"],
     ["12.3 Trie 与 Patricia", ["对象空间 vs 关键码空间", "二叉 Trie、字母 Trie", "最长前缀匹配", "Patricia：按位分支、压缩单孩子结点"], "trie"],
-    ["12.4 改进的 BST", ["最佳 BST：扩充二叉树、动态规划", "AVL：平衡因子、四种旋转、高度上界", "伸展树：一字形 / 之字形、半伸展"], "optimal_bst\nbalanced_trees"],
+    ["12.4 改进的 BST", ["最佳 BST：扩充二叉树、动态规划", "AVL：平衡因子、四种旋转、高度上界", "伸展树：一字形 / 之字形、半伸展", "附录 A：8 道上机题"], "optimal_bst\nbalanced_trees"],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 2.3;
@@ -1841,6 +1841,254 @@ def add(self, l, r, v, k=1, lo=0, hi=None):    # 闭区间 [l, r]
     pill(s, e[0], 0.62, y + 0.14, 0.7, 0.32, C.dark, C.gold, 10);
     text(s, e[1], 1.45, y, 7.95, 0.6, { fontSize: 11, valign: "middle", margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 cs101.openjudge.cn 题库（稀疏矩阵、Trie、AVL、树状数组）与 LeetCode；
+// OJ 题跑过本地测试数据，LeetCode 题与暴力解随机对拍。
+sectionSlide("附录 A", "编程练习", "8 道上机题：稀疏矩阵、Trie、AVL、树状数组各落到题里\n23555 三元组乘法 · 04089 电话号码 · 02797 最短前缀 · LC421\n27625 / 27626 AVL · LC1382 · LC307 · 27018 康托展开");
+
+// A.1 23555
+{
+  const s = content("A.1", "附录 A · OJ 23555 节省存储的矩阵乘法", "三元组相乘：X[i][k] 只和 Y 的第 k 行配对");
+  codeBlock(s, `import sys
+from collections import defaultdict
+
+data = list(map(int, sys.stdin.read().split()))
+n, m1, m2 = data[0], data[1], data[2]
+X = data[3:3 + 3 * m1]
+Y = data[3 + 3 * m1:3 + 3 * (m1 + m2)]
+
+rows_of_Y = defaultdict(list)           # Y 按行号分组：k → [(j, y)]
+for t in range(0, len(Y), 3):
+    rows_of_Y[Y[t]].append((Y[t + 1], Y[t + 2]))
+
+prod = defaultdict(int)                 # (i, j) → 和，只存非零位置
+for t in range(0, len(X), 3):
+    i, k, x = X[t], X[t + 1], X[t + 2]
+    for j, y in rows_of_Y[k]:           # X[i][k] 只和 Y 的第 k 行相乘
+        prod[i, j] += x * y
+
+for (i, j), v in sorted(prod.items()):  # 先行后列
+    if v != 0:                          # 相加可能抵消成 0
+        print(i, j, v)`, 0.5, 1.05, 5.9, 3.3, { fontSize: 8.6, lang: "py", hl: [9, 16, 17, 20] });
+  consoleBlock(s, "X = (0,0,1) (1,0,−1) (1,2,3)，Y = (0,0,7) (2,2,1)\n→ 0 0 7 / 1 0 −7 / 1 2 3", 0.5, 4.5, 5.9, 0.6, 8.8);
+  callout(s, "12.1 的三元组表示", "只存非零元 (行, 列, 值)。乘法不展开成 n × n：先把 Y 按**行号**分组（相当于行链表），再拿 X 的每个非零元去配。", 6.6, 1.05, 2.9, 1.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "代价只看非零元", "每对 (X[i][k], Y[k][j]) 都非零才算一次乘法：O(m₁ × Y 每行非零个数)，和 n³ 无关。", 6.6, 3.0, 2.9, 1.3, { fontSize: 9.5 });
+  callout(s, "⚠ 结果可能抵消成 0", "两项相加正好为 0 的位置不能输出。", 6.6, 4.45, 2.9, 0.65, { fontSize: 9, fill: "FDF0EE", tcolor: C.bad });
+}
+
+// A.2 04089
+{
+  const s = content("A.2", "附录 A · OJ 04089 电话号码", "字母 Trie：有没有一个号码是另一个的前缀");
+  codeBlock(s, `import sys
+
+def consistent(numbers):
+    root = {}
+    for s in sorted(numbers, key=len):  # 短的先插：前缀一定先进树
+        node = root
+        for ch in s:
+            if '$' in node:             # 路上遇到别人的结尾：它是前缀
+                return False
+            node = node.setdefault(ch, {})
+        if node:                        # 结尾处已有孩子（重号也算）
+            return False
+        node['$'] = True                # 标记一个号码在此结束
+    return True
+
+data = sys.stdin.read().split()
+t, pos = int(data[0]), 1
+for _ in range(t):
+    n = int(data[pos]); pos += 1
+    print("YES" if consistent(data[pos:pos + n]) else "NO")
+    pos += n`, 0.5, 1.05, 5.9, 3.0, { fontSize: 8.6, lang: "py", hl: [5, 8, 11] });
+  consoleBlock(s, "911 / 97625999 / 91125426 → NO（911 是 91125426 的前缀）\n113 / 12340 / 123440 / 12345 / 98346 → YES", 0.5, 4.2, 5.9, 0.75, 8.8);
+  callout(s, "两种冲突，两处检查", "插 s 的路上遇到「$」：已有号码是 s 的前缀；走到 s 末尾时结点已有孩子：s 是别人的前缀。短的先插，第二种只剩重号一种可能。", 6.6, 1.05, 2.9, 1.9, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "dict 嵌套就是 Trie", "每个结点是一个 dict：字符 → 子结点。公共前缀只存一次——12.3 节「按关键码空间分解」。", 6.6, 3.1, 2.9, 1.35, { fontSize: 9.5 });
+  text(s, "另一条路：排序后只比相邻两个。", 6.6, 4.6, 2.9, 0.5, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.3 02797
+{
+  const s = content("A.3", "附录 A · OJ 02797 最短前缀", "Trie 结点记「经过的词数」：降到 1 就唯一了");
+  codeBlock(s, `import sys
+
+words = sys.stdin.read().split()
+root = {}
+for w in words:                         # 键 0 记「有几个词经过」
+    node = root
+    for ch in w:
+        node = node.setdefault(ch, {0: 0})  # 整数键不会和字母撞
+        node[0] += 1
+
+for w in words:
+    node, k = root, 0
+    for ch in w:
+        node = node[ch]
+        k += 1
+        if node[0] == 1:                # 只有它自己经过：唯一了
+            break
+    print(w, w[:k])                     # 走到底仍不唯一就输出整个词`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.8, lang: "py", hl: [8, 9, 16] });
+  table(s, [
+    ["词", "最短前缀", "说明"],
+    ["carbohydrate", "carboh", "carbo 还有 carbon、carbonic、carbonate 经过"],
+    ["carbon", "carbon", "走到底仍有 3 个词经过：输出整个词"],
+    ["car", "car", "精确匹配优先"],
+  ], 0.5, 3.95, 5.9, [1.3, 1.1, 3.5], { fontSize: 8.8, rowH: 0.27, tight: true });
+  callout(s, "两遍扫描", "第一遍插入所有词，沿路计数；第二遍每个词从根往下走，第一个计数为 1 的结点就是答案的末字符。", 6.6, 1.05, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么计数为 1 就够", "计数 = 以这个前缀开头的词数。为 1 说明只有它自己，这个前缀不会和别的词混淆。", 6.6, 2.8, 2.9, 1.35, { fontSize: 9.5 });
+  text(s, "总代价 O(所有词长之和)。", 6.6, 4.3, 2.9, 0.4, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.4 LC421
+{
+  const s = content("A.4", "附录 A · LeetCode 421 数组中两个数的最大异或值", "二叉 Trie：从高位起，每一位都尽量走相反的那边");
+  codeBlock(s, `class Solution:
+    def findMaximumXOR(self, nums: list[int]) -> int:
+        H = max(nums).bit_length()      # 只看这么多位
+        root, best = {}, 0
+        for x in nums:
+            node, alt = root, root      # node 插 x；alt 找最「反」的路
+            cur = 0
+            for b in range(H - 1, -1, -1):
+                bit = x >> b & 1
+                node = node.setdefault(bit, {})
+                if 1 - bit in alt:      # 能走相反的位：这一位异或得 1
+                    cur |= 1 << b
+                    alt = alt[1 - bit]
+                else:
+                    alt = alt[bit]
+            best = max(best, cur)
+        return best`, 0.5, 1.05, 5.9, 2.85, { fontSize: 8.6, lang: "py", hl: [10, 11, 12] });
+  consoleBlock(s, "[3, 10, 5, 25, 2, 8] → 28 = 5 ⊕ 25（00101 ⊕ 11001 = 11100）", 0.5, 4.05, 5.9, 0.55, 9);
+  text(s, "边插边查：x 和前面已插入的数配对（含它自己，异或为 0，不影响最大值）。", 0.5, 4.7, 5.9, 0.4, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "12.3 的二叉 Trie", "关键码按**位**分支，深度固定为位数 H。异或要大，高位优先：能让这一位为 1 就一定选，后面低位全为 1 也抵不过。", 6.6, 1.05, 2.9, 1.8, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "代价 O(n · H)", "每个数插一次、查一次，各走 H 层。暴力两两比较是 O(n²)。", 6.6, 3.0, 2.9, 1.1, { fontSize: 9.5 });
+  text(s, "Patricia 再把单孩子的链压缩掉。", 6.6, 4.3, 2.9, 0.6, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.5 27625 / 27626
+{
+  const s = content("A.5", "附录 A · OJ 27625 / 27626 AVL 树的结点数与层数", "最瘦的 AVL 树：N(h) = N(h−1) + N(h−2) + 1");
+  codeBlock(s, `# 27625：n 层的 AVL 树至少几个结点
+def min_nodes(h):
+    a, b = 0, 1                         # N(0) = 0，N(1) = 1
+    for _ in range(h - 1):
+        a, b = b, a + b + 1             # N(h) = N(h−1) + N(h−2) + 1
+    return b if h else 0
+
+# 27626：n 个结点的 AVL 树最多几层
+def max_height(n):
+    h = 0
+    while min_nodes(h + 1) <= n:        # 还凑得出更高的一棵
+        h += 1
+    return h`, 0.5, 1.05, 5.9, 2.3, { fontSize: 9, lang: "py", hl: [5, 11] });
+  table(s, [
+    ["层数 h", "1", "2", "3", "4", "5", "6", "7"],
+    ["至少 N(h) 个结点", "1", "2", "4", "7", "12", "20", "33"],
+  ], 0.5, 3.5, 5.9, [1.7, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6], { fontSize: 9.5, rowH: 0.3, tight: true });
+  text(s, "27625：输入 4 → 7。27626：n = 20 时 N(6) = 20 ≤ 20 < N(7) = 33 → 最多 6 层。", 0.5, 4.25, 5.9, 0.8, { fontSize: 9.5, margin: 0 });
+  callout(s, "为什么是这个递推", "要用最少结点撑出 h 层：根的一棵子树 h − 1 层，另一棵只能矮一层（h − 2），两边都取最瘦的，再加根。", 6.6, 1.05, 2.9, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "和 12.4 的高度上界", "N(h) + 1 = F(h + 2)（斐波那契），按 φʰ 增长；反过来 h < 1.44 log₂(n + 2)——AVL 查找最坏 O(log n) 就从这里来。", 6.6, 2.85, 2.9, 1.75, { fontSize: 9.5 });
+  text(s, "两题互为反函数：一个给层数求结点，一个给结点求层数。", 6.6, 4.7, 2.9, 0.4, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.6 LC1382
+{
+  const s = content("A.6", "附录 A · LeetCode 1382 将二叉搜索树变平衡", "不旋转也能平衡：中序取出有序序列，再以中位数为根重建");
+  codeBlock(s, `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val, self.left, self.right = val, left, right
+
+class Solution:
+    def balanceBST(self, root: TreeNode) -> TreeNode:
+        vals = []
+        def inorder(t):                 # BST 的中序 = 升序
+            if t:
+                inorder(t.left); vals.append(t.val); inorder(t.right)
+        inorder(root)
+
+        def build(lo, hi):              # 用 vals[lo:hi] 建平衡树
+            if lo >= hi:
+                return None
+            mid = (lo + hi) // 2        # 中位数当根：两边个数差 ≤ 1
+            return TreeNode(vals[mid], build(lo, mid), build(mid + 1, hi))
+        return build(0, len(vals))`, 0.5, 1.05, 5.9, 3.2, { fontSize: 8.6, lang: "py", hl: [8, 16, 17] });
+  consoleBlock(s, "1 → 2 → 3 → 4（一条右斜链，高 4）\n→ 中序 [1, 2, 3, 4]，根 3，左 [1, 2]、右 [4]：高 3", 0.5, 4.4, 5.9, 0.7, 8.8);
+  callout(s, "一次性 vs 逐步", "AVL 每次插删后用**旋转**局部修补，O(log n)；这里一次性重建，O(n)。适合「批量建好、之后只读」的场合。", 6.6, 1.05, 2.9, 1.7, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "为什么一定平衡", "每个结点左右两侧个数差 ≤ 1，高度差也就 ≤ 1，满足 AVL 条件；高度 ⌈log₂(n + 1)⌉。", 6.6, 2.9, 2.9, 1.35, { fontSize: 9.5 });
+  text(s, "和 12.4 最佳 BST 对照：各关键码等概率时，这棵树也是一棵最佳 BST。", 6.6, 4.4, 2.9, 0.7, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.7 LC307
+{
+  const s = content("A.7", "附录 A · LeetCode 307 区域和检索 - 数组可修改", "树状数组：单点改、前缀和都只走 log n 步");
+  codeBlock(s, `class NumArray:
+    def __init__(self, nums: list[int]):
+        self.n, self.a = len(nums), nums[:]
+        self.tree = [0] * (self.n + 1)  # 下标从 1 起
+        for i, x in enumerate(nums, 1): # O(n) 建树：把自己加给父亲
+            self.tree[i] += x
+            j = i + (i & -i)
+            if j <= self.n:
+                self.tree[j] += self.tree[i]
+
+    def update(self, index: int, val: int) -> None:
+        d, self.a[index] = val - self.a[index], val
+        i = index + 1
+        while i <= self.n:              # 向上：管着 i 的结点都加 d
+            self.tree[i] += d
+            i += i & -i
+
+    def _prefix(self, i):               # a[0..i) 之和
+        s = 0
+        while i:                        # 向下：每次去掉最低位的 1
+            s += self.tree[i]
+            i -= i & -i
+        return s
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self._prefix(right + 1) - self._prefix(left)`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.2, lang: "py", hl: [7, 15, 16, 21, 22] });
+  callout(s, "i & −i 是什么", "i 最低位的 1（lowbit）。tree[i] 管着 (i − lowbit(i), i] 这一段：向上 += lowbit 找到所有「管我」的结点，向下 −= lowbit 把前缀拆成不相交的几段。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "O(n) 建树", "逐个 update 是 O(n log n)；这里每个结点把自己的和加到父亲 i + lowbit(i) 一次，线性。", 6.6, 3.2, 2.9, 1.3, { fontSize: 9.5 });
+  text(s, "和 12.5 对照：只要「可减」的运算（和）用树状数组；最值不可减，要线段树。", 6.6, 4.6, 2.9, 0.5, { fontSize: 9, color: C.muted, margin: 0 });
+}
+
+// A.8 27018
+{
+  const s = content("A.8", "附录 A · OJ 27018 康托展开", "排名 = Σ（比 xᵢ 小且还没用过的数）×（剩下位置的阶乘）");
+  codeBlock(s, `import sys
+MOD = 998244353
+
+data = sys.stdin.buffer.read().split()
+n = int(data[0])
+perm = list(map(int, data[1:n + 1]))
+tree = [0] * (n + 1)                    # 树状数组：哪些数已经用过
+
+fact = [1] * (n + 1)
+for i in range(1, n + 1):
+    fact[i] = fact[i - 1] * i % MOD
+
+rank = 0
+for i, x in enumerate(perm):
+    used, j = 0, x - 1                  # 比 x 小且已用过的个数
+    while j:
+        used += tree[j]; j -= j & -j
+    smaller = x - 1 - used              # 比 x 小、还没用的个数
+    rank = (rank + smaller * fact[n - 1 - i]) % MOD
+    j = x
+    while j <= n:                       # 标记 x 已用
+        tree[j] += 1; j += j & -j
+print((rank + 1) % MOD)                 # 排名从 1 起`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.4, lang: "py", hl: [15, 18, 19, 21] });
+  table(s, [
+    ["i", "xᵢ", "小且未用", "× 阶乘", "累计"],
+    ["0", "2", "1", "× 2!", "2"],
+    ["1", "1", "0", "× 1!", "2"],
+    ["2", "3", "0", "× 0!", "2"],
+  ], 6.6, 2.95, 2.9, [0.4, 0.35, 0.75, 0.75, 0.65], { fontSize: 8, rowH: 0.26, tight: true });
+  callout(s, "树状数组在这里干什么", "「比 x 小且已用」= 已用标记的前缀和。每步一次查询、一次 +1，O(log n)；朴素地数是 O(n)，整体 O(n²)。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "样例 2 1 3：前面有 2 个排列，排名 = 2 + 1 = 3（排名从 1 起，所以 +1）。", 6.6, 4.1, 2.9, 0.5, { fontSize: 9, margin: 0 });
+  text(s, "N = 10⁶ 时本机 Python 约 3 秒；OJ 卡时限就换 C++ 或 PyPy。", 6.6, 4.65, 2.9, 0.45, { fontSize: 9, color: C.goldText, bold: true, margin: 0 });
 }
 
   summarySlide("本章小结", [
