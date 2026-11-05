@@ -34,8 +34,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第10章  检索",
   subtitle: "Search：比较着找，还是直接算出地址",
-  topics: "平均检索长度 ASL · 顺序检索与监视哨 · 二分检索（半开区间）与决策树 · 分块检索\n集合的数学特性 · IntSet 接口 · 位向量求交并差\n散列函数：除余 / 乘余取整 / 平方取中 / 折叠 / ELFhash · 开散列（拉链）\n闭散列：线性 / 二次 / 随机 / 双散列探查 · 墓碑删除 · 负载因子与效率",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "平均检索长度 ASL · 顺序检索与监视哨 · 二分检索（半开区间）与决策树 · 分块检索\n集合的数学特性 · IntSet 接口 · 位向量求交并差\n散列函数：除余 / 乘余取整 / 平方取中 / 折叠 / ELFhash · 开散列（拉链）\n闭散列：线性 / 二次 / 随机 / 双散列探查 · 墓碑删除 · 负载因子与效率\n附录：8 道上机题 · 二分的四种变形 · 二分答案 · 前缀和 + 散列 · LRU",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -70,7 +70,7 @@ titleSlide({
   const cols = [
     ["10.1  线性表", ["检索与平均检索长度 ASL", "10.1.1 顺序检索、监视哨", "10.1.2 二分检索：半开区间、trace、决策树、代价", "10.1.3 分块检索（索引检索）", "教学版 teaching.hpp 总览"]],
     ["10.2  集合", ["10.2.1 集合的数学特性", "接口口径：可预期的失败返回 bool", "10.2.2 计算机中的集合", "IntSet：顺序检索上的交与包含", "有限全集上的位向量"]],
-    ["10.3  散列", ["散列的思想、冲突、负载因子", "10.3.1 七种散列函数", "10.3.2 开散列（拉链法）", "10.3.3 闭散列：四种探查、墓碑", "10.3.4 HashTable 实现", "10.3.5 效率分析 · 10.3.6 应用"]],
+    ["10.3  散列", ["散列的思想、冲突、负载因子", "10.3.1 七种散列函数", "10.3.2 开散列（拉链法）", "10.3.3 闭散列：四种探查、墓碑", "10.3.4 HashTable 实现", "10.3.5 效率分析 · 10.3.6 应用", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -1668,6 +1668,256 @@ print(*out)`, 5.05, 1.05, 4.45, 4.05, { fontSize: 7.6, lang: "py", hl: [6, 7, 8,
     text(s, e[1], x + 0.2, y + 0.6, 3.95, 0.75, { fontSize: 10.5, margin: 0 });
     text(s, "提示：" + e[2], x + 0.2, y + 1.38, 3.95, 0.45, { fontSize: 9.5, color: C.green, margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 题单与 LC_top-100-liked 的检索题；OJ 题跑过 cs101.openjudge.cn 本地测试数据，
+// LeetCode 题与暴力解随机对拍（08210 另与穷举对拍；其本地第 24 组期望输出有误，见 A.4 讲稿）。
+sectionSlide("附录 A", "编程练习", "8 道上机题：二分的几种变形，加上散列表的几种用法\nLC34 首末位置 · LC33 旋转数组 · LC240 二维矩阵 · 08210 河中跳房子\n01019 Number Sequence · 27141 完美的爱 · LC146 LRU 缓存 · LC3488 最近相等元素");
+
+// A.1 LC34
+{
+  const s = content("A.1", "附录 A · LeetCode 34 在排序数组中查找元素的第一个和最后一个位置", "两次二分：bisect_left 与 bisect_right 夹出半开区间");
+  codeBlock(s, `from bisect import bisect_left, bisect_right
+
+class Solution:
+    def searchRange(self, nums: list[int], target: int) -> list[int]:
+        lo = bisect_left(nums, target)  # 第一个 >= target 的位置
+        if lo == len(nums) or nums[lo] != target:
+            return [-1, -1]
+        hi = bisect_right(nums, target) # 第一个 > target 的位置
+        return [lo, hi - 1]             # 半开区间 [lo, hi) 全是 target
+
+def lower_bound(a, x):                  # bisect_left 手写版
+    first, last = 0, len(a)             # 答案在 [first, last] 里
+    while first < last:
+        mid = (first + last) // 2
+        if a[mid] < x:
+            first = mid + 1             # mid 及左边都太小
+        else:
+            last = mid                  # mid 可能就是答案
+    return first`, 0.5, 1.05, 5.9, 3.3, { fontSize: 8.6, lang: "py", hl: [5, 8, 15, 18] });
+  table(s, [
+    ["nums = [5, 7, 7, 8, 8, 10]", "target = 8", "target = 6"],
+    ["bisect_left", "3", "1"],
+    ["bisect_right", "5", "1（空区间）"],
+  ], 0.5, 4.5, 5.9, [2.6, 1.6, 1.7], { fontSize: 9, rowH: 0.2, tight: true });
+  callout(s, "和 10.1.2 同一个写法", "`lower_bound` 就是讲义的半开区间 [first, last)：不写 mid − 1，循环结束时 first == last 就是插入位置。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "两个边界一个口径", "left 找第一个 **≥** x，right 找第一个 **>** x；[left, right) 里恰好全是 x，个数 = right − left。", 6.6, 2.75, 2.9, 1.45, { fontSize: 9.5 });
+  text(s, "LC35 搜索插入位置就是 bisect_left 本身。", 6.6, 4.35, 2.9, 0.75, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.2 LC33
+{
+  const s = content("A.2", "附录 A · LeetCode 33 搜索旋转排序数组", "整体无序也能二分：每次至少有一半是有序的");
+  codeBlock(s, `class Solution:
+    def search(self, nums: list[int], target: int) -> int:
+        lo, hi = 0, len(nums) - 1
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[lo] <= nums[mid]:   # 左半 [lo, mid] 有序
+                if nums[lo] <= target < nums[mid]:
+                    hi = mid - 1
+                else:
+                    lo = mid + 1
+            else:                       # 右半 [mid, hi] 有序
+                if nums[mid] < target <= nums[hi]:
+                    lo = mid + 1
+                else:
+                    hi = mid - 1
+        return -1`, 0.5, 1.05, 5.9, 3.0, { fontSize: 8.8, lang: "py", hl: [8, 9, 14] });
+  consoleBlock(s, "[4, 5, 6, 7, 0, 1, 2]，target = 0 → 4\nmid = 3（7）：左半 4..7 有序、0 不在里面 → 去右半", 0.5, 4.2, 5.9, 0.9, 9);
+  callout(s, "二分要的不是「有序」", "要的是**每一步能排除一半**。拆开后一半有序：看 target 在不在有序那半的范围里，就知道去哪边。", 6.6, 1.05, 2.9, 1.65, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 为什么是 <=", "`nums[lo] <= nums[mid]`：lo == mid 时左半只有一个元素，也算有序。写成 < 会在两个元素时走错边。", 6.6, 2.85, 2.9, 1.45, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "题目保证元素互不相同；有重复时（LC81）最坏退化成 O(n)。", 6.6, 4.45, 2.9, 0.65, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.3 LC240
+{
+  const s = content("A.3", "附录 A · LeetCode 240 搜索二维矩阵 II", "从右上角出发：每比一次排除一整行或一整列");
+  codeBlock(s, `class Solution:
+    def searchMatrix(self, matrix: list[list[int]], target: int) -> bool:
+        m, n = len(matrix), len(matrix[0])
+        i, j = 0, n - 1                 # 从右上角出发
+        while i < m and j >= 0:
+            x = matrix[i][j]
+            if x == target:
+                return True
+            if x > target:
+                j -= 1                  # 这一列往下只会更大：整列排除
+            else:
+                i += 1                  # 这一行往左只会更小：整行排除
+        return False`, 0.5, 1.05, 5.9, 2.3, { fontSize: 9, lang: "py", hl: [4, 10, 12] });
+  const M = [[1, 4, 7, 11, 15], [2, 5, 8, 12, 19], [3, 6, 9, 16, 22], [10, 13, 14, 17, 24]];
+  const path = { "0,4": 1, "0,3": 1, "0,2": 1, "0,1": 1, "1,1": 2 };
+  M.forEach((row, i) => row.forEach((v, j) => {
+    const k = path[i + "," + j];
+    s.addShape(pres.shapes.RECTANGLE, { x: 0.5 + j * 0.5, y: 3.5 + i * 0.4, w: 0.5, h: 0.4, fill: { color: k === 2 ? C.mint : k ? C.cream : C.white }, line: { color: C.muted, width: 0.75 } });
+    text(s, String(v), 0.5 + j * 0.5, 3.5 + i * 0.4, 0.5, 0.4, { fontSize: 10, bold: !!k, color: C.dark, align: "center", valign: "middle", margin: 0 });
+  }));
+  text(s, "找 5：15、11、7 都比 5 大，各去掉一列；到 4 比 5 小，去掉第一行；下移到 5，命中。共比较 5 次。", 3.15, 3.5, 3.25, 1.6, { fontSize: 9.5, margin: 0 });
+  callout(s, "右上角为什么特别", "它是本行最大、本列最小：比 target 大就整列不可能，比 target 小就整行不可能——像一棵二叉搜索树的根。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "代价 O(m + n)", "每步 i 加一或 j 减一，至多 m + n 步。逐行二分是 O(m log n)，行列相近时更慢。", 6.6, 2.95, 2.9, 1.3, { fontSize: 9.5 });
+  text(s, "左上角不行：往右、往下都变大，排除不了任何东西。", 6.6, 4.4, 2.9, 0.7, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.4 08210
+{
+  const s = content("A.4", "附录 A · OJ 08210 河中跳房子", "二分答案：「最短跳 ≥ d 行不行」随 d 单调");
+  codeBlock(s, `import sys
+
+data = list(map(int, sys.stdin.read().split()))
+L, n, m = data[0], data[1], data[2]
+rocks = data[3:3 + n] + [L]             # 终点也算一块，不能移走
+
+def removed(d):                         # 最短跳至少 d，要移走几块
+    cnt, last = 0, 0
+    for x in rocks:
+        if x - last < d:
+            cnt += 1                    # 离上一块太近：移走
+        else:
+            last = x
+    return cnt
+
+lo, hi = 1, L + 1                       # 找最后一个可行的 d
+while lo < hi:                          # 在 [lo, hi) 中二分
+    mid = (lo + hi) // 2
+    if removed(mid) <= m:
+        lo = mid + 1                    # mid 可行，答案 ≥ mid
+    else:
+        hi = mid
+print(lo - 1)`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.6, lang: "py", hl: [7, 17, 19, 23] });
+  callout(s, "把最优化变成判定", "直接求「最长的最短跳」很难；但给定 d，**贪心**一遍就能数出最少要移走几块：离上一块不到 d 就移走。d 越大要移的越多，于是可以二分 d。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "终点不能移", "终点太近时数作「移走」，实际是移走它前面那块，块数一样。m = 0 时答案就是最短的那一段。", 6.6, 3.2, 2.9, 1.3, { fontSize: 9.5 });
+  consoleBlock(s, "25 5 2 / 2 11 14 17 21 → 4", 6.6, 4.6, 2.9, 0.5, 9);
+  s.addNotes("本地 cs101.openjudge.cn 的 08210 第 24 组（1555069 2 0 / 195028 1541945）期望输出 195028 是错的：m = 0 时不能移走任何石头，最短一跳是 1555069 − 1541945 = 13124。该组由一份把二分下界取成 min(delta)、漏了最后一段的参考解生成。本页代码与穷举对拍 300 组全部一致。");
+}
+
+// A.5 01019
+{
+  const s = content("A.5", "附录 A · OJ 01019 Number Sequence", "两级定位：先二分找在哪一组，再在组里取第几位");
+  codeBlock(s, `from bisect import bisect_left
+
+digits = ''.join(str(k) for k in range(1, 32000))  # "123…k" 的前缀
+group_end = []                          # group_end[k-1] = S1…Sk 的总长
+total, length = 0, 0                    # length = len(Sk)
+k = 0
+while total < 2 ** 31:
+    k += 1
+    length += len(str(k))
+    total += length
+    group_end.append(total)
+
+for _ in range(int(input())):
+    i = int(input())
+    g = bisect_left(group_end, i)       # 第 i 位落在 S(g+1) 里
+    before = group_end[g - 1] if g else 0
+    print(digits[i - before - 1])       # Sk 就是 digits 的前缀`, 0.5, 1.05, 5.9, 2.75, { fontSize: 8.6, lang: "py", hl: [15, 17] });
+  consoleBlock(s, "S1 S2 S3 S4 … = 1 12 123 1234 12345 …\n第 8 位：前三组共 1+2+3 = 6 位，落在 S4 = 1234 的第 2 位 → 2", 0.5, 3.95, 5.9, 0.75, 8.8);
+  text(s, "S_k 都是同一个串 \"123…k\" 的前缀：建一次 digits，每问直接下标取。", 0.5, 4.8, 5.9, 0.3, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "和 10.1.3 分块检索同构", "group_end 是**块间有序**的索引：先二分找块，再块内定位。块长 len(S_k) 逐组增长，所以 k 只到三万出头。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "bisect_left 找的是什么", "第一个 group_end ≥ i 的组：第 i 位正好落在那一组里（等于时是该组最后一位）。", 6.6, 2.95, 2.9, 1.3, { fontSize: 9.5 });
+  text(s, "i ≤ 2³¹ − 1：总长加到超过 2³¹ 就停。", 6.6, 4.4, 2.9, 0.7, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.6 27141
+{
+  const s = content("A.6", "附录 A · OJ 27141 完美的爱", "前缀和 + 散列表：和为 0 的最长子段");
+  codeBlock(s, `import sys
+
+data = list(map(int, sys.stdin.read().split()))
+n, a = data[0], data[1:]
+first = {0: -1}                         # 前缀和 → 第一次出现的位置
+s, best = 0, 0
+for i, x in enumerate(a[:n]):
+    s += x - 520                        # 平均 520 ⇔ 减 520 后和为 0
+    if s in first:
+        best = max(best, i - first[s])  # 区间 (first[s], i] 和为 0
+    else:
+        first[s] = i                    # 只记第一次：区间才最长
+print(best * 520)                       # 总价值 = 520 × 长度`, 0.5, 1.05, 5.9, 2.3, { fontSize: 9, lang: "py", hl: [5, 8, 10, 12] });
+  table(s, [
+    ["i", "0", "1", "2", "3", "4", "…", "6", "7", "8", "9"],
+    ["a − 520", "0", "1", "−1", "−508", "−396", "…", "0", "−1", "−2", "2"],
+    ["前缀和 s", "0", "1", "0", "−508", "−904", "…", "−912", "−913", "−915", "−913"],
+  ], 0.5, 3.5, 5.9, [0.9, 0.5, 0.5, 0.5, 0.55, 0.55, 0.3, 0.5, 0.5, 0.5, 0.6], { fontSize: 8.5, rowH: 0.26, tight: true });
+  text(s, "s 初值 0 记在下标 −1。s = 0 再现于 i = 2 → 段 [0, 2]，长 3；s = −913 在 i = 7、9 → 段 [8, 9] 只有 2。答 3 × 520 = 1560。", 0.5, 4.4, 5.9, 0.7, { fontSize: 9.5, margin: 0 });
+  callout(s, "为什么要散列", "两个前缀和相等 ⇔ 中间这段和为 0。用 dict 记每个前缀和**第一次**出现的位置，一遍扫描、每步 O(1) 期望查找。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 只记第一次", "再遇到同一个 s 不能覆盖：越早的位置，区间越长。", 6.6, 2.95, 2.9, 1.05, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "暴力枚举所有区间是 O(n²)；前缀和值域大，开数组不现实，正是散列的用场。", 6.6, 4.15, 2.9, 0.95, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.7 LC146
+{
+  const s = content("A.7", "附录 A · LeetCode 146 LRU 缓存", "散列表负责「找得快」，双向链表负责「排得快」");
+  codeBlock(s, `class Node:
+    def __init__(self, key=0, val=0):
+        self.key, self.val = key, val
+        self.prev = self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap, self.map = capacity, {}   # key → 结点
+        self.head, self.tail = Node(), Node()   # 两个哨兵
+        self.head.next, self.tail.prev = self.tail, self.head
+
+    def _remove(self, x):
+        x.prev.next, x.next.prev = x.next, x.prev
+
+    def _push_front(self, x):           # 表头 = 最近用过
+        x.prev, x.next = self.head, self.head.next
+        self.head.next.prev = x
+        self.head.next = x`, 0.5, 1.05, 4.6, 3.05, { fontSize: 7.9, lang: "py", hl: [9, 13, 15] });
+  codeBlock(s, `class LRUCache:                         # （接左栏）
+    def get(self, key: int) -> int:
+        if key not in self.map:
+            return -1
+        x = self.map[key]
+        self._remove(x); self._push_front(x)
+        return x.val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.map:
+            self._remove(self.map[key])
+        x = self.map[key] = Node(key, value)
+        self._push_front(x)
+        if len(self.map) > self.cap:
+            old = self.tail.prev        # 表尾 = 最久没用
+            self._remove(old)
+            del self.map[old.key]`, 5.25, 1.05, 4.25, 3.05, { fontSize: 7.9, lang: "py", hl: [6, 15, 17] });
+  callout(s, "各管一半", "dict：key → 结点，get / put 都 O(1) 找到；链表：按最近使用排队，摘下、插到表头、删表尾都 O(1)。两者缺一个就有一步变成 O(n)。", 0.5, 4.25, 4.6, 0.85, { fontSize: 9, fill: C.mint, tcolor: C.dark });
+  callout(s, "结点里为什么存 key", "淘汰表尾时要顺手 `del self.map[old.key]`；两个哨兵让摘除不必判空。Python 里 `OrderedDict` 的 move_to_end 就是这套结构。", 5.25, 4.25, 4.25, 0.85, { fontSize: 9 });
+}
+
+// A.8 LC3488
+{
+  const s = content("A.8", "附录 A · LeetCode 3488 距离最小相等元素查询", "散列分组 + 组内二分：只看环上左右两个邻居");
+  codeBlock(s, `from bisect import bisect_left
+from collections import defaultdict
+
+class Solution:
+    def solveQueries(self, nums: list[int], queries: list[int]) -> list[int]:
+        n, pos = len(nums), defaultdict(list)
+        for i, x in enumerate(nums):    # 散列分组：值 → 升序下标表
+            pos[x].append(i)
+        ans = []
+        for q in queries:
+            p = pos[nums[q]]
+            if len(p) == 1:
+                ans.append(-1); continue
+            k = bisect_left(p, q)       # q 在自己组里的位置
+            best = n
+            for j in (p[k - 1], p[(k + 1) % len(p)]):   # 环上左右邻居
+                d = abs(j - q)
+                best = min(best, d, n - d)
+            ans.append(best)
+        return ans`, 0.5, 1.05, 6.1, 3.25, { fontSize: 8.4, lang: "py", hl: [7, 14, 16] });
+  consoleBlock(s, "nums = [1, 3, 1, 4, 1, 3, 2]，queries = [0, 3, 5]\n→ [2, -1, 3]   （值 1 在下标 0、2、4；查 0：邻居 4 与 2，距离 min(4, 3)、2）", 0.5, 4.45, 6.1, 0.65, 8.3);
+  callout(s, "先按值散列", "pos[x] 是值 x 出现的下标表，天然升序。查询只在**同值**的下标里找，与别的值无关。", 6.8, 1.05, 2.7, 1.45, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "环形距离", "数组首尾相连：|i − j| 与 n − |i − j| 取小。最近的一定是组里紧挨着的两个，下标 k − 1 与 (k + 1) mod 长度。", 6.8, 2.65, 2.7, 1.6, { fontSize: 9.5 });
+  text(s, "k = 0 时 p[k − 1] 就是 p[−1]，Python 负下标正好绕到组尾。", 6.8, 4.4, 2.7, 0.7, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
 }
 
   summarySlide("本章小结", [
