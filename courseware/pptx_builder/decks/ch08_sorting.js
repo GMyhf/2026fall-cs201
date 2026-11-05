@@ -35,8 +35,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第八章  内部排序",
   subtitle: "Internal Sorting：比较还是分配，稳不稳定，多快多省",
-  topics: "基本概念 · 稳定性 · 比较次数与移动次数\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n双指针分割 · BST 排序 · 归并排序 · 逆序对（OJ 02299）\n计数 / 区间桶 / 基数 / 索引排序 · 实测 · std::sort 与 Timsort · 下限 Ω(n log n)",
-  footer: "Compiled by Hongfei Yan · Updated 2026-10-28 · github.com/GMyhf/dsa-modernization",
+  topics: "基本概念 · 稳定性 · 比较次数与移动次数\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n双指针分割 · BST 排序 · 归并排序 · 逆序对（OJ 02299）\n计数 / 区间桶 / 基数 / 索引排序 · 实测 · std::sort 与 Timsort · 下限 Ω(n log n)\n附录：8 道上机题 · Shell · 三路划分 · 快速选择 · 链表归并 · k 路归并",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -69,7 +69,7 @@ titleSlide({
   const cols = [
     ["基础与简单排序", ["8.1 基本概念：术语、稳定性、代价", "8.2 插入排序：直接插入、Shell 排序", "8.3 选择排序：直接选择、堆排序"]],
     ["交换与分治", ["8.4 交换排序：冒泡、快速排序及两处优化", "补充：双指针分割、BST 排序", "8.5 归并排序：两路归并、稳定性来自一个 `<`", "副产品：逆序对计数、OJ 02299"]],
-    ["突破与极限", ["8.6 分配排序：桶式、区间桶、基数、索引排序", "8.7 时间代价：实测数据、std::sort、Timsort", "判定树下限 Ω(n log n)", "本章小结"]],
+    ["突破与极限", ["8.6 分配排序：桶式、区间桶、基数、索引排序", "8.7 时间代价：实测数据、std::sort、Timsort", "判定树下限 Ω(n log n)", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -1638,6 +1638,243 @@ stu.sort(key=lambda t: -t[1])   # 再按分数降序
     pill(s, e[0], x + 0.15, y + 0.12, 1.0, 0.32, C.dark, C.gold, 10);
     text(s, e[1], x + 0.15, y + 0.5, 4.1, 0.68, { fontSize: 10.5, margin: 0 });
   });
+}
+
+// ============================ 附录A ============================
+// 取材 2026spring-cs201 讲义（W01 / W02 / W04-5.5 / LC_top-100-liked）与题单的排序题；
+// OJ 题跑过 cs101.openjudge.cn 本地测试数据，LeetCode 题与暴力解随机对拍。
+sectionSlide("附录 A", "编程练习", "8 道上机题：把本章的插入、划分、归并、堆用到题里\n15265 Shell 排序 · LC75 颜色分类 · LC215 第 K 大 · LC148 排序链表\n20018 越野跑 · LC23 合并 K 个链表 · 31202 这也是逆序对? · 27300 模型整理");
+
+// A.1 15265
+{
+  const s = content("A.1", "附录 A · OJ 15265 Shell 排序", "Hibbard 增量 2ᵏ − 1：每趟就是步长为 gap 的插入排序");
+  codeBlock(s, `n = int(input())
+a = list(map(int, input().split()))
+
+gaps, k = [], 1
+while (1 << k) - 1 < n:                 # Hibbard：1, 3, 7, 15, …
+    gaps.append((1 << k) - 1)
+    k += 1
+
+for gap in reversed(gaps):              # 从大增量到 1
+    for i in range(gap, n):             # 插入排序，把步长 1 换成 gap
+        x, j = a[i], i
+        while j >= gap and a[j - gap] > x:
+            a[j] = a[j - gap]
+            j -= gap
+        a[j] = x
+    print(' '.join(map(str, a)))        # 每趟输出一次`, 0.5, 1.05, 5.6, 2.75, { fontSize: 8.8, lang: "py", hl: [5, 10, 12] });
+  table(s, [
+    ["趟", "gap", "结果（样例 n = 10）"],
+    ["1", "7", "4 7 3 13 11 12 0 47 34 98（三对都不逆序，不变）"],
+    ["2", "3", "0 7 3 4 11 12 13 47 34 98"],
+    ["3", "1", "0 3 4 7 11 12 13 34 47 98"],
+  ], 0.5, 3.95, 5.6, [0.45, 0.55, 4.6], { fontSize: 9, rowH: 0.29, tight: true });
+  callout(s, "和 8.2.2 对照", "讲义里 gap 每次除以 2；这里换成 **Hibbard**：…, 7, 3, 1。相邻增量互素，最坏 Θ(n√n)；除以 2 的增量最坏仍是 Θ(n²)。", 6.3, 1.05, 3.2, 1.7, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "增量怎么生成", "从 1 起，只要 2ᵏ − 1 < n 就收下，再**倒过来**用。n = 10 得 7, 3, 1，共三趟三行输出。", 6.3, 2.9, 3.2, 1.25, { fontSize: 9.5 });
+  text(s, "⚠ 第一趟即使没变也要输出一行：题目按趟数计行。", 6.3, 4.3, 3.2, 0.8, { fontSize: 9.5, color: C.bad, bold: true, margin: 0 });
+}
+
+// A.2 LC75
+{
+  const s = content("A.2", "附录 A · LeetCode 75 颜色分类", "荷兰国旗：一趟三路划分，Θ(n) 时间、O(1) 空间");
+  codeBlock(s, `class Solution:
+    def sortColors(self, nums: list[int]) -> None:
+        lo, i, hi = 0, 0, len(nums) - 1
+        # 不变式：[0, lo) 全 0，[lo, i) 全 1，(hi, n) 全 2，[i, hi] 未看
+        while i <= hi:
+            if nums[i] == 0:
+                nums[lo], nums[i] = nums[i], nums[lo]
+                lo += 1; i += 1
+            elif nums[i] == 2:
+                nums[hi], nums[i] = nums[i], nums[hi]
+                hi -= 1                 # 换来的数还没看，i 不动
+            else:
+                i += 1`, 0.5, 1.05, 5.9, 2.4, { fontSize: 8.6, lang: "py", hl: [4, 11] });
+  table(s, [
+    ["区间", "[0, lo)", "[lo, i)", "[i, hi]", "(hi, n)"],
+    ["内容", "全 0", "全 1", "还没看", "全 2"],
+  ], 0.5, 3.6, 5.9, [0.9, 1.25, 1.25, 1.25, 1.25], { fontSize: 9.5, rowH: 0.32, tight: true });
+  text(s, "每步让「还没看」缩小 1：遇 0 换到左边、两指针都进；遇 2 换到右边、只收 hi；遇 1 直接跳过。", 0.5, 4.35, 5.9, 0.75, { fontSize: 10, margin: 0 });
+  callout(s, "就是本章习题「原书 14」", "红白蓝三色条块排成荷兰国旗。快排的两路划分只分「≤ 轴 / > 轴」；这里一次分三段。", 6.6, 1.05, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 和 2 交换后 i 不动", "从右边换来的数还没看过，可能是 0；从左边换来的一定是 1（已看过），所以 i 可以前进。", 6.6, 2.8, 2.9, 1.5, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "计数排序（数一遍 0、1、2 再写回）也是 Θ(n)，但要扫两趟。", 6.6, 4.45, 2.9, 0.65, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.3 LC215
+{
+  const s = content("A.3", "附录 A · LeetCode 215 数组中的第 K 个最大元素", "快速选择：划分完只进答案所在的一侧");
+  codeBlock(s, `import random
+
+class Solution:
+    def findKthLargest(self, nums: list[int], k: int) -> int:
+        target = len(nums) - k          # 第 k 大 = 升序下标 n − k
+        lo, hi = 0, len(nums) - 1
+        while True:
+            p = nums[random.randint(lo, hi)]   # 随机轴，躲开最坏情况
+            lt, i, gt = lo, lo, hi      # 三路划分：< p | = p | > p
+            while i <= gt:
+                if nums[i] < p:
+                    nums[lt], nums[i] = nums[i], nums[lt]; lt += 1; i += 1
+                elif nums[i] > p:
+                    nums[gt], nums[i] = nums[i], nums[gt]; gt -= 1
+                else:
+                    i += 1
+            if target < lt:             # 只进答案所在的一侧
+                hi = lt - 1
+            elif target > gt:
+                lo = gt + 1
+            else:
+                return p`, 0.5, 1.05, 6.0, 4.05, { fontSize: 8.4, lang: "py", hl: [8, 9, 17] });
+  callout(s, "为什么平均是 Θ(n)", "快排两侧都要递归：n log n。选择只留一侧，期望 n + n/2 + n/4 + … ≈ 2n。", 6.7, 1.05, 2.8, 1.35, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "两处防退化", "**随机轴**：对付有序输入；**三路划分**：全相等时一趟就命中「= p」段，不会一次只缩 1。", 6.7, 2.55, 2.8, 1.45, { fontSize: 9.5 });
+  callout(s, "另一条路：堆", "`heapq.nlargest(k, nums)[-1]`，维护大小为 k 的小顶堆，O(n log k)。", 6.7, 4.15, 2.8, 0.95, { fontSize: 9.5 });
+}
+
+// A.4 LC148
+{
+  const s = content("A.4", "附录 A · LeetCode 148 排序链表", "链表上的归并：分靠快慢指针，合只改指针");
+  codeBlock(s, `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val, self.next = val, next
+
+class Solution:
+    def sortList(self, head):
+        if head is None or head.next is None:
+            return head
+        slow, fast = head, head.next    # 快慢指针找中点
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+        right, slow.next = slow.next, None   # 从中间断开
+        return self.merge(self.sortList(head), self.sortList(right))
+
+    def merge(self, a, b):
+        tail = dummy = ListNode()
+        while a and b:
+            if a.val <= b.val:          # <= 保证稳定
+                tail.next, a = a, a.next
+            else:
+                tail.next, b = b, b.next
+            tail = tail.next
+        tail.next = a or b              # 只改指针，不搬数据
+        return dummy.next`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.6, lang: "py", hl: [9, 12, 18, 23] });
+  callout(s, "为什么链表选归并", "快排、堆排都要随机访问；归并只**顺序**走两条链，正合链表。合并不需要数组版的 Θ(n) 辅助空间。", 6.6, 1.05, 2.9, 1.6, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "fast 从 head.next 起", "这样两个结点时 slow 停在第一个，能断成 1 + 1；从 head 起会断成 2 + 0，无限递归。", 6.6, 2.8, 2.9, 1.35, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "递归深度 log n。题目进阶要 O(1) 空间，就改成自底向上：步长 1, 2, 4, … 两两合并。", 6.6, 4.3, 2.9, 0.8, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.5 20018
+{
+  const s = content("A.5", "附录 A · OJ 20018 蚂蚁王国的越野跑", "赶超 = 后面的比前面的快：在归并里数顺序对");
+  codeBlock(s, `import sys
+
+def count(a):                           # 返回 (降序排好的 a, 顺序对数)
+    if len(a) <= 1:
+        return a, 0
+    mid = len(a) // 2
+    L, x = count(a[:mid])
+    R, y = count(a[mid:])
+    merged, i, cnt = [], 0, x + y
+    for r in R:                         # 降序合并：L 中 < r 的都在 i 之后
+        while i < len(L) and L[i] >= r:
+            merged.append(L[i]); i += 1
+        cnt += len(L) - i               # L[i:] 都 < r：每个都被 r 赶超
+        merged.append(r)
+    merged += L[i:]
+    return merged, cnt
+
+data = sys.stdin.read().split()
+n = int(data[0])
+print(count(list(map(int, data[1:n + 1])))[1])`, 0.5, 1.05, 5.9, 3.2, { fontSize: 8.6, lang: "py", hl: [10, 13] });
+  consoleBlock(s, "速度 1 5 10 7 6 → 7\n速度 1 5 5 7 6 → 8（相等不算赶超）", 0.5, 4.4, 5.9, 0.7, 9);
+  callout(s, "和 8.5 的逆序对是一回事", "逆序对数 i < j 且 a[i] > a[j]；这里要 a[i] **<** a[j]。把合并改成**降序**，数法一行不变。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "相等时先放左边", "`L[i] >= r` 时先放 L[i]：速度相同的不计入，正好对应「速度一样不赶超」。", 6.6, 2.75, 2.9, 1.3, { fontSize: 9.5 });
+  text(s, "n = 10⁵ 时答案可达约 5×10⁹，超出 32 位整数：C++ 要用 `long long`，Python 不用管。", 6.6, 4.2, 2.9, 0.9, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+}
+
+// A.6 LC23
+{
+  const s = content("A.6", "附录 A · LeetCode 23 合并 K 个升序链表", "k 路归并：堆里只放 k 个当前头，每次取最小");
+  codeBlock(s, `import heapq
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val, self.next = val, next
+
+class Solution:
+    def mergeKLists(self, lists):
+        heap = [(h.val, i, h) for i, h in enumerate(lists) if h]
+        heapq.heapify(heap)             # 堆里只放 k 个链表的当前头
+        tail = dummy = ListNode()
+        while heap:
+            _, i, node = heapq.heappop(heap)   # i 破平局，不比较结点
+            tail.next = tail = node
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+        return dummy.next`, 0.5, 1.05, 5.9, 2.9, { fontSize: 8.8, lang: "py", hl: [10, 13, 16] });
+  table(s, [
+    ["做法", "时间"],
+    ["逐条并进结果", "O(k · N)"],
+    ["两两归并（分治）", "O(N log k)"],
+    ["k 个头放进堆", "O(N log k)"],
+  ], 0.5, 4.05, 5.9, [3.2, 2.7], { fontSize: 9, rowH: 0.26, tight: true });
+  callout(s, "堆就是「选最小」", "和 8.3.2 堆排序同一个想法：每次从 k 个候选里取最小，代价 log k 而不是 k。N 为结点总数。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "⚠ 元组里的 i", "值相等时 Python 会接着比第三项——ListNode 不能比较，报 TypeError。放一个下标 i 破平局。", 6.6, 2.75, 2.9, 1.4, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  text(s, "下一章的外排序多路归并、败者树，做的也是这件事。", 6.6, 4.3, 2.9, 0.8, { fontSize: 9.5, color: C.muted, margin: 0 });
+}
+
+// A.7 31202
+{
+  const s = content("A.7", "附录 A · OJ 31202 这也是逆序对?", "移项、排序、对撞指针：O(n log n) 数满足条件的对");
+  codeBlock(s, `import sys
+
+data = sys.stdin.read().split()
+n = int(data[0])
+a = map(int, data[1:n + 1])
+b = map(int, data[n + 1:2 * n + 1])
+c = sorted(x - y for x, y in zip(a, b))   # 化成 c[i] + c[j] > 0
+
+ans, i, j = 0, 0, n - 1
+while i < j:                            # 对撞指针
+    if c[i] + c[j] > 0:
+        ans += j - i                    # c[i..j-1] 配 c[j] 都成立
+        j -= 1
+    else:
+        i += 1                          # c[i] 配谁都不行了
+print(ans)`, 0.5, 1.05, 5.9, 2.85, { fontSize: 8.8, lang: "py", hl: [7, 11, 12] });
+  table(s, [
+    ["", "1", "2", "3", "4", "5"],
+    ["a", "4", "8", "2", "6", "2"],
+    ["b", "4", "5", "4", "1", "3"],
+    ["c = a − b", "0", "3", "−2", "5", "−1"],
+    ["排序后", "−2", "−1", "0", "3", "5"],
+  ], 0.5, 4.0, 5.9, [1.4, 0.9, 0.9, 0.9, 0.9, 0.9], { fontSize: 9, rowH: 0.22, tight: true });
+  callout(s, "第一步：移项", "a[i] + a[j] > b[i] + b[j] ⇔ c[i] + c[j] > 0。条件只和**无序对**有关，所以可以先排序再数。", 6.6, 1.05, 2.9, 1.5, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "对撞指针为什么对", "c[i] + c[j] > 0 时，c[i..j−1] 都不小于 c[i]，配 c[j] 都成立，一次加 j − i，j 退一格；否则 c[i] 配谁都不够，i 进一格。", 6.6, 2.7, 2.9, 1.7, { fontSize: 9.5 });
+  consoleBlock(s, "样例 1 → 7", 6.6, 4.55, 2.9, 0.55, 9.5);
+}
+
+// A.8 27300
+{
+  const s = content("A.8", "附录 A · OJ 27300 模型整理", "排序的关键是「按什么排」：数值键，不是字符串");
+  codeBlock(s, `from collections import defaultdict
+
+def size(p):                            # '1.3B' → 1300，单位统一成 M
+    return float(p[:-1]) * (1000 if p[-1] == 'B' else 1)
+
+models = defaultdict(list)
+for _ in range(int(input())):
+    name, p = input().strip().rsplit('-', 1)
+    models[name].append(p)
+
+for name in sorted(models):             # 名称按字典序
+    ps = sorted(models[name], key=size) # 参数量按数值，不按字符串
+    print(f"{name}: {', '.join(ps)}")`, 0.5, 1.05, 5.9, 2.4, { fontSize: 9, lang: "py", hl: [3, 12] });
+  consoleBlock(s, "GPT-1.3B / Bert-340M / GPT-350M / Bert-110M / GPT-175B\n→ Bert: 110M, 340M\n  GPT: 350M, 1.3B, 175B", 0.5, 3.6, 5.9, 1.0, 9);
+  text(s, "`rsplit('-', 1)` 只切最后一个「-」：参数量一定在最后，名称里带「-」也不会切错。", 0.5, 4.7, 5.9, 0.4, { fontSize: 9.5, color: C.goldText, bold: true, margin: 0 });
+  callout(s, "⚠ 按字符串排会错", "字符串比较：'1.3B' < '175B' < '350M'，把 13 亿排到 3.5 亿前面。先把单位换算成同一量纲。", 6.6, 1.05, 2.9, 1.55, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  callout(s, "key 函数", "`sorted(…, key=size)` 每个元素只算一次 size，再按结果比较；比写比较函数（cmp_to_key）快也更清楚。", 6.6, 2.75, 2.9, 1.45, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
+  text(s, "sorted 就是 8.7 节的 Timsort：稳定，最坏 Θ(n log n)。", 6.6, 4.35, 2.9, 0.75, { fontSize: 9.5, color: C.muted, margin: 0 });
 }
 
   summarySlide("本章小结", [
