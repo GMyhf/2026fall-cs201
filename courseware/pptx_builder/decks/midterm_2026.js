@@ -789,7 +789,7 @@ def widest_level(head):
   callout(s, "另一种写法", [
     "DFS 递归，带层号 dep，用数组 cnt[dep]++ 统计；最后扫一遍取最大。",
     "时间同样 O(n)；空间 O(h)（栈）+ O(h)（计数数组）。",
-    "注意：沿 nextSibling 递归**不加深** dep。",
+    "注意：沿 nextSibling **用循环走**，dep 不变；只对 firstChild 递归，栈才是 O(h)。",
   ], 6.3, 2.75, 3.2, 2.35, { fontSize: 10 });
 }
 
