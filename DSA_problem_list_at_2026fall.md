@@ -15,6 +15,7 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |       |       | Medium |          |
+| 11 | M1882. 使用服务器处理任务      | heap       | Medium | https://leetcode.cn/problems/process-tasks-using-servers/          |
 | 11 | M02524:宗教信仰      | dsu      | Medium | http://cs101.openjudge.cn/pctbook/M02524/         |
 | 11 | 01703:发现它，抓住它 | dsu      | Medium | http://cs101.openjudge.cn/practice/01703/         |
 | 11 | 04081:树的转换     | tree       | Medium | http://cs101.openjudge.cn/practice/04081/          |
