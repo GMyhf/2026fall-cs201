@@ -788,9 +788,38 @@ def widest_level(head):
   consoleBlock(s, "例子森林      → (2, 4)\n空森林        → (0, 0)\nA(B,C) 与 D   → (1, 2)\nA(B,C)        → (2, 2)", 6.3, 1.0, 3.2, 1.55, 9.5);
   callout(s, "另一种写法", [
     "DFS 递归，带层号 dep，用数组 cnt[dep]++ 统计；最后扫一遍取最大。",
-    "时间同样 O(n)；空间 O(h)（栈）+ O(h)（计数数组）。",
-    "注意：沿 nextSibling **用循环走**，dep 不变；只对 firstChild 递归，栈才是 O(h)。",
+    "时间同样 O(n)；代码与空间分析见下页。",
   ], 6.3, 2.75, 3.2, 2.35, { fontSize: 10 });
+}
+
+// 五.3 DFS
+{
+  const s = content("五.3", "设计 · 森林", "DFS 实现：带层号递归，按层计数");
+  codeBlock(s, `def widest_level_dfs(head):
+    if head is None:
+        return 0, 0
+    cnt = [0]                         # cnt[d]：第 d 层结点数
+
+    def dfs(p, dep):
+        while p is not None:          # 兄弟同层：循环走，dep 不变
+            if dep == len(cnt):
+                cnt.append(0)         # 第一次到达第 dep 层
+            cnt[dep] += 1
+            dfs(p.firstChild, dep + 1)    # 下到孩子才 dep + 1
+            p = p.nextSibling
+
+    dfs(head, 1)
+    best_level, best_count = 0, 0
+    for d in range(1, len(cnt)):
+        if cnt[d] > best_count:       # 严格大于：并列保留小层号
+            best_count, best_level = cnt[d], d
+    return best_level, best_count`, 0.5, 1.0, 5.6, 4.1, { lang: "py", fontSize: 9.5 });
+  consoleBlock(s, "例子森林：cnt = [0, 2, 4, 3]\n          → (2, 4)\n空森林    → (0, 0)", 6.3, 1.0, 3.2, 1.25, 9.5);
+  callout(s, "复杂度与易错", [
+    "时间 **O(n)**：每个结点计数一次，再扫一遍 cnt。",
+    "空间 **O(h)**：递归栈 O(h) + 计数数组 O(h)。",
+    "兄弟要用 **while** 走；若对 nextSibling 也递归，栈深随兄弟数增长，最坏 O(n)。",
+  ], 6.3, 2.45, 3.2, 2.65, { fontSize: 10.5 });
 }
 
 // =====================================================================
