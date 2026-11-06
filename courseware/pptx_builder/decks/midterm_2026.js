@@ -822,6 +822,42 @@ def widest_level(head):
   ], 6.3, 2.45, 3.2, 2.65, { fontSize: 10.5 });
 }
 
+// 五.3 DFS 手算
+{
+  const s = content("五.3", "设计 · 森林", "DFS 手算：cnt 一步步怎么变");
+  tree(s, {
+    A: [1.55, 1.35, "A"], H: [3.05, 1.35, "H"],
+    B: [0.95, 2.0, "B"], Cc: [1.55, 2.0, "C"], Dd: [2.15, 2.0, "D"], I: [3.05, 2.0, "I"],
+    E: [0.7, 2.65, "E"], F: [1.2, 2.65, "F"], G: [2.15, 2.65, "G"],
+  }, [["A", "B"], ["A", "Cc"], ["A", "Dd"], ["H", "I"], ["B", "E"], ["B", "F"], ["Dd", "G"]], { r: 0.17 });
+  [[1.55, 1.35, 1], [0.95, 2.0, 2], [0.7, 2.65, 3], [1.2, 2.65, 4], [1.55, 2.0, 5], [2.15, 2.0, 6], [2.15, 2.65, 7], [3.05, 1.35, 8], [3.05, 2.0, 9]]
+    .forEach(([cx, cy, n]) => text(s, String(n), cx + 0.15, cy - 0.24, 0.18, 0.18, { fontSize: 9, bold: true, color: C.bad, margin: 0 }));
+  text(s, "红色数字 = 访问顺序", 0.5, 2.92, 3.0, 0.2, { fontSize: 9, color: C.muted, margin: 0 });
+  callout(s, "读表要点", [
+    "firstChild：下一层，**dep + 1**。",
+    "nextSibling：同一层，**dep 不变**。",
+    "第一次到达某层才 append，所以只有 3 次。",
+  ], 0.5, 3.2, 3.1, 1.9, { fontSize: 10.5 });
+  const yes = { t: "是", bold: true, color: C.ok, align: "center" }, no = { t: "否", color: C.muted, align: "center" };
+  const c = (t) => ({ t, mono: true });
+  const ctr = (t) => ({ t, align: "center" });
+  table(s, [
+    ["步", "访问", "怎么到的", "dep", "append", "访问后 cnt"],
+    [ctr("1"), ctr("A"), "dfs(head, 1)", ctr("1"), yes, c("[0, **1**]")],
+    [ctr("2"), ctr("B"), "A.firstChild", ctr("2"), yes, c("[0, 1, **1**]")],
+    [ctr("3"), ctr("E"), "B.firstChild", ctr("3"), yes, c("[0, 1, 1, **1**]")],
+    [ctr("4"), ctr("F"), "E.nextSibling", ctr("3"), no, c("[0, 1, 1, **2**]")],
+    [ctr("5"), ctr("C"), "B.nextSibling", ctr("2"), no, c("[0, 1, **2**, 2]")],
+    [ctr("6"), ctr("D"), "C.nextSibling", ctr("2"), no, c("[0, 1, **3**, 2]")],
+    [ctr("7"), ctr("G"), "D.firstChild", ctr("3"), no, c("[0, 1, 3, **3**]")],
+    [ctr("8"), ctr("H"), "A.nextSibling", ctr("1"), no, c("[0, **2**, 3, 3]")],
+    [ctr("9"), ctr("I"), "H.firstChild", ctr("2"), no, c("[0, 2, **4**, 3]")],
+  ], 3.85, 1.0, 5.65, [0.4, 0.5, 1.45, 0.5, 0.7, 2.1], { fontSize: 10, rowH: 0.3 });
+  text(s, "扫描 cnt[1..3]：", 3.85, 4.28, 1.3, 0.42, { fontSize: 11, bold: true, color: C.green, valign: "middle", margin: 0 });
+  cells(s, 5.15, 4.28, [0, 2, 4, 3], { idx: true, cw: 0.5, fills: [C.code, undefined, GOLDF, undefined], colors: [C.muted] });
+  answer(s, "返回 (2, 4)", 7.6, 4.28, 1.9, 0.42, 13);
+}
+
 // =====================================================================
 summarySlide("讲评小结", [
   ["先定规则再计数", "KMP 比较次数、堆的下标、并查集的「Union 内只压缩两条路径」：题目规定是**判分的唯一依据**。"],
