@@ -16,6 +16,7 @@
     "ch11": "node decks/ch11_index.js ../202609_DSA_11_Index.pptx",
     "ch12": "node decks/ch12_advanced.js ../202609_DSA_12_Advanced.pptx",
     "mid2026": "node decks/midterm_2026.js ../202609_DSA_Midterm_2026_Review.pptx",
+    "talk1109": "node decks/talk_research_agents.js ../202609_DSA_Talk_Research_with_Agents.pptx",
     "quiz0304": "node quiz.js ../202609_DSA_MOOC_Quiz_CH03-04.pptx ch03 ch04",
     "quiz0506": "node quiz.js ../202609_DSA_MOOC_Quiz_CH05-06.pptx ch05 ch06",
     "quiz0708": "node quiz.js ../202609_DSA_MOOC_Quiz_CH07-08.pptx ch07 ch08",
