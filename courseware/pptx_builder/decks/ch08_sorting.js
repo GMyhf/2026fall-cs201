@@ -35,8 +35,8 @@ titleSlide({
   kicker: "数据结构与算法 · 2026 Fall",
   title: "第八章  内部排序",
   subtitle: "Internal Sorting：比较还是分配，稳不稳定，多快多省",
-  topics: "基本概念 · 稳定性 · 比较次数与移动次数\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n双指针分割 · BST 排序 · 归并排序 · 逆序对（OJ 02299）\n计数 / 区间桶 / 基数 / 索引排序 · 实测 · std::sort 与 Timsort · 下限 Ω(n log n)\n附录：8 道上机题 · Shell · 三路划分 · 快速选择 · 链表归并 · k 路归并",
-  footer: "Compiled by Hongfei Yan · Updated 2026-11-05 · github.com/GMyhf/dsa-modernization",
+  topics: "基本概念 · 稳定性 · 比较次数与移动次数 · 手写排序五个易错点\n直接插入 · Shell · 直接选择 · 堆排序 · 冒泡 · 快速排序\n双指针分割 · 列表推导快排 · BST 排序 · 归并排序 · 逆序对（OJ 02299）\n计数 / 区间桶 / 基数 / 索引排序 · 实测 · std::sort 与 Timsort · 下限 Ω(n log n)\n附录：8 道上机题 · Shell · 三路划分 · 快速选择 · 链表归并 · k 路归并",
+  footer: "Compiled by Hongfei Yan · Updated 2026-11-10 · github.com/GMyhf/dsa-modernization",
 });
 
 // 2. Three questions
@@ -68,8 +68,8 @@ titleSlide({
   const s = content("≡", "本章导引", "内容地图");
   const cols = [
     ["基础与简单排序", ["8.1 基本概念：术语、稳定性、代价", "8.2 插入排序：直接插入、Shell 排序", "8.3 选择排序：直接选择、堆排序"]],
-    ["交换与分治", ["8.4 交换排序：冒泡、快速排序及两处优化", "补充：双指针分割、BST 排序", "8.5 归并排序：两路归并、稳定性来自一个 `<`", "副产品：逆序对计数、OJ 02299"]],
-    ["突破与极限", ["8.6 分配排序：桶式、区间桶、基数、索引排序", "8.7 时间代价：实测数据、std::sort、Timsort", "判定树下限 Ω(n log n)", "附录 A：8 道上机题"]],
+    ["交换与分治", ["8.4 交换排序：冒泡、快速排序及两处优化", "补充：双指针分割、列表推导版、BST 排序", "8.5 归并排序：两路归并、稳定性来自一个 `<`", "副产品：逆序对计数、OJ 02299"]],
+    ["突破与极限", ["8.6 分配排序：桶式、区间桶、基数、索引排序", "8.7 时间代价：实测数据、std::sort、Timsort", "判定树下限 Ω(n log n)", "易错点：手写排序五个坑", "附录 A：8 道上机题"]],
   ];
   cols.forEach((c, i) => {
     const x = 0.5 + i * 3.05;
@@ -491,7 +491,7 @@ inline void heap_sort(std::vector<int>& values) {
 }
 
 // ============================ 8.4 ============================
-sectionSlide("8.4", "交换排序", "发现逆置就交换，直到没有逆置为止\n冒泡排序 · 快速排序 · 深递归与小区间两处优化\n补充：双指针分割 · BST 排序与快排同构");
+sectionSlide("8.4", "交换排序", "发现逆置就交换，直到没有逆置为止\n冒泡排序 · 快速排序 · 深递归与小区间两处优化\n补充：双指针分割 · 列表推导版 · BST 排序与快排同构");
 
 // 8.4.1 bubble concept
 {
@@ -702,6 +702,30 @@ print(a)                                # [1, 2, 3, 4, 5, 6, 7, 8]`, 0.5, 1.05, 
   callout(s, "left <= right", "两个内层循环都要带这个条件：否则 left 会越过 high，right 会退到轴的左边。", 6.6, 1.05, 2.9, 1.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "⚠ 全相等的输入退化", "两边都**跳过等于 pivot** 的元素：2000 个 7，left 一路走到底，每次只切掉一个，递归 **1999 层**、约 200 万次比较。Hoare 原版让两边**遇到相等也停下来交换**，就能对半分。", 6.6, 2.4, 2.9, 1.75, { fontSize: 9.5, fill: RED, tcolor: C.bad });
   callout(s, "仍然不稳定", "成对交换是**跨越式**移动；首元素当轴，有序输入照样 Θ(n²)。", 6.6, 4.3, 2.9, 0.8, { fontSize: 9.5 });
+}
+
+// ---- 补充（取材 courseware/code/ten_sort_algorithms.md）：列表推导版快排 ----
+{
+  const s = content("8.4.2", "8.4 交换排序 · 快速排序 · Python · 补充", "列表推导版：三行写完，但不是原地排序");
+  codeBlock(s, `def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[0]                      # 首元素当轴
+    left  = [x for x in arr[1:] if x < pivot]
+    right = [x for x in arr[1:] if x >= pivot]
+    return quick_sort(left) + [pivot] + quick_sort(right)
+
+print(quick_sort([6, 5, 18, 2, 16, 4, 4, 8, 1]))
+# [1, 2, 4, 4, 5, 6, 8, 16, 18]`, 0.5, 1.05, 5.9, 2.15, { fontSize: 9, lang: "py", hl: [5, 6] });
+  table(s, [
+    ["", "双指针版（上一页）", "列表推导版"],
+    ["原地", { t: "是", color: C.ok, bold: true }, { t: "否：每层新建列表", color: C.bad }],
+    ["稳定", { t: "否（跨越式交换）", color: C.bad }, { t: "是：推导保持次序，等于轴的都在轴后", color: C.ok, bold: true }],
+    ["额外空间", "栈，平均 Θ(log n)", "平均 Θ(n)；退化时 Θ(n²)"],
+    ["有序输入", "Θ(n²)，递归 n 层", "Θ(n²)；1000 个就 RecursionError"],
+  ], 0.5, 3.35, 5.9, [1.0, 1.9, 3.0], { fontSize: 9.5, rowH: 0.33, tight: true });
+  callout(s, "⚠ 稳定性看写法，不看名字", "十大排序讲义原把这一版标成「不稳定」，其实它**恰好稳定**；不稳定的是原地分割。判断稳定性要看**具体代码**，「快排不稳定」说的是原地版本。", 6.6, 1.05, 2.9, 2.0, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  callout(s, "怎么改才不退化", "随机轴 `random.choice(arr)`，再分成 `<`、`==`、`>` **三个**列表：有序输入、全相等输入都不再一次只切一个。", 6.6, 3.2, 2.9, 1.9, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
 }
 
 // quick_sort_range + analysis
@@ -1101,7 +1125,7 @@ while True:
     pos += n`, 0.5, 1.05, 5.9, 4.05, { fontSize: 8.4, lang: "py", hl: [11, 15] });
   callout(s, "题意 = 数逆序对", "只能交换**相邻**两个数，最少交换次数 = 逆序对数：每次相邻交换恰好消掉一个逆序对（8.2 节的结论）。n ≤ 50 万，O(n²) 冒泡超时，归并 **O(n log n)**。", 6.6, 1.05, 2.9, 1.75, { fontSize: 9.5, fill: C.mint, tcolor: C.dark });
   consoleBlock(s, "输入 5 / 9 1 0 5 4 → 6\n输入 3 / 1 2 3 → 0", 6.6, 2.95, 2.9, 0.8, 9);
-  callout(s, "⚠ 写成 < 就错了", "春季讲义的归并模板用 `left[i] < right[j]`：遇到相等先取右边，**把相等的一对也算成逆序**。数逆序对必须 `<=`。", 6.6, 3.9, 2.9, 1.2, { fontSize: 9.5, fill: RED, tcolor: C.bad });
+  callout(s, "⚠ 写成 < 就错了", "十大排序讲义原来的归并模板用 `left[i] < right[j]`：相等先取右边，**把相等的一对也算成逆序**（[2, 2, 1] 数出 3，应为 2）。必须 `<=`。", 6.6, 3.9, 2.9, 1.2, { fontSize: 9.5, fill: RED, tcolor: C.bad });
 }
 
 // ============================ 8.6 ============================
@@ -1178,7 +1202,7 @@ inline void counting_sort(std::vector<int>& values) {
   ], 0.5, 1.1, 5.6, [1.6, 1.5, 2.5], { fontSize: 11.5, rowH: 0.45 });
   text(s, "时间：扫一遍计数 + 累加 m 个计数器 + 输出循环 n 次；空间：m 个计数器 + 长度 n 的临时数组。", 0.5, 3.1, 5.6, 0.6, { fontSize: 11, color: C.muted });
   callout(s, "判断能不能用，看 m 与 n 的比值", "这也正是下一节要把**大值域拆成若干小值域**的原因。", 0.5, 3.85, 5.6, 1.25, { fontSize: 11.5 });
-  callout(s, "Python 版的差别", "Python 整数没有宽度，`high − low + 1` 溢出的坑不存在——**但值域上限的检查一条都不能少**：它挡的是**内存**，不是溢出。", 6.35, 1.1, 3.15, 2.2, { fontSize: 10.5, fill: C.mint, tcolor: C.dark });
+  callout(s, "Python 版的差别", "整数没有宽度，溢出的坑不存在；但**减 low 不能省**：负数的 `count[-1]` 环绕到末尾，不报错给错答案（`[3, −1, 2]` → `[2, 3, 3]`）。值域上限检查也不能少——它挡的是**内存**。", 6.35, 1.1, 3.15, 2.2, { fontSize: 10, fill: C.mint, tcolor: C.dark });
   callout(s, "分配排序天然稳定", "同一个桶里的记录按进桶顺序出桶，从头到尾没有任何一次比较能打乱它们（前提：收集方式保持入桶顺序）。", 6.35, 3.45, 3.15, 1.65, { fontSize: 10.5 });
 }
 
@@ -1212,7 +1236,7 @@ print(bucket_sort([0.78, 0.17, 0.39, 0.26, 0.72, 0.94,
     ["时间", "Θ(n + m)", "平均 Θ(n + k)"],
   ], 6.3, 1.05, 3.2, [0.85, 1.2, 1.15], { fontSize: 9.5, rowH: 0.38 });
   callout(s, "⚠ 依赖分布", "均匀时每桶期望 O(1) 个，总代价线性；全挤进一个桶就退化成那个桶的插入排序，**Θ(n²)**。", 6.3, 3.1, 3.2, 1.0, { fontSize: 9.5, fill: RED, tcolor: C.bad });
-  text(s, "原书的「桶式排序」实为**计数排序**；春季讲义「十大排序」里两者分开列。基数排序每一趟就是一次计数排序。", 6.3, 4.2, 3.2, 0.9, { fontSize: 9.5, color: C.muted, margin: 0 });
+  text(s, "不在 [0, 1) 时按 (x − min)/(max − min) 映射到桶号；**全相等要特判**，否则除以 0。原书的「桶式排序」实为**计数排序**。", 6.3, 4.2, 3.2, 0.9, { fontSize: 9.5, color: C.muted, margin: 0 });
 }
 
 // 8.6.2 radix intro
@@ -1578,6 +1602,29 @@ stu.sort(key=lambda t: -t[1])   # 再按分数降序
   callout(s, "下界只管比较排序", "桶式、基数不比较，做到 Θ(m+n)、Θ(d(n+r))——站在下界**管辖范围之外**；代价是值域要够密或位数要够少。", 5.25, 4.07, 4.25, 1.03, { fontSize: 10, tsize: 11, fill: C.mint, tcolor: C.dark });
 }
 
+// ---- 补充（取材 courseware/code/ten_sort_algorithms.md 2026-11-10 修订）：易错点 ----
+{
+  const s = content("∑", "本章总结 · 易错点 · 补充", "手写 Python 排序的五个坑：都是实测出来的");
+  const pits = [
+    ["归并：`left[i] < right[j]`", "相等时先取右边 → **不稳定**；拿它数逆序对还会把相等的一对也算进去。改成 `<=`。"],
+    ["计数：`count[num]` 不减 min", "负数下标在 Python 里合法：`count[-1]` 环绕到末尾，**不报错、给错答案**：[3, −1, 2] → [2, 3, 3]。"],
+    ["区间桶：`(max − min) / n` 当桶宽", "全部相等或只有一个元素时桶宽为 0 → **ZeroDivisionError**。先特判 max == min。"],
+    ["插入：逐对交换、找到位置不停", "有序输入也要做 n(n−1)/2 次比较，**最好情况丢了 Θ(n)**。用 while + 后移，遇到不大于的就停。"],
+    ["快排：列表推导、首元素当轴", "恰好稳定但不原地；有序输入退化，**1000 个就 RecursionError**。随机轴 + 三路划分。"],
+  ];
+  pits.forEach((p, i) => {
+    const col = i % 2, row = Math.floor(i / 2);
+    const x = 0.5 + col * 4.6, y = 1.08 + row * 1.35;
+    card(s, x, y, 4.4, 1.22, RED);
+    numCircle(s, i + 1, x + 0.15, y + 0.12, 0.32, C.bad);
+    s.addText(runs(p[0], { color: C.bad, bold: true }), { x: x + 0.6, y: y + 0.1, w: 3.7, h: 0.36, fontFace: FONT, fontSize: 11, valign: "middle", margin: 0, isTextBox: true });
+    text(s, p[1], x + 0.15, y + 0.52, 4.1, 0.66, { fontSize: 10, margin: 0 });
+  });
+  card(s, 5.1, 3.78, 4.4, 1.22, C.dark);
+  text(s, "怎么防", 5.25, 3.85, 4, 0.3, { fontSize: 11, bold: true, color: C.gold, margin: 0 });
+  text(s, "随机数据与 `sorted` 对拍，再补四类边界：**空、单元素、全相等、含负数**；稳定性用「(键, 原序号)」记录来测。", 5.25, 4.2, 4.1, 0.75, { fontSize: 10, color: C.white, margin: 0 });
+}
+
 // overall table
 {
   const s = content("∑", "本章总结 · 总表", "九种内排序放在一张表里");
@@ -1603,7 +1650,7 @@ stu.sort(key=lambda t: -t[1])   # 再按分数降序
   const rules = [
     ["关键码序列**基本有序**", "直接插入最快，冒泡也较快"],
     ["要求速度**稳定**、对初始排列不敏感", "归并排序"],
-    ["记录个数 n **较小**", "直接插入或直接选择"],
+    ["n **较小**（几十到几千）", "直接插入或直接选择"],
     ["n **较大**", "O(n log n) 的快排、堆排序、归并或基数排序"],
     ["n 较大、输入**杂乱无序**、无稳定性要求", "快速排序效果最好"],
     ["n **很大**且关键码**位数较少**", "静态链的基数排序"],
