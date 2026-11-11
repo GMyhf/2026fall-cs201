@@ -8,6 +8,8 @@ Updated Nov 10 2026
 
 Logs:
 
+2026/11/10 补充：快排的 Lomuto 与挖坑填数两种分割；归并的 Sedgewick 哨兵写法（含不稳定反例）与「小区间只能当场插入排序」；基数排序的计数排序版；新增 3.11 索引排序（通俗讲法、Python 实现、复杂度）。
+
 2026/11/10 修正归并排序稳定性（`<` 改 `<=`）；修正桶排序在全部元素相等/只有一个元素时除零；计数排序支持负数（原代码遇负数会静默输出错误结果）并补充稳定版；修正快排、计数、桶、基数排序的复杂度与稳定性描述；选择排序比喻与代码一致；标题去掉多余的公式标记。
 
 2024/5/3 增加了改进冒泡排序，增加了改进的插入排序，增加了双指针实现的快排。
@@ -20,7 +22,7 @@ Logs:
 
 经常用到各种排序算法，但是网上的Python排序源码质量参差不齐。因此结合网上的资料和个人理解，整理了一份可直接使用的排序算法Python源码。
 
-包括：冒泡排序（Bubble Sort），插入排序（Insertion Sort），选择排序（Selection Sort），希尔排序（Shell Sort），归并排序（Merge Sort），快速排序（Quick Sort），堆排序（Heap Sort），计数排序（Counting Sort），桶排序（Bucket Sort），基数排序（Radix Sort）
+包括：冒泡排序（Bubble Sort），插入排序（Insertion Sort），选择排序（Selection Sort），希尔排序（Shell Sort），归并排序（Merge Sort），快速排序（Quick Sort），堆排序（Heap Sort），计数排序（Counting Sort），桶排序（Bucket Sort），基数排序（Radix Sort），另附索引排序（Index Sort）。
 
 ## 2 排序算法的选取规则
 
@@ -43,6 +45,8 @@ Logs:
 数据分布均匀：桶排序。
 
 固定长度的整数或字符串：基数排序。
+
+单条记录很大、搬不起：索引排序（只排下标）。
 
 **性能要求**
 
@@ -355,6 +359,74 @@ if __name__ == "__main__":
 
 
 
+**优化一：小区间改用插入排序——只能“当场”排**
+
+递归到十几个元素时，函数调用和切片的固定开销超过收益，可以改用插入排序。但要注意它和快排的区别：
+
+- 快排可以在小区间**直接返回、什么都不做**，等整个递归结束后对全数组做**一次**插入排序。此时块与块之间已经有序，每个元素离最终位置都不远，这一趟接近 $O(n)$。
+- 归并**不能**这样偷懒。`merge` 的前提是左右两半**各自有序**；小区间若不排好就返回，上一层的 `merge` 得到的就是错误结果。所以归并只能在递归到小区间时**当场**做插入排序。
+
+
+
+**优化二：Sedgewick 的哨兵（监视哨）归并**
+
+普通 `merge` 的循环每一步都要检查 `i < len(left) and j < len(right)`，结束后还要处理剩下的一半。Sedgewick（《Algorithms》作者）的办法是：**左半段正序复制、右半段倒序复制**到辅助数组，两个指针从两端向中间走：
+
+```python
+def merge_sedgewick(a, aux, l, m, r):
+    # 合并 a[l..m] 与 a[m+1..r]（闭区间，两段各自有序且都非空）
+    for i in range(l, m + 1):
+        aux[i] = a[i]                    # 左半段正序复制
+    for j in range(m + 1, r + 1):
+        aux[r + m + 1 - j] = a[j]        # 右半段倒序复制
+    i, j = l, r                          # 一个从左往右，一个从右往左
+    for k in range(l, r + 1):            # 循环里没有任何越界检查
+        if aux[j] < aux[i]:
+            a[k] = aux[j]
+            j -= 1
+        else:
+            a[k] = aux[i]
+            i += 1
+
+
+def merge_sort_sedgewick(a):
+    aux = [None] * len(a)                # 辅助数组只开一次，各层递归复用
+
+    def sort(l, r):
+        if l >= r:
+            return
+        m = (l + r) // 2
+        sort(l, m)
+        sort(m + 1, r)
+        merge_sedgewick(a, aux, l, m, r)
+
+    sort(0, len(a) - 1)
+    return a
+
+if __name__ == "__main__":
+    print(merge_sort_sedgewick([6, 5, 18, 2, 16, 15, 19, 13, 10, 12, 7, 9, 4, 4, 8, 1]))
+    # [1, 2, 4, 4, 5, 6, 7, 8, 9, 10, 12, 13, 15, 16, 18, 19]
+```
+
+为什么不会越界：以左 `[1, 3, 5]`、右 `[2, 4, 6]` 为例，复制后 `aux = [1, 3, 5, 6, 4, 2]`，呈“山峰”状，两段各自的最大值 5 和 6 在中间相邻。
+
+- 左段先取完时，`i` 越过中点，停在右段的最大值 6 上。右段剩下的元素都不大于 6：要么 `aux[j] < aux[i]` 取 `aux[j]`，要么二者相等取 `aux[i]`（它也是右段的元素）。`i`、`j` 只会在 `[l, r]` 内相向收拢，`k` 走满 `r - l + 1` 步时恰好取完，不需要任何越界判断。
+- 右段先取完时，`j` 停在左段的最大值 5 上，同理充当哨兵。
+
+代价：**这种写法不稳定**。平局时取左边，所以单看“右段倒序”并不会打乱次序；问题出在**左段先取完之后**：`i` 越过中点进入倒序的右段，是从右段的**末尾**开始往回取，右段里相等的最大值就被反序输出了。最小反例：
+
+```python
+# 左段 [1]，右段 [2a, 2b]：aux = [1, 2b, 2a]
+# k=0：2a < 1 ? 否 → 取 1，i 走到 2b
+# k=1：2a < 2b ? 否（相等）→ 取 aux[i] = 2b   ← 2b 跑到了 2a 前面
+# k=2：取 2a
+# 结果 [1, 2b, 2a]，不稳定
+```
+
+（右段先取完的情形仍然稳定：此时 `j` 停在左段最大值上，`aux[j] < aux[i]` 不可能成立，剩下的左段按原次序取完。）所以需要稳定性的场合（如 C++ `std::stable_sort`）不用这个技巧；只排整数、追求内层循环最少分支时才值得用。
+
+
+
 ### 3.6 快速排序（Quick Sort）
 
 快速排序是一种高效的排序算法，采用分治法的思想，通过将数组分割成较小的子数组，然后分别对子数组进行排序，最终将数组整合成有序序列。
@@ -425,6 +497,64 @@ if __name__ == "__main__":
 ```
 
 时间复杂度：平均 $O(n\log n)$，最坏 $O(n^2)$；空间复杂度：递归栈平均 $O(\log n)$，最坏 $O(n)$；不稳定排序。
+
+
+
+**另外两种原地分割写法**
+
+原地快排的差别全在 `partition`。除了上面“两头各找一个、成对交换”的写法，教材里还常见两种，它们都以末元素为基准，分割后的排列不同，但都把基准放到最终位置。课件第 8 章的图 8.7 是**挖坑填数**，配套代码 `modern.hpp` 的 `partition` 是 **Lomuto**——两者本来就不是同一种写法。
+
+① **Lomuto 分割（单向扫描，CLRS《算法导论》采用）**：`boundary`（慢指针）和 `i`（快指针）都从左往右走；`a[first..boundary-1]` 始终都小于基准，遇到小于基准的元素就换到 `boundary` 处，扫完后把基准换到 `boundary`。
+
+② **挖坑填数（两端交替，严蔚敏《数据结构》等国内教材常用，即课件图 8.7）**：先把基准暂存，末位就成了一个“坑”；`l` 从左往右找比基准大的，填进右边的坑，`l` 处成了新坑；`r` 再从右往左找比基准小的，填进左边的坑……两端交替，`l`、`r` 相遇处就是基准的最终位置。全程只有赋值、没有交换。
+
+```python
+def partition_lomuto(arr, first, last):
+    pivot = arr[last]                    # 末元素当基准
+    boundary = first                     # [first, boundary) 都 < pivot
+    for i in range(first, last):         # [boundary, i) 都 >= pivot
+        if arr[i] < pivot:
+            arr[boundary], arr[i] = arr[i], arr[boundary]
+            boundary += 1
+    arr[boundary], arr[last] = arr[last], arr[boundary]
+    return boundary
+
+
+def partition_hole(arr, l, r):
+    pivot = arr[r]                       # 暂存基准，arr[r] 成为“坑”
+    while l < r:
+        while l < r and arr[l] <= pivot:
+            l += 1
+        arr[r] = arr[l]                  # 大的填进右边的坑，l 处成为新坑
+        while l < r and arr[r] >= pivot:
+            r -= 1
+        arr[l] = arr[r]                  # 小的填进左边的坑，r 处成为新坑
+    arr[l] = pivot                       # 相遇处回填基准
+    return l
+
+
+def quick_sort_with(arr, partition, lo=0, hi=None):
+    if hi is None:
+        hi = len(arr) - 1
+    if lo < hi:
+        p = partition(arr, lo, hi)
+        quick_sort_with(arr, partition, lo, p - 1)
+        quick_sort_with(arr, partition, p + 1, hi)
+    return arr
+
+if __name__ == "__main__":
+    print(quick_sort_with([22, 11, 88, 66, 55, 77, 33, 44], partition_lomuto))
+    print(quick_sort_with([22, 11, 88, 66, 55, 77, 33, 44], partition_hole))
+    # 两行都输出 [11, 22, 33, 44, 55, 66, 77, 88]
+```
+
+| 写法 | 指针 | 每步操作 | 交换/赋值量 | 全部相等的输入 |
+| :--: | :--: | :--: | :--: | :--: |
+| 成对交换（上文双指针） | 相向 | 两边各找到一个逆置元素就交换 | 较少 | 退化为 $O(n^2)$ |
+| Lomuto | 同向（快慢指针） | 小于基准就与 `boundary` 交换 | 最多，约为成对交换的 3 倍 | 退化为 $O(n^2)$ |
+| 挖坑填数 | 相向、交替 | 单向赋值填坑，不交换 | 较少 | 退化为 $O(n^2)$ |
+
+三种写法都不稳定，平均 $O(n\log n)$、最坏 $O(n^2)$。Lomuto 最好写、不容易写错边界；想避免“全部相等”时退化，可让两边遇到相等也停下来交换（Hoare 原版），或改成三路划分（`<`、`=`、`>` 三段）。
 
 
 
@@ -628,3 +758,154 @@ if __name__ == "__main__":
 空间复杂度：$O(n + b)$
 稳定排序
 
+
+
+**每一趟用计数排序实现**
+
+上面每趟都新建 10 个列表当桶。也可以像 3.8 节的稳定版计数排序那样，用“计数 → 前缀和 → **从后往前**放置”完成每一趟，只需一个长度为 10 的计数数组和一个长度为 n 的输出数组：
+
+```python
+def counting_sort_by_digit(arr, exp):
+    # 按 exp 所在的那一位（exp = 1 个位、10 十位、100 百位……）做一次稳定的计数排序
+    count = [0] * 10
+    for x in arr:
+        count[x // exp % 10] += 1
+    for d in range(1, 10):               # 前缀和：count[d] = 该位 <= d 的元素个数
+        count[d] += count[d - 1]
+    output = [0] * len(arr)
+    for x in reversed(arr):              # 从后往前放，保证稳定
+        d = x // exp % 10
+        count[d] -= 1
+        output[count[d]] = x
+    return output
+
+
+def RadixSortCounting(arr):
+    if not arr:
+        return arr
+    max_val = max(arr)
+    exp = 1
+    while max_val // exp > 0:            # 从个位开始，逐位稳定排序
+        arr = counting_sort_by_digit(arr, exp)
+        exp *= 10
+    return arr
+
+if __name__ == "__main__":
+    print(RadixSortCounting([170, 45, 75, 90, 802, 24, 2, 66]))
+    # [2, 24, 45, 66, 75, 90, 170, 802]
+```
+
+逐趟结果（把位数补齐看更清楚）：
+
+| 趟 | 结果 |
+| :--: | :-- |
+| 初始 | 170, 045, 075, 090, 802, 024, 002, 066 |
+| 按个位 | 170, 090, 802, 002, 024, 045, 075, 066 |
+| 按十位 | 802, 002, 024, 045, 066, 170, 075, 090 |
+| 按百位 | 002, 024, 045, 066, 075, 090, 170, 802 |
+
+为什么“先排低位、再排高位”是对的：按十位排时，`45` 和 `42` 十位相同，**这一趟稳定**，所以上一趟按个位排出的 `42` 在 `45` 前的次序被保留下来。任何一趟不稳定，前面各趟的成果都会被打乱。
+
+
+
+### 3.11 索引排序（Index Sort，补充）
+
+**通俗讲法**
+
+给全班同学按身高排座位，有两种做法：
+
+- 让同学们**真的起身换座位**——这就是前面十种排序在做的“搬记录”；
+- 老师只在纸上写一张**名单**：“第 1 个座位坐 5 号同学，第 2 个座位坐 1 号同学……”。同学一个都不动，排的只是这张名单。
+
+当每条记录很大（一条学籍几百字节、一张图片几 MB）时，搬一次记录远比比较一次贵，只排“名单”就划算得多。这张名单就是**索引**：
+
+> `index[i]` = 排序后第 i 位的记录在原数组中的下标，即 **有序结果[i] == records[index[i]]**。
+
+（另一种约定是 `rank[j]` = 原数组第 j 条记录排完后在第几位，两者互为逆置换，做题时先看清用的是哪一种。）
+
+如果最后确实需要让记录本身按顺序排好，再按名单**一次到位**地整理：沿着“置换环”走，每个不在位的元素只搬一次。
+
+**第一步：排索引（记录一次都不搬）**
+
+排索引可以用任何排序算法，比较时通过下标去取记录的键。下面用插入排序：
+
+```python
+def index_sort(records, key=lambda r: r):
+    index = list(range(len(records)))       # 名单初始为 0, 1, ..., n-1
+    for i in range(1, len(records)):
+        cur = index[i]
+        j = i - 1
+        # 比较的是记录的键，挪动的只是下标
+        while j >= 0 and key(records[cur]) < key(records[index[j]]):
+            index[j + 1] = index[j]
+            j -= 1
+        index[j + 1] = cur
+    return index
+
+if __name__ == "__main__":
+    scores = [29, 25, 34, 64, 34, 12, 32, 45]
+    print(index_sort(scores))           # [5, 1, 0, 6, 2, 4, 7, 3]
+    print(scores)                       # 原数组没动：[29, 25, 34, 64, 34, 12, 32, 45]
+```
+
+Python 里这件事就是 argsort，用内置的 `sorted` 一行即可，而且同样稳定：
+
+```python
+def argsort(records, key=lambda r: r):
+    return sorted(range(len(records)), key=lambda i: key(records[i]))
+
+if __name__ == "__main__":
+    print(argsort([29, 25, 34, 64, 34, 12, 32, 45]))   # [5, 1, 0, 6, 2, 4, 7, 3]
+```
+
+**第二步（需要时）：按索引原地整理**
+
+```python
+def adjust_by_index(records, index):
+    # 沿置换环把记录搬到位；结束后 index 变为 0, 1, ..., n-1
+    for first in range(len(records)):
+        if index[first] == first:          # 已在位，或所在的环已处理过
+            continue
+        saved = records[first]             # 起点腾空
+        cur = first
+        while index[cur] != first:         # 顺着环走：cur 位置应取 index[cur] 处的记录
+            src = index[cur]
+            records[cur] = records[src]
+            index[cur] = cur               # 到位一个，标记一个
+            cur = src
+        records[cur] = saved               # 走回起点，把腾空的记录放进最后一个位置
+        index[cur] = cur
+
+if __name__ == "__main__":
+    students = [("甲", 29), ("乙", 25), ("丙", 34), ("丁", 64),
+                ("戊", 34), ("己", 12), ("庚", 32), ("辛", 45)]
+    idx = sorted(range(len(students)), key=lambda i: students[i][1])  # 第一步：排索引（也可用 index_sort）
+    print(idx)                          # [5, 1, 0, 6, 2, 4, 7, 3]
+    print([students[i] for i in idx])   # 原数组不动，按名单读出有序结果
+    adjust_by_index(students, idx)      # 需要时再原地整理
+    print(students)
+    # [('己', 12), ('乙', 25), ('甲', 29), ('庚', 32), ('丙', 34), ('戊', 34), ('辛', 45), ('丁', 64)]
+```
+
+手算整理过程（键值 `[29, 25, 34, 64, 34′, 12, 32, 45]`，`index = [5, 1, 0, 6, 2, 4, 7, 3]`）：
+
+| 环 | 走法 | 整理后 |
+| :--: | :-- | :-- |
+| {0, 5, 4, 2} | 暂存 29；0 ← 5 的 12，5 ← 4 的 34′，4 ← 2 的 34；回到 0，29 放进 2 | 12, 25, 29, 64, 34, 34′, 32, 45 |
+| {1} | 25 已在位，跳过 | 不变 |
+| {3, 6, 7} | 暂存 64；3 ← 6 的 32，6 ← 7 的 45；回到 3，64 放进 7 | 12, 25, 29, 32, 34, 34′, 45, 64 |
+
+两个 34 的次序没变：`index` 里下标 2 排在 4 前面，因为插入排序不越过相等元素。
+
+**复杂度分析**
+
+| 阶段 | 比较次数 | 记录移动 | 额外空间 |
+| :--: | :--: | :--: | :--: |
+| 排索引 | 与所用排序相同：插入排序 $O(n^2)$，`sorted` 为 $O(n\log n)$ | **0 次** | 索引数组 $O(n)$ |
+| 原地整理 | 0 | 每个不在位的元素恰好写 1 次（含最后的回填），每个长度为 L 的环另加 1 次暂存，即 L + 1 次；环长至少 2，合计不超过 $1.5n$ 次，即 $O(n)$ | $O(1)$（一个 `saved`） |
+
+- 整理是 $O(n)$ 的原因：每个下标一旦到位就被改成自己（`index[cur] = cur`），外层循环再遇到它直接跳过，所以每个元素只被处理一次。
+- 也可以不原地整理，直接 `[records[i] for i in index]` 生成新表：同样 $O(n)$ 时间，但要 $O(n)$ 额外空间。
+- 稳定性由排索引所用的算法决定：插入排序、`sorted` 都稳定，索引排序就稳定。
+- `adjust_by_index` 会把 `index` 改成 `0, 1, …, n-1`；之后还要用名单的话，先复制一份。
+- 适用场景：记录大、比较便宜；或者原数组不允许改动（例如同时要按多个关键字给同一份数据建多张“名单”）。
