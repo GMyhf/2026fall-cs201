@@ -10,6 +10,8 @@
 
 - **题解**：[fuynaloft.github.io/sol101/](https://fuynaloft.github.io/sol101/)
 
+- **知识点动画短片**（3B1B 风格，按周次排列，页面内直接播放）：https://infomall.zhengmao.ltd/cs201-anim/ ；两门课总入口 https://infomall.zhengmao.ltd/anim/
+
 - **核心教材**：以课件为主，辅以以下参考书目：
 
   - 数据结构与算法：Python 讲算法，C++ 讲实现，https://gmyhf.github.io/dsa-modernization/

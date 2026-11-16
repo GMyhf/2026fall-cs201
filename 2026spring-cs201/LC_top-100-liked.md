@@ -3976,7 +3976,7 @@ def longestPalindrome(s):
 >         for i in range(n):
 >             if i < max_right:
 >                 mirror = 2 * center - i
->                 p[i] = min(max_right - i, p[mirror])
+>                 p[i] = min(max_right - i + 1, p[mirror])  # max_right 是含在内的右端点，到它为止的半径是 max_right - i + 1
 >             else:
 >                 p[i] = 1
 >             

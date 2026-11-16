@@ -2369,7 +2369,7 @@ BIT = construct(arr, len(arr))
 print(f'BIT: ', *BIT)
 print("Sum of elements in arr[0..5] is " + str(bit_sum(BIT, 5)))
 arr[3] += 6
-bit_update(BIT, 3, 6)
+bit_update(BIT, 4, 6)  # arr 下标从 0 起、BIT 下标从 1 起：arr[3] 对应 BIT 的 4
 print(f'BIT: ', *BIT)
 print("Sum of elements in arr[0..5]" +
       " after update is " + str(bit_sum(BIT, 5)))
@@ -2381,7 +2381,7 @@ print("Sum of elements in arr[0..5]" +
 ```
 BIT:  0 1 3 3 10 5 11 7 36 9 19 11 42 13 27 15 136
 Sum of elements in arr[0..5] is 15
-BIT:  0 1 3 9 16 5 11 7 42 9 19 11 42 13 27 15 142
+BIT:  0 1 3 3 16 5 11 7 42 9 19 11 42 13 27 15 142
 Sum of elements in arr[0..5] after update is 21
 ```
 
