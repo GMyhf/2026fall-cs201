@@ -1,0 +1,713 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:33:12",
+  "source_pptx_sha256": "bbd8e19126cefbdb1f7915db9a196e5fff9ac6c3eaa1fac877198ca37df1fd83",
+  "source_script_sha256": "9c4b7467d208d954d115b15813775338a6fe88d042aadaa97593a88f4599be9e",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第四章　字符串",
+      "start": "00:00",
+      "end": "01:03",
+      "seconds": 62.6,
+      "chars": 324
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "01:03",
+      "end": "02:10",
+      "seconds": 67.0,
+      "chars": 337
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "02:10",
+      "end": "03:26",
+      "seconds": 76.7,
+      "chars": 398
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：append、substr、find",
+      "start": "03:26",
+      "end": "04:42",
+      "seconds": 75.2,
+      "chars": 442
+    },
+    {
+      "page": 5,
+      "title": "图 4.12 那对串：正确下标 10，原书返回 11",
+      "start": "04:42",
+      "end": "05:41",
+      "seconds": 59.7,
+      "chars": 322
+    },
+    {
+      "page": 6,
+      "title": "Part 1：字符串的基本概念",
+      "start": "05:41",
+      "end": "05:57",
+      "seconds": 15.5,
+      "chars": 71
+    },
+    {
+      "page": 7,
+      "title": "字符串：元素为单个字符的线性表",
+      "start": "05:57",
+      "end": "07:00",
+      "seconds": 63.4,
+      "chars": 300
+    },
+    {
+      "page": 8,
+      "title": "子串：一个串是不是另一个串的一段",
+      "start": "07:00",
+      "end": "08:11",
+      "seconds": 71.1,
+      "chars": 425
+    },
+    {
+      "page": 9,
+      "title": "原书代码 4.1 有三处必须改",
+      "start": "08:11",
+      "end": "09:21",
+      "seconds": 69.4,
+      "chars": 420
+    },
+    {
+      "page": 10,
+      "title": "逻辑元素是字符，内存里保存的是编码单元",
+      "start": "09:21",
+      "end": "10:34",
+      "seconds": 73.7,
+      "chars": 385
+    },
+    {
+      "page": 11,
+      "title": "从各自为政到 Unicode 和 UTF-8",
+      "start": "10:34",
+      "end": "11:41",
+      "seconds": 66.9,
+      "chars": 366
+    },
+    {
+      "page": 12,
+      "title": "char 不等于字符",
+      "start": "11:41",
+      "end": "12:48",
+      "seconds": 66.6,
+      "chars": 361
+    },
+    {
+      "page": 13,
+      "title": "编码顺序与自然次序一致",
+      "start": "12:48",
+      "end": "14:05",
+      "seconds": 77.5,
+      "chars": 412
+    },
+    {
+      "page": 14,
+      "title": "编码值比较不等于自然语言排序",
+      "start": "14:05",
+      "end": "15:03",
+      "seconds": 57.9,
+      "chars": 301
+    },
+    {
+      "page": 15,
+      "title": "两个字面量之间写小于号，比的是地址",
+      "start": "15:03",
+      "end": "16:05",
+      "seconds": 61.7,
+      "chars": 327
+    },
+    {
+      "page": 16,
+      "title": "Part 2：字符串的存储结构和实现",
+      "start": "16:05",
+      "end": "16:20",
+      "seconds": 15.4,
+      "chars": 71
+    },
+    {
+      "page": 17,
+      "title": "这一节的正题：变长存储管理",
+      "start": "16:20",
+      "end": "17:41",
+      "seconds": 80.2,
+      "chars": 421
+    },
+    {
+      "page": 18,
+      "title": "顺序存储：连续字符数组加结尾的空字符",
+      "start": "17:41",
+      "end": "19:06",
+      "seconds": 85.5,
+      "chars": 432
+    },
+    {
+      "page": 19,
+      "title": "表 4.1：标准串函数",
+      "start": "19:06",
+      "end": "20:17",
+      "seconds": 70.5,
+      "chars": 381
+    },
+    {
+      "page": 20,
+      "title": "strchr 和 strrchr 返回指针；s1 等于 s2 不是复制",
+      "start": "20:17",
+      "end": "21:27",
+      "seconds": 70.4,
+      "chars": 402
+    },
+    {
+      "page": 21,
+      "title": "变长存储为什么不走链表",
+      "start": "21:27",
+      "end": "22:35",
+      "seconds": 67.8,
+      "chars": 337
+    },
+    {
+      "page": 22,
+      "title": "空串也占 1 个字节；从 C 字符串构造",
+      "start": "22:35",
+      "end": "23:49",
+      "seconds": 74.6,
+      "chars": 407
+    },
+    {
+      "page": 23,
+      "title": "原书算法 4.4 的构造函数：两处问题",
+      "start": "23:49",
+      "end": "25:07",
+      "seconds": 77.2,
+      "chars": 429
+    },
+    {
+      "page": 24,
+      "title": "三法则：拷贝构造与拷贝赋值",
+      "start": "25:07",
+      "end": "26:25",
+      "seconds": 78.8,
+      "chars": 391
+    },
+    {
+      "page": 25,
+      "title": "图 4.3 和 4.4：按当前串长动态调整空间",
+      "start": "26:25",
+      "end": "27:28",
+      "seconds": 62.8,
+      "chars": 346
+    },
+    {
+      "page": 26,
+      "title": "访问器、clear 与 at",
+      "start": "27:28",
+      "end": "28:32",
+      "seconds": 63.8,
+      "chars": 337
+    },
+    {
+      "page": 27,
+      "title": "追加一个字符：为什么是 O(n)",
+      "start": "28:32",
+      "end": "29:48",
+      "seconds": 76.0,
+      "chars": 403
+    },
+    {
+      "page": 28,
+      "title": "concatenate：重新申请、拷两段、释放旧的",
+      "start": "29:48",
+      "end": "31:02",
+      "seconds": 74.4,
+      "chars": 415
+    },
+    {
+      "page": 29,
+      "title": "抽取子串，算法 4.5：越界就抛",
+      "start": "31:02",
+      "end": "32:10",
+      "seconds": 67.3,
+      "chars": 352
+    },
+    {
+      "page": 30,
+      "title": "原书越界时 return NULL：能编译，崩在运行期",
+      "start": "32:10",
+      "end": "33:21",
+      "seconds": 71.4,
+      "chars": 400
+    },
+    {
+      "page": 31,
+      "title": "find，算法 4.4：optional 取代负一",
+      "start": "33:21",
+      "end": "34:26",
+      "seconds": 64.6,
+      "chars": 363
+    },
+    {
+      "page": 32,
+      "title": "compare，算法 4.3：只该看符号",
+      "start": "34:26",
+      "end": "35:42",
+      "seconds": 76.1,
+      "chars": 391
+    },
+    {
+      "page": 33,
+      "title": "工程版的拷贝：读 raw，copy-and-swap",
+      "start": "35:42",
+      "end": "36:52",
+      "seconds": 70.0,
+      "chars": 350
+    },
+    {
+      "page": 34,
+      "title": "移动之后的那个空壳怎么办",
+      "start": "36:52",
+      "end": "38:05",
+      "seconds": 73.2,
+      "chars": 399
+    },
+    {
+      "page": 35,
+      "title": "Part 3：字符串的模式匹配",
+      "start": "38:05",
+      "end": "38:20",
+      "seconds": 14.6,
+      "chars": 72
+    },
+    {
+      "page": 36,
+      "title": "在很大的文本里找一个短小的模式",
+      "start": "38:20",
+      "end": "39:22",
+      "seconds": 62.9,
+      "chars": 307
+    },
+    {
+      "page": 37,
+      "title": "精确匹配与近似匹配；本节的记号",
+      "start": "39:22",
+      "end": "40:33",
+      "seconds": 70.2,
+      "chars": 388
+    },
+    {
+      "page": 38,
+      "title": "naive_search：接口与约定",
+      "start": "40:33",
+      "end": "41:39",
+      "seconds": 66.0,
+      "chars": 363
+    },
+    {
+      "page": 39,
+      "title": "朴素匹配：失配就右移一位，从头再比",
+      "start": "41:39",
+      "end": "42:53",
+      "seconds": 74.4,
+      "chars": 391
+    },
+    {
+      "page": 40,
+      "title": "Python 版：同一个回溯过程",
+      "start": "42:53",
+      "end": "44:10",
+      "seconds": 76.5,
+      "chars": 466
+    },
+    {
+      "page": 41,
+      "title": "图 4.6：朴素匹配逐趟过程",
+      "start": "44:10",
+      "end": "45:18",
+      "seconds": 68.9,
+      "chars": 412
+    },
+    {
+      "page": 42,
+      "title": "三种极端情况：图 4.7、4.8、4.9",
+      "start": "45:18",
+      "end": "46:29",
+      "seconds": 70.7,
+      "chars": 400
+    },
+    {
+      "page": 43,
+      "title": "平均情况：依赖字符的分布概率",
+      "start": "46:29",
+      "end": "47:54",
+      "seconds": 84.5,
+      "chars": 472
+    },
+    {
+      "page": 44,
+      "title": "原书算法 4.6、4.8 的返回值差 1",
+      "start": "47:54",
+      "end": "49:18",
+      "seconds": 84.8,
+      "chars": 451
+    },
+    {
+      "page": 45,
+      "title": "朴素匹配的问题：目标的回溯",
+      "start": "49:18",
+      "end": "50:25",
+      "seconds": 66.3,
+      "chars": 352
+    },
+    {
+      "page": 46,
+      "title": "已经匹配上的那一段携带了信息",
+      "start": "50:25",
+      "end": "51:31",
+      "seconds": 65.9,
+      "chars": 363
+    },
+    {
+      "page": 47,
+      "title": "特征向量：失配时该退到哪里",
+      "start": "51:31",
+      "end": "52:36",
+      "seconds": 64.9,
+      "chars": 359
+    },
+    {
+      "page": 48,
+      "title": "build_next：只改了所有权",
+      "start": "52:36",
+      "end": "53:36",
+      "seconds": 60.2,
+      "chars": 340
+    },
+    {
+      "page": 49,
+      "title": "用模式串跟自己匹配",
+      "start": "53:36",
+      "end": "54:29",
+      "seconds": 53.6,
+      "chars": 304
+    },
+    {
+      "page": 50,
+      "title": "手算 abcdaabcab 的特征向量",
+      "start": "54:29",
+      "end": "55:41",
+      "seconds": 72.0,
+      "chars": 435
+    },
+    {
+      "page": 51,
+      "title": "abcdaabcab 的特征向量",
+      "start": "55:41",
+      "end": "56:45",
+      "seconds": 63.3,
+      "chars": 309
+    },
+    {
+      "page": 52,
+      "title": "KMP 接口：next 由调用方传入",
+      "start": "56:45",
+      "end": "57:38",
+      "seconds": 53.6,
+      "chars": 292
+    },
+    {
+      "page": 53,
+      "title": "与朴素算法只差失配那一步",
+      "start": "57:38",
+      "end": "58:34",
+      "seconds": 55.4,
+      "chars": 301
+    },
+    {
+      "page": 54,
+      "title": "Python 版 KMP",
+      "start": "58:34",
+      "end": "59:24",
+      "seconds": 50.3,
+      "chars": 294
+    },
+    {
+      "page": 55,
+      "title": "逐步追踪 abababd 中找 ababd",
+      "start": "59:24",
+      "end": "1:00:22",
+      "seconds": 57.6,
+      "chars": 318
+    },
+    {
+      "page": 56,
+      "title": "为什么 KMP 是线性的",
+      "start": "1:00:22",
+      "end": "1:01:27",
+      "seconds": 65.2,
+      "chars": 373
+    },
+    {
+      "page": 57,
+      "title": "图 4.12：完整匹配过程",
+      "start": "1:01:27",
+      "end": "1:02:23",
+      "seconds": 56.6,
+      "chars": 335
+    },
+    {
+      "page": 58,
+      "title": "朴素与 KMP 的代价对照",
+      "start": "1:02:23",
+      "end": "1:03:21",
+      "seconds": 57.5,
+      "chars": 314
+    },
+    {
+      "page": 59,
+      "title": "KMP 的另一个用途：最小循环节",
+      "start": "1:03:21",
+      "end": "1:04:29",
+      "seconds": 68.4,
+      "chars": 360
+    },
+    {
+      "page": 60,
+      "title": "三个例子：周期不一定整除长度",
+      "start": "1:04:29",
+      "end": "1:05:26",
+      "seconds": 56.5,
+      "chars": 307
+    },
+    {
+      "page": 61,
+      "title": "border_lengths：去掉优化的失效函数",
+      "start": "1:05:26",
+      "end": "1:06:22",
+      "seconds": 56.6,
+      "chars": 348
+    },
+    {
+      "page": 62,
+      "title": "陷阱一：优化版 next 不能求周期",
+      "start": "1:06:22",
+      "end": "1:07:21",
+      "seconds": 58.5,
+      "chars": 326
+    },
+    {
+      "page": 63,
+      "title": "minimal_period 与 is_repetition",
+      "start": "1:07:21",
+      "end": "1:08:15",
+      "seconds": 54.2,
+      "chars": 299
+    },
+    {
+      "page": 64,
+      "title": "三类上机题怎么落到这组函数上",
+      "start": "1:08:15",
+      "end": "1:09:18",
+      "seconds": 63.1,
+      "chars": 381
+    },
+    {
+      "page": 65,
+      "title": "习题选讲",
+      "start": "1:09:18",
+      "end": "1:10:25",
+      "seconds": 66.9,
+      "chars": 353
+    },
+    {
+      "page": 66,
+      "title": "本章小结",
+      "start": "1:10:25",
+      "end": "1:11:32",
+      "seconds": 67.2,
+      "chars": 333
+    },
+    {
+      "page": 67,
+      "title": "附录 A：编程练习",
+      "start": "1:11:32",
+      "end": "1:11:42",
+      "seconds": 9.7,
+      "chars": 47
+    },
+    {
+      "page": 68,
+      "title": "为什么是这三道题加一个引理",
+      "start": "1:11:42",
+      "end": "1:12:47",
+      "seconds": 65.1,
+      "chars": 351
+    },
+    {
+      "page": 69,
+      "title": "T76 最小覆盖子串：题意",
+      "start": "1:12:47",
+      "end": "1:13:51",
+      "seconds": 64.3,
+      "chars": 342
+    },
+    {
+      "page": 70,
+      "title": "滑动窗口：右端扩、左端缩",
+      "start": "1:13:51",
+      "end": "1:14:59",
+      "seconds": 67.4,
+      "chars": 395
+    },
+    {
+      "page": 71,
+      "title": "C++ 实现：need 数组加 required 计数",
+      "start": "1:14:59",
+      "end": "1:16:00",
+      "seconds": 61.6,
+      "chars": 354
+    },
+    {
+      "page": 72,
+      "title": "Python 实现：另一种收缩写法",
+      "start": "1:16:00",
+      "end": "1:16:53",
+      "seconds": 53.0,
+      "chars": 317
+    },
+    {
+      "page": 73,
+      "title": "31378 KMP 字符比较次数：题意",
+      "start": "1:16:53",
+      "end": "1:17:55",
+      "seconds": 62.2,
+      "chars": 367
+    },
+    {
+      "page": 74,
+      "title": "next 与 nextval：改掉了哪三个位置",
+      "start": "1:17:55",
+      "end": "1:19:07",
+      "seconds": 71.2,
+      "chars": 416
+    },
+    {
+      "page": 75,
+      "title": "比较过程追踪：31 次，下标 19",
+      "start": "1:19:07",
+      "end": "1:20:17",
+      "seconds": 69.8,
+      "chars": 416
+    },
+    {
+      "page": 76,
+      "title": "C++ 实现：next、nextval、计数",
+      "start": "1:20:17",
+      "end": "1:21:09",
+      "seconds": 52.4,
+      "chars": 305
+    },
+    {
+      "page": 77,
+      "title": "Python 实现：与 C++ 逐段对应",
+      "start": "1:21:09",
+      "end": "1:21:56",
+      "seconds": 47.5,
+      "chars": 276
+    },
+    {
+      "page": 78,
+      "title": "01961 前缀中的周期：题意",
+      "start": "1:21:56",
+      "end": "1:22:59",
+      "seconds": 62.8,
+      "chars": 343
+    },
+    {
+      "page": 79,
+      "title": "思路：最小周期等于 i 减 nxt",
+      "start": "1:22:59",
+      "end": "1:24:08",
+      "seconds": 69.1,
+      "chars": 397
+    },
+    {
+      "page": 80,
+      "title": "C++ 实现：线性求 nxt，线性扫前缀",
+      "start": "1:24:08",
+      "end": "1:25:02",
+      "seconds": 54.0,
+      "chars": 303
+    },
+    {
+      "page": 81,
+      "title": "Python 实现：一次读入，攒好再输出",
+      "start": "1:25:02",
+      "end": "1:25:57",
+      "seconds": 54.5,
+      "chars": 310
+    },
+    {
+      "page": 82,
+      "title": "引理：充分性证明",
+      "start": "1:25:57",
+      "end": "1:27:11",
+      "seconds": 74.6,
+      "chars": 441
+    },
+    {
+      "page": 83,
+      "title": "最小性证明与不整除的情形",
+      "start": "1:27:11",
+      "end": "1:28:21",
+      "seconds": 69.8,
+      "chars": 390
+    },
+    {
+      "page": 84,
+      "title": "三道题的复杂度总表与自检",
+      "start": "1:28:21",
+      "end": "1:29:28",
+      "seconds": 67.0,
+      "chars": 350
+    },
+    {
+      "page": 85,
+      "title": "附录 B：回文，中心扩展与 Manacher",
+      "start": "1:29:28",
+      "end": "1:29:42",
+      "seconds": 13.5,
+      "chars": 73
+    },
+    {
+      "page": 86,
+      "title": "中心扩展：2n 减 1 个中心",
+      "start": "1:29:42",
+      "end": "1:30:50",
+      "seconds": 68.5,
+      "chars": 363
+    },
+    {
+      "page": 87,
+      "title": "Manacher：镜像点先给个下限",
+      "start": "1:30:50",
+      "end": "1:32:00",
+      "seconds": 70.1,
+      "chars": 390
+    },
+    {
+      "page": 88,
+      "title": "manacher：Python 实现与总结",
+      "start": "1:32:00",
+      "end": "1:33:12",
+      "seconds": 71.8,
+      "chars": 407
+    }
+  ]
+}

@@ -1,0 +1,545 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:10:07",
+  "source_pptx_sha256": "c40250f1eddd97eeaac82117370deef0769ab9a6ab37f1e5abeb27fbed553ed1",
+  "source_script_sha256": "fdfbae1c4e7fff4afcb10d4d8abe8c4b4a363bd920e80726b5f5ac3ee21dc230",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第六章　树",
+      "start": "00:00",
+      "end": "01:00",
+      "seconds": 60.2,
+      "chars": 291
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "01:00",
+      "end": "02:06",
+      "seconds": 65.4,
+      "chars": 318
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "02:06",
+      "end": "03:01",
+      "seconds": 55.0,
+      "chars": 265
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：建树、周游与合并",
+      "start": "03:01",
+      "end": "04:15",
+      "seconds": 74.1,
+      "chars": 381
+    },
+    {
+      "page": 5,
+      "title": "demo 里的树是怎么长出来的",
+      "start": "04:15",
+      "end": "05:27",
+      "seconds": 72.3,
+      "chars": 389
+    },
+    {
+      "page": 6,
+      "title": "6.1　树的定义和基本术语",
+      "start": "05:27",
+      "end": "05:43",
+      "seconds": 16.2,
+      "chars": 72
+    },
+    {
+      "page": 7,
+      "title": "树的两种等价定义",
+      "start": "05:43",
+      "end": "06:52",
+      "seconds": 68.5,
+      "chars": 362
+    },
+    {
+      "page": 8,
+      "title": "以图 6.1 为例：结点集合与关系",
+      "start": "06:52",
+      "end": "08:02",
+      "seconds": 69.9,
+      "chars": 358
+    },
+    {
+      "page": 9,
+      "title": "术语基本沿用二叉树",
+      "start": "08:02",
+      "end": "09:15",
+      "seconds": 73.6,
+      "chars": 357
+    },
+    {
+      "page": 10,
+      "title": "度为 2 的有序树不是二叉树",
+      "start": "09:15",
+      "end": "10:12",
+      "seconds": 57.2,
+      "chars": 309
+    },
+    {
+      "page": 11,
+      "title": "同一棵树的四种逻辑表示",
+      "start": "10:12",
+      "end": "11:31",
+      "seconds": 78.8,
+      "chars": 393
+    },
+    {
+      "page": 12,
+      "title": "连线、切线、旋转：森林变成二叉树",
+      "start": "11:31",
+      "end": "12:42",
+      "seconds": 71.1,
+      "chars": 366
+    },
+    {
+      "page": 13,
+      "title": "形式定义与逆过程",
+      "start": "12:42",
+      "end": "14:02",
+      "seconds": 79.5,
+      "chars": 447
+    },
+    {
+      "page": 14,
+      "title": "图 6.5：本章反复用到的森林",
+      "start": "14:02",
+      "end": "15:15",
+      "seconds": 73.4,
+      "chars": 374
+    },
+    {
+      "page": 15,
+      "title": "树的抽象数据类型",
+      "start": "15:15",
+      "end": "16:29",
+      "seconds": 73.5,
+      "chars": 384
+    },
+    {
+      "page": 16,
+      "title": "深度优先：先根次序与后根次序",
+      "start": "16:29",
+      "end": "17:41",
+      "seconds": 72.2,
+      "chars": 376
+    },
+    {
+      "page": 17,
+      "title": "先根等于前序，后根等于中序",
+      "start": "17:41",
+      "end": "18:48",
+      "seconds": 67.0,
+      "chars": 353
+    },
+    {
+      "page": 18,
+      "title": "广度优先（层次）周游",
+      "start": "18:48",
+      "end": "19:59",
+      "seconds": 70.6,
+      "chars": 367
+    },
+    {
+      "page": 19,
+      "title": "6.2　树的链式存储结构",
+      "start": "19:59",
+      "end": "20:13",
+      "seconds": 14.5,
+      "chars": 64
+    },
+    {
+      "page": 20,
+      "title": "存储要求与四种链式表示",
+      "start": "20:13",
+      "end": "21:23",
+      "seconds": 70.1,
+      "chars": 365
+    },
+    {
+      "page": 21,
+      "title": "子结点表：结点数组加孩子链表",
+      "start": "21:23",
+      "end": "22:32",
+      "seconds": 68.8,
+      "chars": 352
+    },
+    {
+      "page": 22,
+      "title": "静态「左子右兄」",
+      "start": "22:32",
+      "end": "23:36",
+      "seconds": 64.0,
+      "chars": 332
+    },
+    {
+      "page": 23,
+      "title": "两棵树归并只改 3 个链接",
+      "start": "23:36",
+      "end": "24:38",
+      "seconds": 61.6,
+      "chars": 314
+    },
+    {
+      "page": 24,
+      "title": "动态表示法",
+      "start": "24:38",
+      "end": "25:39",
+      "seconds": 61.8,
+      "chars": 300
+    },
+    {
+      "page": 25,
+      "title": "二叉链表表示法：本章主实现",
+      "start": "25:39",
+      "end": "26:43",
+      "seconds": 63.5,
+      "chars": 368
+    },
+    {
+      "page": 26,
+      "title": "Node 与拷贝：递归 clone，copy-and-swap",
+      "start": "26:43",
+      "end": "27:46",
+      "seconds": 63.4,
+      "chars": 348
+    },
+    {
+      "page": 27,
+      "title": "移动、析构与 create_root",
+      "start": "27:46",
+      "end": "28:39",
+      "seconds": 52.9,
+      "chars": 296
+    },
+    {
+      "page": 28,
+      "title": "insert_first 与 insert_next",
+      "start": "28:39",
+      "end": "29:47",
+      "seconds": 68.3,
+      "chars": 346
+    },
+    {
+      "page": 29,
+      "title": "delete_subtree：先脱开，再销毁",
+      "start": "29:47",
+      "end": "30:57",
+      "seconds": 70.0,
+      "chars": 350
+    },
+    {
+      "page": 30,
+      "title": "先根与后根：沿兄弟链循环，对孩子链递归",
+      "start": "30:57",
+      "end": "32:04",
+      "seconds": 66.2,
+      "chars": 337
+    },
+    {
+      "page": 31,
+      "title": "breadth_first：vector 当队列",
+      "start": "32:04",
+      "end": "33:10",
+      "seconds": 66.9,
+      "chars": 346
+    },
+    {
+      "page": 32,
+      "title": "destroy 与 clone：递归保留教材写法",
+      "start": "33:10",
+      "end": "34:19",
+      "seconds": 68.3,
+      "chars": 352
+    },
+    {
+      "page": 33,
+      "title": "GeneralTree 的三条要点",
+      "start": "34:19",
+      "end": "35:18",
+      "seconds": 59.3,
+      "chars": 296
+    },
+    {
+      "page": 34,
+      "title": "6.2.5　父指针表示法与并查集",
+      "start": "35:18",
+      "end": "35:36",
+      "seconds": 17.6,
+      "chars": 79
+    },
+    {
+      "page": 35,
+      "title": "等价关系与等价类",
+      "start": "35:36",
+      "end": "36:51",
+      "seconds": 75.9,
+      "chars": 390
+    },
+    {
+      "page": 36,
+      "title": "父指针表示法",
+      "start": "36:51",
+      "end": "38:08",
+      "seconds": 76.4,
+      "chars": 389
+    },
+    {
+      "page": 37,
+      "title": "朴素合并会退化",
+      "start": "38:08",
+      "end": "39:02",
+      "seconds": 54.1,
+      "chars": 279
+    },
+    {
+      "page": 38,
+      "title": "重量权衡合并规则",
+      "start": "39:02",
+      "end": "40:19",
+      "seconds": 76.7,
+      "chars": 401
+    },
+    {
+      "page": 39,
+      "title": "路径压缩",
+      "start": "40:19",
+      "end": "41:22",
+      "seconds": 63.2,
+      "chars": 368
+    },
+    {
+      "page": 40,
+      "title": "构造与 find",
+      "start": "41:22",
+      "end": "42:23",
+      "seconds": 61.4,
+      "chars": 346
+    },
+    {
+      "page": 41,
+      "title": "unite：小树挂到大树下",
+      "start": "42:23",
+      "end": "43:23",
+      "seconds": 59.5,
+      "chars": 305
+    },
+    {
+      "page": 42,
+      "title": "same、set_size 与 demo",
+      "start": "43:23",
+      "end": "44:22",
+      "seconds": 59.4,
+      "chars": 372
+    },
+    {
+      "page": 43,
+      "title": "习题 8 逐步演算",
+      "start": "44:22",
+      "end": "45:38",
+      "seconds": 76.0,
+      "chars": 476
+    },
+    {
+      "page": 44,
+      "title": "连通分量与连通点对",
+      "start": "45:38",
+      "end": "46:50",
+      "seconds": 71.9,
+      "chars": 377
+    },
+    {
+      "page": 45,
+      "title": "ComponentCounter",
+      "start": "46:50",
+      "end": "48:03",
+      "seconds": 73.2,
+      "chars": 411
+    },
+    {
+      "page": 46,
+      "title": "6.3 树的顺序存储结构",
+      "start": "48:03",
+      "end": "48:22",
+      "seconds": 19.0,
+      "chars": 79
+    },
+    {
+      "page": 47,
+      "title": "四种顺序表示一览",
+      "start": "48:22",
+      "end": "49:36",
+      "seconds": 73.8,
+      "chars": 386
+    },
+    {
+      "page": 48,
+      "title": "带右链的先根次序",
+      "start": "49:36",
+      "end": "50:45",
+      "seconds": 68.5,
+      "chars": 362
+    },
+    {
+      "page": 49,
+      "title": "带双标记的先根次序",
+      "start": "50:45",
+      "end": "52:00",
+      "seconds": 75.7,
+      "chars": 398
+    },
+    {
+      "page": 50,
+      "title": "用栈还原：逐步演算",
+      "start": "52:00",
+      "end": "53:18",
+      "seconds": 77.9,
+      "chars": 409
+    },
+    {
+      "page": 51,
+      "title": "from_dual_tag：结点格式",
+      "start": "53:18",
+      "end": "54:06",
+      "seconds": 47.7,
+      "chars": 249
+    },
+    {
+      "page": 52,
+      "title": "主循环",
+      "start": "54:06",
+      "end": "55:07",
+      "seconds": 61.1,
+      "chars": 297
+    },
+    {
+      "page": 53,
+      "title": "收尾检查",
+      "start": "55:07",
+      "end": "56:11",
+      "seconds": 64.2,
+      "chars": 322
+    },
+    {
+      "page": 54,
+      "title": "带度数的后根次序",
+      "start": "56:11",
+      "end": "57:22",
+      "seconds": 70.8,
+      "chars": 370
+    },
+    {
+      "page": 55,
+      "title": "带双标记的层次次序",
+      "start": "57:22",
+      "end": "58:37",
+      "seconds": 75.2,
+      "chars": 392
+    },
+    {
+      "page": 56,
+      "title": "紧凑树编码的现代视角",
+      "start": "58:37",
+      "end": "59:30",
+      "seconds": 52.5,
+      "chars": 270
+    },
+    {
+      "page": 57,
+      "title": "6.4 K 叉树",
+      "start": "59:30",
+      "end": "59:44",
+      "seconds": 14.8,
+      "chars": 69
+    },
+    {
+      "page": 58,
+      "title": "满 K 叉树与完全 K 叉树",
+      "start": "59:44",
+      "end": "1:00:43",
+      "seconds": 58.1,
+      "chars": 313
+    },
+    {
+      "page": 59,
+      "title": "完全 K 叉树的编号公式",
+      "start": "1:00:43",
+      "end": "1:01:55",
+      "seconds": 72.7,
+      "chars": 434
+    },
+    {
+      "page": 60,
+      "title": "课堂练习",
+      "start": "1:01:55",
+      "end": "1:03:07",
+      "seconds": 71.6,
+      "chars": 383
+    },
+    {
+      "page": 61,
+      "title": "附录 A 编程练习",
+      "start": "1:03:07",
+      "end": "1:03:24",
+      "seconds": 16.8,
+      "chars": 79
+    },
+    {
+      "page": 62,
+      "title": "OJ 24729 括号嵌套树",
+      "start": "1:03:24",
+      "end": "1:04:28",
+      "seconds": 64.0,
+      "chars": 328
+    },
+    {
+      "page": 63,
+      "title": "OJ 07161 带度数层次序列",
+      "start": "1:04:28",
+      "end": "1:05:37",
+      "seconds": 69.8,
+      "chars": 348
+    },
+    {
+      "page": 64,
+      "title": "OJ 27928 遍历树与父数组求树高",
+      "start": "1:05:37",
+      "end": "1:06:45",
+      "seconds": 67.4,
+      "chars": 335
+    },
+    {
+      "page": 65,
+      "title": "OJ 07734 虫子的生活",
+      "start": "1:06:45",
+      "end": "1:07:50",
+      "seconds": 65.5,
+      "chars": 364
+    },
+    {
+      "page": 66,
+      "title": "OJ 01182 食物链",
+      "start": "1:07:50",
+      "end": "1:08:57",
+      "seconds": 66.2,
+      "chars": 356
+    },
+    {
+      "page": 67,
+      "title": "本章小结",
+      "start": "1:08:57",
+      "end": "1:10:07",
+      "seconds": 70.0,
+      "chars": 332
+    }
+  ]
+}

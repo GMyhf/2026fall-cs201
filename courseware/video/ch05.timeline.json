@@ -1,0 +1,681 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:23:53",
+  "source_pptx_sha256": "fc06eaca6f81f5d7b538561300c4f6b8893015d7b0236c11fc4dbc4a0adbe562",
+  "source_script_sha256": "d002e962d9af11c4fada1e940bd9235b0a5a141650d0dabd6f35b5181f70ce2a",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第五章　二叉树",
+      "start": "00:00",
+      "end": "00:54",
+      "seconds": 54.0,
+      "chars": 258
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "00:54",
+      "end": "01:57",
+      "seconds": 63.4,
+      "chars": 307
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "01:57",
+      "end": "03:05",
+      "seconds": 67.4,
+      "chars": 328
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：建树并打印四种周游",
+      "start": "03:05",
+      "end": "04:08",
+      "seconds": 62.8,
+      "chars": 336
+    },
+    {
+      "page": 5,
+      "title": "先跑一遍：最小堆与 Huffman 树",
+      "start": "04:08",
+      "end": "05:09",
+      "seconds": 61.2,
+      "chars": 290
+    },
+    {
+      "page": 6,
+      "title": "Part 1：二叉树的概念",
+      "start": "05:09",
+      "end": "05:24",
+      "seconds": 15.8,
+      "chars": 71
+    },
+    {
+      "page": 7,
+      "title": "递归定义与五种基本形态",
+      "start": "05:24",
+      "end": "06:19",
+      "seconds": 55.0,
+      "chars": 268
+    },
+    {
+      "page": 8,
+      "title": "基本术语",
+      "start": "06:19",
+      "end": "07:22",
+      "seconds": 62.2,
+      "chars": 309
+    },
+    {
+      "page": 9,
+      "title": "满二叉树与完全二叉树",
+      "start": "07:22",
+      "end": "08:27",
+      "seconds": 64.9,
+      "chars": 321
+    },
+    {
+      "page": 10,
+      "title": "扩充二叉树与路径长度",
+      "start": "08:27",
+      "end": "09:32",
+      "seconds": 65.1,
+      "chars": 337
+    },
+    {
+      "page": 11,
+      "title": "性质一、二与按层编号",
+      "start": "09:32",
+      "end": "10:30",
+      "seconds": 58.6,
+      "chars": 298
+    },
+    {
+      "page": 12,
+      "title": "性质三到五",
+      "start": "10:30",
+      "end": "11:42",
+      "seconds": 71.8,
+      "chars": 348
+    },
+    {
+      "page": 13,
+      "title": "n 个结点有 n 加一个空指针",
+      "start": "11:42",
+      "end": "12:42",
+      "seconds": 60.2,
+      "chars": 300
+    },
+    {
+      "page": 14,
+      "title": "中序线索化：代码",
+      "start": "12:42",
+      "end": "13:57",
+      "seconds": 74.9,
+      "chars": 358
+    },
+    {
+      "page": 15,
+      "title": "沿线索找后继",
+      "start": "13:57",
+      "end": "15:08",
+      "seconds": 71.3,
+      "chars": 334
+    },
+    {
+      "page": 16,
+      "title": "Morris 遍历：临时线索",
+      "start": "15:08",
+      "end": "16:24",
+      "seconds": 75.2,
+      "chars": 381
+    },
+    {
+      "page": 17,
+      "title": "Morris 遍历逐步推演",
+      "start": "16:24",
+      "end": "17:46",
+      "seconds": 81.9,
+      "chars": 402
+    },
+    {
+      "page": 18,
+      "title": "Part 2：二叉树的周游",
+      "start": "17:46",
+      "end": "18:02",
+      "seconds": 16.9,
+      "chars": 74
+    },
+    {
+      "page": 19,
+      "title": "二叉树的抽象数据类型",
+      "start": "18:02",
+      "end": "19:09",
+      "seconds": 66.0,
+      "chars": 311
+    },
+    {
+      "page": 20,
+      "title": "深度优先周游：三种次序",
+      "start": "19:09",
+      "end": "20:10",
+      "seconds": 61.1,
+      "chars": 297
+    },
+    {
+      "page": 21,
+      "title": "图五点五的三种周游序列",
+      "start": "20:10",
+      "end": "21:09",
+      "seconds": 59.2,
+      "chars": 318
+    },
+    {
+      "page": 22,
+      "title": "三个递归函数只差一行",
+      "start": "21:09",
+      "end": "22:11",
+      "seconds": 62.5,
+      "chars": 307
+    },
+    {
+      "page": 23,
+      "title": "表达式树：三种周游，三种写法",
+      "start": "22:11",
+      "end": "23:21",
+      "seconds": 69.4,
+      "chars": 332
+    },
+    {
+      "page": 24,
+      "title": "由周游序列重建二叉树",
+      "start": "23:21",
+      "end": "24:30",
+      "seconds": 69.1,
+      "chars": 347
+    },
+    {
+      "page": 25,
+      "title": "逐帧推演重建过程",
+      "start": "24:30",
+      "end": "25:40",
+      "seconds": 70.0,
+      "chars": 387
+    },
+    {
+      "page": 26,
+      "title": "把推演表翻译成递归",
+      "start": "25:40",
+      "end": "26:53",
+      "seconds": 73.2,
+      "chars": 355
+    },
+    {
+      "page": 27,
+      "title": "直接查表：找根变成查一次",
+      "start": "26:53",
+      "end": "27:59",
+      "seconds": 66.2,
+      "chars": 331
+    },
+    {
+      "page": 28,
+      "title": "显式栈版（上）：栈也要有主人",
+      "start": "27:59",
+      "end": "28:56",
+      "seconds": 56.8,
+      "chars": 275
+    },
+    {
+      "page": 29,
+      "title": "显式栈版（下）：弹帧、找根、挂接、压帧",
+      "start": "28:56",
+      "end": "29:57",
+      "seconds": 60.9,
+      "chars": 285
+    },
+    {
+      "page": 30,
+      "title": "工程版：两处坑与两个静态工厂",
+      "start": "29:57",
+      "end": "31:06",
+      "seconds": 69.1,
+      "chars": 341
+    },
+    {
+      "page": 31,
+      "title": "工程版 rebuild（上）：位置查找表",
+      "start": "31:06",
+      "end": "32:12",
+      "seconds": 66.1,
+      "chars": 320
+    },
+    {
+      "page": 32,
+      "title": "工程版 rebuild（下）：逐帧挂接",
+      "start": "32:12",
+      "end": "33:26",
+      "seconds": 73.4,
+      "chars": 346
+    },
+    {
+      "page": 33,
+      "title": "层次周游：靠队列",
+      "start": "33:26",
+      "end": "34:38",
+      "seconds": 71.8,
+      "chars": 352
+    },
+    {
+      "page": 34,
+      "title": "层次周游教学版（上）：极简链式队列",
+      "start": "34:38",
+      "end": "35:34",
+      "seconds": 56.4,
+      "chars": 281
+    },
+    {
+      "page": 35,
+      "title": "层次周游教学版（下）与空间代价",
+      "start": "35:34",
+      "end": "36:31",
+      "seconds": 56.9,
+      "chars": 279
+    },
+    {
+      "page": 36,
+      "title": "Part 3：二叉树的存储结构",
+      "start": "36:31",
+      "end": "36:47",
+      "seconds": 15.8,
+      "chars": 68
+    },
+    {
+      "page": 37,
+      "title": "二叉链表与三叉链表",
+      "start": "36:47",
+      "end": "37:42",
+      "seconds": 54.9,
+      "chars": 273
+    },
+    {
+      "page": 38,
+      "title": "完全二叉树的顺序存储",
+      "start": "37:42",
+      "end": "38:39",
+      "seconds": 57.8,
+      "chars": 291
+    },
+    {
+      "page": 39,
+      "title": "教学版（一）：结点、构造与三法则",
+      "start": "38:39",
+      "end": "39:40",
+      "seconds": 60.2,
+      "chars": 285
+    },
+    {
+      "page": 40,
+      "title": "教学版（二）：建树与所有权转移",
+      "start": "39:40",
+      "end": "40:40",
+      "seconds": 60.2,
+      "chars": 305
+    },
+    {
+      "page": 41,
+      "title": "教学版（三）：后序释放与深拷贝",
+      "start": "40:40",
+      "end": "41:36",
+      "seconds": 55.7,
+      "chars": 273
+    },
+    {
+      "page": 42,
+      "title": "递归的代价",
+      "start": "41:36",
+      "end": "42:40",
+      "seconds": 64.0,
+      "chars": 309
+    },
+    {
+      "page": 43,
+      "title": "Part 4：二叉搜索树",
+      "start": "42:40",
+      "end": "42:56",
+      "seconds": 16.3,
+      "chars": 67
+    },
+    {
+      "page": 44,
+      "title": "二叉搜索树的定义",
+      "start": "42:56",
+      "end": "44:06",
+      "seconds": 70.0,
+      "chars": 333
+    },
+    {
+      "page": 45,
+      "title": "查找：每比较一次扔掉一棵子树",
+      "start": "44:06",
+      "end": "44:55",
+      "seconds": 49.4,
+      "chars": 248
+    },
+    {
+      "page": 46,
+      "title": "插入：指向指针的指针",
+      "start": "44:55",
+      "end": "45:55",
+      "seconds": 60.0,
+      "chars": 293
+    },
+    {
+      "page": 47,
+      "title": "例题：插入后删除 3",
+      "start": "45:55",
+      "end": "47:10",
+      "seconds": 74.8,
+      "chars": 327
+    },
+    {
+      "page": 48,
+      "title": "两种删除方案",
+      "start": "47:10",
+      "end": "48:17",
+      "seconds": 67.3,
+      "chars": 353
+    },
+    {
+      "page": 49,
+      "title": "remove_impl 上半：找到要删的结点",
+      "start": "48:17",
+      "end": "49:17",
+      "seconds": 59.6,
+      "chars": 286
+    },
+    {
+      "page": 50,
+      "title": "remove_impl 下半：中序前驱顶替",
+      "start": "49:17",
+      "end": "50:24",
+      "seconds": 66.6,
+      "chars": 321
+    },
+    {
+      "page": 51,
+      "title": "Part 5：堆与优先队列",
+      "start": "50:24",
+      "end": "50:40",
+      "seconds": 16.4,
+      "chars": 71
+    },
+    {
+      "page": 52,
+      "title": "最小堆：特殊的完全二叉树",
+      "start": "50:40",
+      "end": "51:46",
+      "seconds": 66.1,
+      "chars": 329
+    },
+    {
+      "page": 53,
+      "title": "教学版 MinHeap",
+      "start": "51:46",
+      "end": "52:47",
+      "seconds": 60.8,
+      "chars": 302
+    },
+    {
+      "page": 54,
+      "title": "插入：上浮",
+      "start": "52:47",
+      "end": "53:41",
+      "seconds": 54.4,
+      "chars": 255
+    },
+    {
+      "page": 55,
+      "title": "删除：下沉",
+      "start": "53:41",
+      "end": "54:33",
+      "seconds": 51.8,
+      "chars": 258
+    },
+    {
+      "page": 56,
+      "title": "例题：remove_min 逐步推演",
+      "start": "54:33",
+      "end": "55:45",
+      "seconds": 71.5,
+      "chars": 324
+    },
+    {
+      "page": 57,
+      "title": "建堆：筛选法",
+      "start": "55:45",
+      "end": "56:58",
+      "seconds": 72.8,
+      "chars": 343
+    },
+    {
+      "page": 58,
+      "title": "建堆为什么是线性的",
+      "start": "56:58",
+      "end": "58:14",
+      "seconds": 76.7,
+      "chars": 422
+    },
+    {
+      "page": 59,
+      "title": "优先队列",
+      "start": "58:14",
+      "end": "59:26",
+      "seconds": 71.9,
+      "chars": 371
+    },
+    {
+      "page": 60,
+      "title": "对顶堆：动态维护中位数",
+      "start": "59:26",
+      "end": "1:00:44",
+      "seconds": 77.6,
+      "chars": 371
+    },
+    {
+      "page": 61,
+      "title": "工程版 RunningMedian",
+      "start": "1:00:44",
+      "end": "1:01:42",
+      "seconds": 57.9,
+      "chars": 280
+    },
+    {
+      "page": 62,
+      "title": "Part 6：Huffman 树及其应用",
+      "start": "1:01:42",
+      "end": "1:01:55",
+      "seconds": 13.7,
+      "chars": 63
+    },
+    {
+      "page": 63,
+      "title": "带权路径长度",
+      "start": "1:01:55",
+      "end": "1:02:52",
+      "seconds": 56.4,
+      "chars": 274
+    },
+    {
+      "page": 64,
+      "title": "Huffman 树的构造",
+      "start": "1:02:52",
+      "end": "1:03:54",
+      "seconds": 62.3,
+      "chars": 298
+    },
+    {
+      "page": 65,
+      "title": "教学版 HuffmanTree 上：先查参数",
+      "start": "1:03:54",
+      "end": "1:04:56",
+      "seconds": 62.5,
+      "chars": 302
+    },
+    {
+      "page": 66,
+      "title": "教学版 HuffmanTree 下：用堆合并",
+      "start": "1:04:56",
+      "end": "1:05:54",
+      "seconds": 57.5,
+      "chars": 262
+    },
+    {
+      "page": 67,
+      "title": "权值成批给出：只求 WPL",
+      "start": "1:05:54",
+      "end": "1:07:12",
+      "seconds": 78.5,
+      "chars": 380
+    },
+    {
+      "page": 68,
+      "title": "Huffman 编码：为什么要前缀码",
+      "start": "1:07:12",
+      "end": "1:08:22",
+      "seconds": 69.8,
+      "chars": 356
+    },
+    {
+      "page": 69,
+      "title": "Huffman 编码示例",
+      "start": "1:08:22",
+      "end": "1:09:29",
+      "seconds": 67.2,
+      "chars": 320
+    },
+    {
+      "page": 70,
+      "title": "编码总长等于 WPL",
+      "start": "1:09:29",
+      "end": "1:10:36",
+      "seconds": 67.0,
+      "chars": 333
+    },
+    {
+      "page": 71,
+      "title": "Huffman 译码",
+      "start": "1:10:36",
+      "end": "1:11:28",
+      "seconds": 51.2,
+      "chars": 252
+    },
+    {
+      "page": 72,
+      "title": "Part 7：进阶选读",
+      "start": "1:11:28",
+      "end": "1:11:40",
+      "seconds": 12.7,
+      "chars": 53
+    },
+    {
+      "page": 73,
+      "title": "工程版释放：右旋拉直",
+      "start": "1:11:40",
+      "end": "1:12:42",
+      "seconds": 61.9,
+      "chars": 318
+    },
+    {
+      "page": 74,
+      "title": "工程版深拷贝：显式栈",
+      "start": "1:12:42",
+      "end": "1:13:34",
+      "seconds": 51.9,
+      "chars": 254
+    },
+    {
+      "page": 75,
+      "title": "非递归周游",
+      "start": "1:13:34",
+      "end": "1:14:44",
+      "seconds": 69.6,
+      "chars": 344
+    },
+    {
+      "page": 76,
+      "title": "课后练习",
+      "start": "1:14:44",
+      "end": "1:15:50",
+      "seconds": 66.2,
+      "chars": 328
+    },
+    {
+      "page": 77,
+      "title": "附录 A：编程练习",
+      "start": "1:15:50",
+      "end": "1:16:03",
+      "seconds": 13.0,
+      "chars": 60
+    },
+    {
+      "page": 78,
+      "title": "OJ 27638：高度与叶子数",
+      "start": "1:16:03",
+      "end": "1:16:58",
+      "seconds": 55.5,
+      "chars": 273
+    },
+    {
+      "page": 79,
+      "title": "OJ 08581：扩展二叉树",
+      "start": "1:16:58",
+      "end": "1:18:09",
+      "seconds": 70.2,
+      "chars": 325
+    },
+    {
+      "page": 80,
+      "title": "OJ 22158：前中序建树",
+      "start": "1:18:09",
+      "end": "1:19:22",
+      "seconds": 73.1,
+      "chars": 348
+    },
+    {
+      "page": 81,
+      "title": "OJ 25140：队列表达式",
+      "start": "1:19:22",
+      "end": "1:20:31",
+      "seconds": 69.6,
+      "chars": 318
+    },
+    {
+      "page": 82,
+      "title": "OJ 05455：BST 层次遍历",
+      "start": "1:20:31",
+      "end": "1:21:33",
+      "seconds": 61.6,
+      "chars": 286
+    },
+    {
+      "page": 83,
+      "title": "OJ 18164：剪绳子",
+      "start": "1:21:33",
+      "end": "1:22:38",
+      "seconds": 64.6,
+      "chars": 340
+    },
+    {
+      "page": 84,
+      "title": "本章小结",
+      "start": "1:22:38",
+      "end": "1:23:53",
+      "seconds": 75.2,
+      "chars": 340
+    }
+  ]
+}

@@ -1,0 +1,617 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:21:22",
+  "source_pptx_sha256": "7d58bf2d0af37517a0fde582b31ad54bf0652ecb3341997cdf64149bd83bc231",
+  "source_script_sha256": "f4b1db4d5def38f2c283fd8b5cae0a72b51dc5e6b64eda783dc103bf47912f77",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第二章　线性表",
+      "start": "00:00",
+      "end": "00:46",
+      "seconds": 46.4,
+      "chars": 215
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "00:46",
+      "end": "01:47",
+      "seconds": 60.3,
+      "chars": 301
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "01:47",
+      "end": "02:53",
+      "seconds": 66.6,
+      "chars": 308
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：教学版 ArrayList",
+      "start": "02:53",
+      "end": "03:51",
+      "seconds": 58.0,
+      "chars": 282
+    },
+    {
+      "page": 5,
+      "title": "先跑一遍：教学版 LinkedList",
+      "start": "03:51",
+      "end": "04:51",
+      "seconds": 60.0,
+      "chars": 287
+    },
+    {
+      "page": 6,
+      "title": "Part 1　线性表的概念",
+      "start": "04:51",
+      "end": "05:06",
+      "seconds": 14.4,
+      "chars": 65
+    },
+    {
+      "page": 7,
+      "title": "线性表：有限且有序的元素序列",
+      "start": "05:06",
+      "end": "06:12",
+      "seconds": 66.7,
+      "chars": 351
+    },
+    {
+      "page": 8,
+      "title": "线性结构的两个结构特点",
+      "start": "06:12",
+      "end": "07:13",
+      "seconds": 60.5,
+      "chars": 295
+    },
+    {
+      "page": 9,
+      "title": "线性表的运算分五类",
+      "start": "07:13",
+      "end": "08:15",
+      "seconds": 62.4,
+      "chars": 299
+    },
+    {
+      "page": 10,
+      "title": "ArrayList 的运算表",
+      "start": "08:15",
+      "end": "09:19",
+      "seconds": 64.0,
+      "chars": 327
+    },
+    {
+      "page": 11,
+      "title": "两类存储结构",
+      "start": "09:19",
+      "end": "10:32",
+      "seconds": 72.3,
+      "chars": 339
+    },
+    {
+      "page": 12,
+      "title": "Part 2　顺序表",
+      "start": "10:32",
+      "end": "10:46",
+      "seconds": 14.2,
+      "chars": 57
+    },
+    {
+      "page": 13,
+      "title": "为什么这一节没有 Python 版",
+      "start": "10:46",
+      "end": "11:48",
+      "seconds": 62.4,
+      "chars": 319
+    },
+    {
+      "page": 14,
+      "title": "地址公式：随机存取",
+      "start": "11:48",
+      "end": "12:49",
+      "seconds": 60.8,
+      "chars": 317
+    },
+    {
+      "page": 15,
+      "title": "类定义：裸指针与三法则",
+      "start": "12:49",
+      "end": "14:04",
+      "seconds": 74.7,
+      "chars": 365
+    },
+    {
+      "page": 16,
+      "title": "按位置检索：常数时间",
+      "start": "14:04",
+      "end": "15:00",
+      "seconds": 56.6,
+      "chars": 277
+    },
+    {
+      "page": 17,
+      "title": "按内容检索：n 的量级",
+      "start": "15:00",
+      "end": "16:06",
+      "seconds": 65.3,
+      "chars": 329
+    },
+    {
+      "page": 18,
+      "title": "插入：必须从后往前搬",
+      "start": "16:06",
+      "end": "17:12",
+      "seconds": 66.9,
+      "chars": 321
+    },
+    {
+      "page": 19,
+      "title": "删除与扩容：容量翻倍",
+      "start": "17:12",
+      "end": "18:26",
+      "seconds": 73.6,
+      "chars": 361
+    },
+    {
+      "page": 20,
+      "title": "三法则：拷贝构造与拷贝赋值",
+      "start": "18:26",
+      "end": "19:39",
+      "seconds": 73.4,
+      "chars": 352
+    },
+    {
+      "page": 21,
+      "title": "Part 3　链表",
+      "start": "19:39",
+      "end": "19:56",
+      "seconds": 16.1,
+      "chars": 69
+    },
+    {
+      "page": 22,
+      "title": "顺序表用物理相邻，链表用链接域",
+      "start": "19:56",
+      "end": "21:09",
+      "seconds": 73.6,
+      "chars": 357
+    },
+    {
+      "page": 23,
+      "title": "尾指针 tail",
+      "start": "21:09",
+      "end": "21:59",
+      "seconds": 50.4,
+      "chars": 281
+    },
+    {
+      "page": 24,
+      "title": "结点与头结点：消特例的哨兵",
+      "start": "21:59",
+      "end": "23:00",
+      "seconds": 60.8,
+      "chars": 303
+    },
+    {
+      "page": 25,
+      "title": "循链定位",
+      "start": "23:00",
+      "end": "24:01",
+      "seconds": 61.2,
+      "chars": 309
+    },
+    {
+      "page": 26,
+      "title": "插入与删除：不搬元素，但定位要走",
+      "start": "24:01",
+      "end": "25:03",
+      "seconds": 61.4,
+      "chars": 298
+    },
+    {
+      "page": 27,
+      "title": "析构必须循环，不能递归",
+      "start": "25:03",
+      "end": "26:09",
+      "seconds": 66.6,
+      "chars": 319
+    },
+    {
+      "page": 28,
+      "title": "双链表：多一根 prev",
+      "start": "26:09",
+      "end": "27:08",
+      "seconds": 58.8,
+      "chars": 320
+    },
+    {
+      "page": 29,
+      "title": "循环链表",
+      "start": "27:08",
+      "end": "28:20",
+      "seconds": 72.3,
+      "chars": 385
+    },
+    {
+      "page": 30,
+      "title": "Part 4　线性表实现方法的比较",
+      "start": "28:20",
+      "end": "28:33",
+      "seconds": 12.5,
+      "chars": 55
+    },
+    {
+      "page": 31,
+      "title": "两种实现的代价对比",
+      "start": "28:33",
+      "end": "29:38",
+      "seconds": 65.0,
+      "chars": 319
+    },
+    {
+      "page": 32,
+      "title": "取舍时的两个因素",
+      "start": "29:38",
+      "end": "30:30",
+      "seconds": 52.2,
+      "chars": 262
+    },
+    {
+      "page": 33,
+      "title": "线性表在后面各章的位置",
+      "start": "30:30",
+      "end": "31:09",
+      "seconds": 38.9,
+      "chars": 185
+    },
+    {
+      "page": 34,
+      "title": "本章小结",
+      "start": "31:09",
+      "end": "31:56",
+      "seconds": 46.4,
+      "chars": 220
+    },
+    {
+      "page": 35,
+      "title": "附录 A　编程练习",
+      "start": "31:56",
+      "end": "32:13",
+      "seconds": 17.5,
+      "chars": 77
+    },
+    {
+      "page": 36,
+      "title": "为什么是这六道题",
+      "start": "32:13",
+      "end": "33:19",
+      "seconds": 66.2,
+      "chars": 329
+    },
+    {
+      "page": 37,
+      "title": "结点定义",
+      "start": "33:19",
+      "end": "34:21",
+      "seconds": 61.4,
+      "chars": 340
+    },
+    {
+      "page": 38,
+      "title": "三条铁律与哨兵",
+      "start": "34:21",
+      "end": "35:36",
+      "seconds": 75.2,
+      "chars": 388
+    },
+    {
+      "page": 39,
+      "title": "E160 相交链表：什么叫「相交」",
+      "start": "35:36",
+      "end": "36:52",
+      "seconds": 75.9,
+      "chars": 381
+    },
+    {
+      "page": 40,
+      "title": "解法一哈希表，解法二对齐长度",
+      "start": "36:52",
+      "end": "38:12",
+      "seconds": 80.3,
+      "chars": 414
+    },
+    {
+      "page": 41,
+      "title": "解法三：双指针「换道」",
+      "start": "38:12",
+      "end": "39:25",
+      "seconds": 72.9,
+      "chars": 389
+    },
+    {
+      "page": 42,
+      "title": "双指针法的数学证明",
+      "start": "39:25",
+      "end": "40:42",
+      "seconds": 77.2,
+      "chars": 431
+    },
+    {
+      "page": 43,
+      "title": "本题最大的坑，复杂度与易错点",
+      "start": "40:42",
+      "end": "41:56",
+      "seconds": 73.7,
+      "chars": 367
+    },
+    {
+      "page": 44,
+      "title": "E206 反转链表：迭代三指针",
+      "start": "41:56",
+      "end": "43:09",
+      "seconds": 73.0,
+      "chars": 410
+    },
+    {
+      "page": 45,
+      "title": "递归版：假设后面那段已经反转好了",
+      "start": "43:09",
+      "end": "44:31",
+      "seconds": 82.1,
+      "chars": 408
+    },
+    {
+      "page": 46,
+      "title": "prev 买到了什么",
+      "start": "44:31",
+      "end": "45:37",
+      "seconds": 65.8,
+      "chars": 346
+    },
+    {
+      "page": 47,
+      "title": "M1472 浏览器历史：双链表的教科书例子",
+      "start": "45:37",
+      "end": "46:44",
+      "seconds": 67.4,
+      "chars": 369
+    },
+    {
+      "page": 48,
+      "title": "Python 实现：visit 那一行丢弃前进历史",
+      "start": "46:44",
+      "end": "47:46",
+      "seconds": 61.5,
+      "chars": 357
+    },
+    {
+      "page": 49,
+      "title": "C++ 实现：丢弃的那一段必须自己 delete",
+      "start": "47:46",
+      "end": "48:51",
+      "seconds": 65.0,
+      "chars": 373
+    },
+    {
+      "page": 50,
+      "title": "对照组：顺序表实现",
+      "start": "48:51",
+      "end": "49:57",
+      "seconds": 66.6,
+      "chars": 389
+    },
+    {
+      "page": 51,
+      "title": "两种实现对照",
+      "start": "49:57",
+      "end": "51:13",
+      "seconds": 75.5,
+      "chars": 373
+    },
+    {
+      "page": 52,
+      "title": "M146 LRU 缓存：哈希表加双链表",
+      "start": "51:13",
+      "end": "52:29",
+      "seconds": 75.8,
+      "chars": 392
+    },
+    {
+      "page": 53,
+      "title": "为什么要用两个哨兵",
+      "start": "52:29",
+      "end": "53:38",
+      "seconds": 69.5,
+      "chars": 396
+    },
+    {
+      "page": 54,
+      "title": "Python 实现：结构与哨兵",
+      "start": "53:38",
+      "end": "54:40",
+      "seconds": 62.1,
+      "chars": 372
+    },
+    {
+      "page": 55,
+      "title": "Python 实现：get 与 put",
+      "start": "54:40",
+      "end": "55:52",
+      "seconds": 71.6,
+      "chars": 389
+    },
+    {
+      "page": 56,
+      "title": "为什么 self.tail 从来没被赋值",
+      "start": "55:52",
+      "end": "57:03",
+      "seconds": 71.6,
+      "chars": 424
+    },
+    {
+      "page": 57,
+      "title": "C++ 实现（上）：结构与私有辅助",
+      "start": "57:03",
+      "end": "58:05",
+      "seconds": 61.3,
+      "chars": 362
+    },
+    {
+      "page": 58,
+      "title": "C++ 实现（下）：构造、析构、禁拷贝",
+      "start": "58:05",
+      "end": "59:14",
+      "seconds": 69.0,
+      "chars": 396
+    },
+    {
+      "page": 59,
+      "title": "C++ 的 get 与 put",
+      "start": "59:14",
+      "end": "1:00:20",
+      "seconds": 66.6,
+      "chars": 360
+    },
+    {
+      "page": 60,
+      "title": "速写版：OrderedDict 与 splice",
+      "start": "1:00:20",
+      "end": "1:01:32",
+      "seconds": 71.8,
+      "chars": 396
+    },
+    {
+      "page": 61,
+      "title": "LRU 的复杂度与易错点",
+      "start": "1:01:32",
+      "end": "1:02:45",
+      "seconds": 72.8,
+      "chars": 380
+    },
+    {
+      "page": 62,
+      "title": "E21 合并两个有序链表：哨兵省掉了什么",
+      "start": "1:02:45",
+      "end": "1:03:57",
+      "seconds": 71.9,
+      "chars": 353
+    },
+    {
+      "page": 63,
+      "title": "迭代版：最后一行的胜利",
+      "start": "1:03:57",
+      "end": "1:05:04",
+      "seconds": 67.3,
+      "chars": 326
+    },
+    {
+      "page": 64,
+      "title": "递归版，以及归并排序的核心",
+      "start": "1:05:04",
+      "end": "1:06:16",
+      "seconds": 72.5,
+      "chars": 363
+    },
+    {
+      "page": 65,
+      "title": "E234 回文链表：三步走",
+      "start": "1:06:16",
+      "end": "1:07:30",
+      "seconds": 73.8,
+      "chars": 354
+    },
+    {
+      "page": 66,
+      "title": "第一步的原理：数 slow 前面有几个结点",
+      "start": "1:07:30",
+      "end": "1:08:44",
+      "seconds": 73.4,
+      "chars": 435
+    },
+    {
+      "page": 67,
+      "title": "实际轨迹、落点表与错误的循环条件",
+      "start": "1:08:44",
+      "end": "1:10:06",
+      "seconds": 82.0,
+      "chars": 412
+    },
+    {
+      "page": 68,
+      "title": "完整解法，为什么用 while right",
+      "start": "1:10:06",
+      "end": "1:11:19",
+      "seconds": 73.2,
+      "chars": 371
+    },
+    {
+      "page": 69,
+      "title": "加分项：把链表恢复原状",
+      "start": "1:11:19",
+      "end": "1:12:34",
+      "seconds": 75.5,
+      "chars": 408
+    },
+    {
+      "page": 70,
+      "title": "循环链表：只存尾指针",
+      "start": "1:12:34",
+      "end": "1:13:46",
+      "seconds": 71.6,
+      "chars": 384
+    },
+    {
+      "page": 71,
+      "title": "在循环链表上实现 remove",
+      "start": "1:13:46",
+      "end": "1:15:11",
+      "seconds": 84.9,
+      "chars": 418
+    },
+    {
+      "page": 72,
+      "title": "快慢指针找中点：在正中插入 6",
+      "start": "1:15:11",
+      "end": "1:16:31",
+      "seconds": 79.6,
+      "chars": 411
+    },
+    {
+      "page": 73,
+      "title": "六道题的复杂度总表",
+      "start": "1:16:31",
+      "end": "1:17:35",
+      "seconds": 64.8,
+      "chars": 314
+    },
+    {
+      "page": 74,
+      "title": "五个必须形成肌肉记忆的模板",
+      "start": "1:17:35",
+      "end": "1:18:44",
+      "seconds": 68.8,
+      "chars": 338
+    },
+    {
+      "page": 75,
+      "title": "提交前的自检清单与课后拓展",
+      "start": "1:18:44",
+      "end": "1:20:02",
+      "seconds": 77.8,
+      "chars": 394
+    },
+    {
+      "page": 76,
+      "title": "本地调试脚手架",
+      "start": "1:20:02",
+      "end": "1:21:22",
+      "seconds": 80.4,
+      "chars": 411
+    }
+  ]
+}

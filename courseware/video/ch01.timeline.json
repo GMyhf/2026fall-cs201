@@ -1,0 +1,537 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:12:20",
+  "source_pptx_sha256": "d9180722f9968629df08cb764e86a8ae2d2e4e3ec9ddd523feb97e8dad31d396",
+  "source_script_sha256": "254e8d18e03553977e2d0d155414568dc54cb71455c78f1778ee944646d720c3",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第一章　ADT 与复杂度",
+      "start": "00:00",
+      "end": "01:00",
+      "seconds": 60.0,
+      "chars": 322
+    },
+    {
+      "page": 2,
+      "title": "三条主线：抽象、实现、评价",
+      "start": "01:00",
+      "end": "02:03",
+      "seconds": 62.9,
+      "chars": 322
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "02:03",
+      "end": "03:04",
+      "seconds": 61.4,
+      "chars": 329
+    },
+    {
+      "page": 4,
+      "title": "第一部分　数据结构与算法",
+      "start": "03:04",
+      "end": "03:19",
+      "seconds": 14.7,
+      "chars": 68
+    },
+    {
+      "page": 5,
+      "title": "DSA：两个独立又紧密关联的领域",
+      "start": "03:19",
+      "end": "04:32",
+      "seconds": 73.0,
+      "chars": 347
+    },
+    {
+      "page": 6,
+      "title": "算法是前序《计算概论》的核心内容",
+      "start": "04:32",
+      "end": "05:38",
+      "seconds": 66.4,
+      "chars": 321
+    },
+    {
+      "page": 7,
+      "title": "数据结构：三件事要分开看",
+      "start": "05:38",
+      "end": "06:49",
+      "seconds": 70.7,
+      "chars": 348
+    },
+    {
+      "page": 8,
+      "title": "逻辑结构：二元组 B ＝ (K, R)",
+      "start": "06:49",
+      "end": "08:03",
+      "seconds": 73.4,
+      "chars": 378
+    },
+    {
+      "page": 9,
+      "title": "结构的分类：以关系 r 的性质为准",
+      "start": "08:03",
+      "end": "09:04",
+      "seconds": 61.6,
+      "chars": 300
+    },
+    {
+      "page": 10,
+      "title": "存储结构：从 (K, r) 到物理空间的映射",
+      "start": "09:04",
+      "end": "10:10",
+      "seconds": 65.3,
+      "chars": 324
+    },
+    {
+      "page": 11,
+      "title": "顺序方法：紧凑存储，按下标访问常数时间",
+      "start": "10:10",
+      "end": "11:18",
+      "seconds": 68.6,
+      "chars": 344
+    },
+    {
+      "page": 12,
+      "title": "链接方法：每个结点附一个指针域",
+      "start": "11:18",
+      "end": "12:23",
+      "seconds": 65.3,
+      "chars": 325
+    },
+    {
+      "page": 13,
+      "title": "索引方法：索引函数 Y : Z 到 D",
+      "start": "12:23",
+      "end": "13:30",
+      "seconds": 66.8,
+      "chars": 326
+    },
+    {
+      "page": 14,
+      "title": "索引的代价，以及散列方法",
+      "start": "13:30",
+      "end": "14:39",
+      "seconds": 69.2,
+      "chars": 338
+    },
+    {
+      "page": 15,
+      "title": "ADT：同一个概念可以有多种具体实现",
+      "start": "14:39",
+      "end": "15:53",
+      "seconds": 73.6,
+      "chars": 366
+    },
+    {
+      "page": 16,
+      "title": "概念层与实现层：切勿混淆层次",
+      "start": "15:53",
+      "end": "17:00",
+      "seconds": 66.9,
+      "chars": 339
+    },
+    {
+      "page": 17,
+      "title": "算法：从《周髀算经》到图灵机",
+      "start": "17:00",
+      "end": "18:05",
+      "seconds": 65.4,
+      "chars": 348
+    },
+    {
+      "page": 18,
+      "title": "算法的四条性质",
+      "start": "18:05",
+      "end": "19:07",
+      "seconds": 61.2,
+      "chars": 300
+    },
+    {
+      "page": 19,
+      "title": "六种常用的算法设计方法",
+      "start": "19:07",
+      "end": "20:20",
+      "seconds": 73.3,
+      "chars": 366
+    },
+    {
+      "page": 20,
+      "title": "三条值得记住的要点",
+      "start": "20:20",
+      "end": "21:28",
+      "seconds": 68.3,
+      "chars": 354
+    },
+    {
+      "page": 21,
+      "title": "第二部分　问题求解",
+      "start": "21:28",
+      "end": "21:44",
+      "seconds": 15.7,
+      "chars": 76
+    },
+    {
+      "page": 22,
+      "title": "程序 ＝ 数据结构 ＋ 算法",
+      "start": "21:44",
+      "end": "22:46",
+      "seconds": 62.3,
+      "chars": 329
+    },
+    {
+      "page": 23,
+      "title": "股市的传言：从谁开始散布最快",
+      "start": "22:46",
+      "end": "23:45",
+      "seconds": 58.9,
+      "chars": 307
+    },
+    {
+      "page": 24,
+      "title": "十条有向边：谁能传给谁，各要多久",
+      "start": "23:45",
+      "end": "24:46",
+      "seconds": 61.4,
+      "chars": 331
+    },
+    {
+      "page": 25,
+      "title": "抽象：有向带权图上的最短路径",
+      "start": "24:46",
+      "end": "25:58",
+      "seconds": 71.2,
+      "chars": 374
+    },
+    {
+      "page": 26,
+      "title": "相邻矩阵：这就是算法的输入",
+      "start": "25:58",
+      "end": "27:06",
+      "seconds": 68.6,
+      "chars": 358
+    },
+    {
+      "page": 27,
+      "title": "为什么要取「最慢的一项」",
+      "start": "27:06",
+      "end": "28:15",
+      "seconds": 68.8,
+      "chars": 371
+    },
+    {
+      "page": 28,
+      "title": "每个人都当一次起点：答案是 B3",
+      "start": "28:15",
+      "end": "29:27",
+      "seconds": 71.8,
+      "chars": 409
+    },
+    {
+      "page": 29,
+      "title": "把「怎么展示」与「怎么算」分开",
+      "start": "29:27",
+      "end": "30:40",
+      "seconds": 73.2,
+      "chars": 426
+    },
+    {
+      "page": 30,
+      "title": "编译与运行：命令逐项解释",
+      "start": "30:40",
+      "end": "31:44",
+      "seconds": 63.9,
+      "chars": 362
+    },
+    {
+      "page": 31,
+      "title": "头文件、命名空间与 pragma once",
+      "start": "31:44",
+      "end": "32:46",
+      "seconds": 62.6,
+      "chars": 373
+    },
+    {
+      "page": 32,
+      "title": "两个「无穷」：infinity 与 unreachable",
+      "start": "32:46",
+      "end": "33:46",
+      "seconds": 59.9,
+      "chars": 364
+    },
+    {
+      "page": 33,
+      "title": "构造函数与 add_route",
+      "start": "33:46",
+      "end": "34:50",
+      "seconds": 63.8,
+      "chars": 363
+    },
+    {
+      "page": 34,
+      "title": "三层循环的含义：按中转站逐步扩大可用路径",
+      "start": "34:50",
+      "end": "36:09",
+      "seconds": 79.1,
+      "chars": 413
+    },
+    {
+      "page": 35,
+      "title": "从最短路矩阵里挑答案：离心率最小的那一行",
+      "start": "36:09",
+      "end": "37:26",
+      "seconds": 76.5,
+      "chars": 402
+    },
+    {
+      "page": 36,
+      "title": "这套方案的代价与适用场景",
+      "start": "37:26",
+      "end": "38:32",
+      "seconds": 66.1,
+      "chars": 346
+    },
+    {
+      "page": 37,
+      "title": "M05443 兔子与樱花：输出最短路的具体走法",
+      "start": "38:32",
+      "end": "39:40",
+      "seconds": 68.0,
+      "chars": 405
+    },
+    {
+      "page": 38,
+      "title": "求最短路只是一半：还要把路径打印出来",
+      "start": "39:40",
+      "end": "41:00",
+      "seconds": 80.7,
+      "chars": 424
+    },
+    {
+      "page": 39,
+      "title": "读入、初始化与路径输出",
+      "start": "41:00",
+      "end": "42:11",
+      "seconds": 70.5,
+      "chars": 351
+    },
+    {
+      "page": 40,
+      "title": "堆优化加 prev 回溯",
+      "start": "42:11",
+      "end": "43:24",
+      "seconds": 72.8,
+      "chars": 381
+    },
+    {
+      "page": 41,
+      "title": "同一套思路的 Python 版本",
+      "start": "43:24",
+      "end": "44:30",
+      "seconds": 65.9,
+      "chars": 356
+    },
+    {
+      "page": 42,
+      "title": "第三部分：算法分析",
+      "start": "44:30",
+      "end": "44:47",
+      "seconds": 17.0,
+      "chars": 84
+    },
+    {
+      "page": 43,
+      "title": "算法分析：用数学工具评价效率",
+      "start": "44:47",
+      "end": "45:55",
+      "seconds": 68.4,
+      "chars": 357
+    },
+    {
+      "page": 44,
+      "title": "为什么不能用微秒、纳秒这样的真实时间",
+      "start": "45:55",
+      "end": "47:08",
+      "seconds": 72.7,
+      "chars": 378
+    },
+    {
+      "page": 45,
+      "title": "渐进分析：只看大数据下的主导项",
+      "start": "47:08",
+      "end": "48:15",
+      "seconds": 66.7,
+      "chars": 361
+    },
+    {
+      "page": 46,
+      "title": "大 O 表示法：增长率的上限",
+      "start": "48:15",
+      "end": "49:21",
+      "seconds": 66.8,
+      "chars": 362
+    },
+    {
+      "page": 47,
+      "title": "大 O 的六条有益特性",
+      "start": "49:21",
+      "end": "50:32",
+      "seconds": 70.8,
+      "chars": 414
+    },
+    {
+      "page": 48,
+      "title": "常见的上限 g(n)",
+      "start": "50:32",
+      "end": "51:31",
+      "seconds": 59.3,
+      "chars": 325
+    },
+    {
+      "page": 49,
+      "title": "差一个数量级有多大",
+      "start": "51:31",
+      "end": "52:43",
+      "seconds": 71.7,
+      "chars": 370
+    },
+    {
+      "page": 50,
+      "title": "常用函数的增长趋势",
+      "start": "52:43",
+      "end": "53:54",
+      "seconds": 70.4,
+      "chars": 379
+    },
+    {
+      "page": 51,
+      "title": "Omega 表示法与 Theta 表示法",
+      "start": "53:54",
+      "end": "55:20",
+      "seconds": 86.6,
+      "chars": 506
+    },
+    {
+      "page": 52,
+      "title": "数赋值操作：两段代码，两个量级",
+      "start": "55:20",
+      "end": "56:37",
+      "seconds": 76.8,
+      "chars": 421
+    },
+    {
+      "page": 53,
+      "title": "循环嵌套并不总是增加复杂度",
+      "start": "56:37",
+      "end": "57:49",
+      "seconds": 72.2,
+      "chars": 382
+    },
+    {
+      "page": 54,
+      "title": "同一规模、不同输入，复杂度可以不一样",
+      "start": "57:49",
+      "end": "59:11",
+      "seconds": 82.3,
+      "chars": 437
+    },
+    {
+      "page": 55,
+      "title": "平均情况怎么算：按概率加权",
+      "start": "59:11",
+      "end": "1:00:18",
+      "seconds": 66.8,
+      "chars": 355
+    },
+    {
+      "page": 56,
+      "title": "概率不相等时，结论会明显改变",
+      "start": "1:00:18",
+      "end": "1:01:24",
+      "seconds": 66.0,
+      "chars": 371
+    },
+    {
+      "page": 57,
+      "title": "分析一种算法时，该研究哪种情况",
+      "start": "1:01:24",
+      "end": "1:02:29",
+      "seconds": 64.2,
+      "chars": 335
+    },
+    {
+      "page": 58,
+      "title": "空间开销：静态结构好估，动态结构必须分析",
+      "start": "1:02:29",
+      "end": "1:03:37",
+      "seconds": 68.6,
+      "chars": 335
+    },
+    {
+      "page": 59,
+      "title": "反过来也成立：用时间换空间",
+      "start": "1:03:37",
+      "end": "1:04:59",
+      "seconds": 81.8,
+      "chars": 405
+    },
+    {
+      "page": 60,
+      "title": "选择数据结构的四条原则",
+      "start": "1:04:59",
+      "end": "1:06:11",
+      "seconds": 71.8,
+      "chars": 362
+    },
+    {
+      "page": 61,
+      "title": "补充：用 Python 落地",
+      "start": "1:06:11",
+      "end": "1:06:28",
+      "seconds": 17.0,
+      "chars": 95
+    },
+    {
+      "page": 62,
+      "title": "抽象数据类型 = 数据 + 运算：在 Python 里就是一个 class",
+      "start": "1:06:28",
+      "end": "1:07:41",
+      "seconds": 73.6,
+      "chars": 370
+    },
+    {
+      "page": 63,
+      "title": "逐行数代价：插入排序",
+      "start": "1:07:41",
+      "end": "1:09:06",
+      "seconds": 84.2,
+      "chars": 462
+    },
+    {
+      "page": 64,
+      "title": "同样一行代码，换个容器差三四个数量级",
+      "start": "1:09:06",
+      "end": "1:10:23",
+      "seconds": 77.0,
+      "chars": 377
+    },
+    {
+      "page": 65,
+      "title": "平台与资源",
+      "start": "1:10:23",
+      "end": "1:11:05",
+      "seconds": 42.1,
+      "chars": 241
+    },
+    {
+      "page": 66,
+      "title": "本章小结",
+      "start": "1:11:05",
+      "end": "1:12:20",
+      "seconds": 75.8,
+      "chars": 364
+    }
+  ]
+}

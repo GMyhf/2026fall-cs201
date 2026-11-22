@@ -16,7 +16,9 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-TITLES = {'07': '第七章 图', '08': '第八章 内部排序', '09': '第九章 文件管理与外部排序',
+TITLES = {'01': '第一章 ADT 与复杂度', '02': '第二章 线性表', '03': '第三章 栈与队列',
+          '04': '第四章 字符串', '05': '第五章 二叉树', '06': '第六章 树',
+          '07': '第七章 图', '08': '第八章 内部排序', '09': '第九章 文件管理与外部排序',
           '10': '第十章 检索', '11': '第十一章 索引技术', '12': '第十二章 高级数据结构'}
 RELEASE = 'https://github.com/GMyhf/2026fall-cs201/releases/tag/slides-film-2026fall'
 
