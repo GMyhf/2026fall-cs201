@@ -12,7 +12,7 @@
 
 - **知识点动画短片**（3B1B 风格，按周次排列，页面内直接播放）：https://infomall.zhengmao.ltd/cs201-anim/ ；两门课总入口 https://infomall.zhengmao.ltd/anim/
 
-- **课件讲解视频**（逐页配音讲解，带逐句字幕，页面内可按页跳转、下载）：第七章 图 https://infomall.zhengmao.ltd/cs201-anim/slides/ch07/ （1:44:19）；720p [courseware/video/ch07-preview.mp4](courseware/video/ch07-preview.mp4)，1080p 在 [Releases](https://github.com/GMyhf/2026fall-cs201/releases/tag/slides-film-2026fall)；字幕 [ch07.srt](courseware/video/ch07.srt)，讲稿 [ch07_narration.md](courseware/video/ch07_narration.md)，合成脚本 `courseware/make_video.py`
+- **课件讲解视频**（课件逐页配音讲解，带逐句字幕，可按页跳转、倍速、下载）：各章入口 https://infomall.zhengmao.ltd/cs201-anim/slides/ ；第七章 图（1:44:19）、第八章 内部排序（1:32:30）、第九章 文件管理与外部排序（1:07:45）、第十章 检索（1:27:23）、第十一章 索引技术（1:11:54）、第十二章 高级数据结构（1:30:27）。720p 在 [courseware/video/](courseware/video/)（`chNN-preview.mp4`，另有字幕 `chNN.srt`、讲稿 `chNN_narration.md`），1080p 在 [Releases](https://github.com/GMyhf/2026fall-cs201/releases/tag/slides-film-2026fall)；合成脚本 `courseware/make_video.py`
 
 - **核心教材**：以课件为主，辅以以下参考书目：
 

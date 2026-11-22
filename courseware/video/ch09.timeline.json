@@ -1,0 +1,537 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:07:45",
+  "source_pptx_sha256": "043db53896619c5cc55344dc3081d52af7f265f507c27e6ff5fc60808883cf48",
+  "source_script_sha256": "0442690e8dd1a7b75f06fb44e7cc2f2408dfbcb743e11c18dda0cb9344cd3d78",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第九章　文件管理与外部排序",
+      "start": "00:00",
+      "end": "00:49",
+      "seconds": 48.8,
+      "chars": 239
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "00:49",
+      "end": "01:54",
+      "seconds": 65.1,
+      "chars": 325
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "01:54",
+      "end": "02:46",
+      "seconds": 51.8,
+      "chars": 256
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：demo.cpp",
+      "start": "02:46",
+      "end": "03:49",
+      "seconds": 63.0,
+      "chars": 303
+    },
+    {
+      "page": 5,
+      "title": "读懂输出",
+      "start": "03:49",
+      "end": "05:05",
+      "seconds": 76.2,
+      "chars": 365
+    },
+    {
+      "page": 6,
+      "title": "Part 1　主存储器和外存储器",
+      "start": "05:05",
+      "end": "05:21",
+      "seconds": 15.8,
+      "chars": 70
+    },
+    {
+      "page": 7,
+      "title": "两种存储器：快而小与慢而大",
+      "start": "05:21",
+      "end": "06:26",
+      "seconds": 65.0,
+      "chars": 315
+    },
+    {
+      "page": 8,
+      "title": "外存为什么慢",
+      "start": "06:26",
+      "end": "07:24",
+      "seconds": 57.7,
+      "chars": 272
+    },
+    {
+      "page": 9,
+      "title": "先建立成本模型",
+      "start": "07:24",
+      "end": "08:34",
+      "seconds": 70.0,
+      "chars": 357
+    },
+    {
+      "page": 10,
+      "title": "随机两个磁道平均相距三分之一",
+      "start": "08:34",
+      "end": "09:40",
+      "seconds": 66.6,
+      "chars": 343
+    },
+    {
+      "page": 11,
+      "title": "图九点一：三个缓冲区分开",
+      "start": "09:40",
+      "end": "10:33",
+      "seconds": 52.5,
+      "chars": 249
+    },
+    {
+      "page": 12,
+      "title": "Part 2　文件的组织和管理",
+      "start": "10:33",
+      "end": "10:47",
+      "seconds": 14.8,
+      "chars": 67
+    },
+    {
+      "page": 13,
+      "title": "文件：由大量同类记录组成",
+      "start": "10:47",
+      "end": "12:00",
+      "seconds": 72.3,
+      "chars": 349
+    },
+    {
+      "page": 14,
+      "title": "常见的物理文件",
+      "start": "12:00",
+      "end": "13:04",
+      "seconds": 64.0,
+      "chars": 302
+    },
+    {
+      "page": 15,
+      "title": "四种组织方式",
+      "start": "13:04",
+      "end": "14:18",
+      "seconds": 74.3,
+      "chars": 359
+    },
+    {
+      "page": 16,
+      "title": "澄清：物理顺序与逻辑顺序一致",
+      "start": "14:18",
+      "end": "15:24",
+      "seconds": 65.6,
+      "chars": 320
+    },
+    {
+      "page": 17,
+      "title": "记录怎样装进页",
+      "start": "15:24",
+      "end": "16:45",
+      "seconds": 81.0,
+      "chars": 396
+    },
+    {
+      "page": 18,
+      "title": "算一算：块里能放几条记录",
+      "start": "16:45",
+      "end": "17:57",
+      "seconds": 72.4,
+      "chars": 372
+    },
+    {
+      "page": 19,
+      "title": "C++ 的流文件",
+      "start": "17:57",
+      "end": "19:26",
+      "seconds": 89.4,
+      "chars": 437
+    },
+    {
+      "page": 20,
+      "title": "Part 3　外排序：顺串生成",
+      "start": "19:26",
+      "end": "19:41",
+      "seconds": 14.9,
+      "chars": 68
+    },
+    {
+      "page": 21,
+      "title": "外排序的两个阶段",
+      "start": "19:41",
+      "end": "20:42",
+      "seconds": 60.4,
+      "chars": 294
+    },
+    {
+      "page": 22,
+      "title": "读写次数由归并趟数决定",
+      "start": "20:42",
+      "end": "21:51",
+      "seconds": 69.3,
+      "chars": 355
+    },
+    {
+      "page": 23,
+      "title": "置换选择：从堆排序演化而来",
+      "start": "21:51",
+      "end": "23:00",
+      "seconds": 68.6,
+      "chars": 345
+    },
+    {
+      "page": 24,
+      "title": "逐步演算：原书图九点二",
+      "start": "23:00",
+      "end": "24:30",
+      "seconds": 90.8,
+      "chars": 418
+    },
+    {
+      "page": 25,
+      "title": "两条守门不变量",
+      "start": "24:30",
+      "end": "25:30",
+      "seconds": 59.9,
+      "chars": 292
+    },
+    {
+      "page": 26,
+      "title": "输入次序决定顺串长度",
+      "start": "25:30",
+      "end": "26:49",
+      "seconds": 78.2,
+      "chars": 357
+    },
+    {
+      "page": 27,
+      "title": "课堂例题：M 等于三",
+      "start": "26:49",
+      "end": "28:13",
+      "seconds": 84.1,
+      "chars": 381
+    },
+    {
+      "page": 28,
+      "title": "置换选择不等于堆排序",
+      "start": "28:13",
+      "end": "29:21",
+      "seconds": 68.6,
+      "chars": 334
+    },
+    {
+      "page": 29,
+      "title": "代码上：参数检查与首次建堆",
+      "start": "29:21",
+      "end": "30:24",
+      "seconds": 63.1,
+      "chars": 327
+    },
+    {
+      "page": 30,
+      "title": "代码中：换顺串",
+      "start": "30:24",
+      "end": "31:33",
+      "seconds": 68.3,
+      "chars": 342
+    },
+    {
+      "page": 31,
+      "title": "代码下：按大小分流",
+      "start": "31:33",
+      "end": "32:39",
+      "seconds": 66.3,
+      "chars": 329
+    },
+    {
+      "page": 32,
+      "title": "Part 4　归并：二路与多路",
+      "start": "32:39",
+      "end": "32:53",
+      "seconds": 14.4,
+      "chars": 64
+    },
+    {
+      "page": 33,
+      "title": "二路归并：至少三个缓冲页",
+      "start": "32:53",
+      "end": "33:59",
+      "seconds": 65.2,
+      "chars": 320
+    },
+    {
+      "page": 34,
+      "title": "3000 条记录要归并几趟",
+      "start": "33:59",
+      "end": "35:05",
+      "seconds": 66.4,
+      "chars": 375
+    },
+    {
+      "page": 35,
+      "title": "省一趟值多少，路数越多越好吗",
+      "start": "35:05",
+      "end": "36:05",
+      "seconds": 59.8,
+      "chars": 316
+    },
+    {
+      "page": 36,
+      "title": "直接比较时内部归并随 k 变贵",
+      "start": "36:05",
+      "end": "37:12",
+      "seconds": 67.2,
+      "chars": 400
+    },
+    {
+      "page": 37,
+      "title": "选择树消掉这一项",
+      "start": "37:12",
+      "end": "38:31",
+      "seconds": 78.9,
+      "chars": 443
+    },
+    {
+      "page": 38,
+      "title": "选择树与赢者树",
+      "start": "38:31",
+      "end": "39:45",
+      "seconds": 74.1,
+      "chars": 380
+    },
+    {
+      "page": 39,
+      "title": "外部结点挂在哪个内部结点下",
+      "start": "39:45",
+      "end": "41:01",
+      "seconds": 75.5,
+      "chars": 457
+    },
+    {
+      "page": 40,
+      "title": "六路归并的赢者树",
+      "start": "41:01",
+      "end": "42:13",
+      "seconds": 72.5,
+      "chars": 397
+    },
+    {
+      "page": 41,
+      "title": "输出冠军后只沿一条路径重赛",
+      "start": "42:13",
+      "end": "43:19",
+      "seconds": 65.8,
+      "chars": 353
+    },
+    {
+      "page": 42,
+      "title": "四路归并手工演算",
+      "start": "43:19",
+      "end": "44:41",
+      "seconds": 82.4,
+      "chars": 401
+    },
+    {
+      "page": 43,
+      "title": "败者树",
+      "start": "44:41",
+      "end": "45:46",
+      "seconds": 64.9,
+      "chars": 346
+    },
+    {
+      "page": 44,
+      "title": "败者树的重构",
+      "start": "45:46",
+      "end": "46:41",
+      "seconds": 54.9,
+      "chars": 315
+    },
+    {
+      "page": 45,
+      "title": "本书实现里的败者树",
+      "start": "46:41",
+      "end": "47:42",
+      "seconds": 60.6,
+      "chars": 354
+    },
+    {
+      "page": 46,
+      "title": "赢者树与败者树对比",
+      "start": "47:42",
+      "end": "48:39",
+      "seconds": 57.2,
+      "chars": 297
+    },
+    {
+      "page": 47,
+      "title": "better 与 worse",
+      "start": "48:39",
+      "end": "49:30",
+      "seconds": 51.1,
+      "chars": 285
+    },
+    {
+      "page": 48,
+      "title": "WinnerTree 建树",
+      "start": "49:30",
+      "end": "50:22",
+      "seconds": 52.2,
+      "chars": 324
+    },
+    {
+      "page": 49,
+      "title": "WinnerTree 的替换",
+      "start": "50:22",
+      "end": "51:07",
+      "seconds": 45.0,
+      "chars": 260
+    },
+    {
+      "page": 50,
+      "title": "LoserTree 的两个数组",
+      "start": "51:07",
+      "end": "51:54",
+      "seconds": 46.8,
+      "chars": 288
+    },
+    {
+      "page": 51,
+      "title": "loser_at 与 replace",
+      "start": "51:54",
+      "end": "52:38",
+      "seconds": 44.3,
+      "chars": 259
+    },
+    {
+      "page": 52,
+      "title": "replay_node",
+      "start": "52:38",
+      "end": "53:30",
+      "seconds": 52.0,
+      "chars": 271
+    },
+    {
+      "page": 53,
+      "title": "稳定性和重复关键码",
+      "start": "53:30",
+      "end": "54:23",
+      "seconds": 53.1,
+      "chars": 262
+    },
+    {
+      "page": 54,
+      "title": "三个常见错误",
+      "start": "54:23",
+      "end": "55:20",
+      "seconds": 56.6,
+      "chars": 277
+    },
+    {
+      "page": 55,
+      "title": "代价小结",
+      "start": "55:20",
+      "end": "56:16",
+      "seconds": 56.5,
+      "chars": 298
+    },
+    {
+      "page": 56,
+      "title": "习题精选",
+      "start": "56:16",
+      "end": "57:34",
+      "seconds": 77.7,
+      "chars": 404
+    },
+    {
+      "page": 57,
+      "title": "附录 A 编程练习",
+      "start": "57:34",
+      "end": "57:50",
+      "seconds": 15.6,
+      "chars": 74
+    },
+    {
+      "page": 58,
+      "title": "置换选择的 Python 版",
+      "start": "57:50",
+      "end": "58:58",
+      "seconds": 68.7,
+      "chars": 352
+    },
+    {
+      "page": 59,
+      "title": "LeetCode 88 合并两个有序数组",
+      "start": "58:58",
+      "end": "1:00:07",
+      "seconds": 68.3,
+      "chars": 378
+    },
+    {
+      "page": 60,
+      "title": "LeetCode 373 和最小的 K 对数字",
+      "start": "1:00:07",
+      "end": "1:01:09",
+      "seconds": 62.2,
+      "chars": 355
+    },
+    {
+      "page": 61,
+      "title": "LeetCode 378 有序矩阵第 K 小",
+      "start": "1:01:09",
+      "end": "1:02:09",
+      "seconds": 60.0,
+      "chars": 326
+    },
+    {
+      "page": 62,
+      "title": "OJ 06648 Sequence",
+      "start": "1:02:09",
+      "end": "1:03:13",
+      "seconds": 63.9,
+      "chars": 348
+    },
+    {
+      "page": 63,
+      "title": "LeetCode 264 丑数 II",
+      "start": "1:03:13",
+      "end": "1:04:19",
+      "seconds": 66.2,
+      "chars": 334
+    },
+    {
+      "page": 64,
+      "title": "OJ 14683 合并果子",
+      "start": "1:04:19",
+      "end": "1:05:26",
+      "seconds": 66.5,
+      "chars": 348
+    },
+    {
+      "page": 65,
+      "title": "最佳 k 路归并树",
+      "start": "1:05:26",
+      "end": "1:06:36",
+      "seconds": 69.9,
+      "chars": 371
+    },
+    {
+      "page": 66,
+      "title": "本章小结",
+      "start": "1:06:36",
+      "end": "1:07:45",
+      "seconds": 69.7,
+      "chars": 340
+    }
+  ]
+}

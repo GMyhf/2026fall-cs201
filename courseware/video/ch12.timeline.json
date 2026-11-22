@@ -1,0 +1,705 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:30:27",
+  "source_pptx_sha256": "79071b699033fc90837713291be47be0b55ad2390c467c3794047dcbe2854816",
+  "source_script_sha256": "8ddc090900d9cac1d87fb631e5552725b106216b093b436d29cb2c655fd89e7b",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第十二章　高级数据结构",
+      "start": "00:00",
+      "end": "01:08",
+      "seconds": 68.0,
+      "chars": 340
+    },
+    {
+      "page": 2,
+      "title": "每一节都追问三个问题",
+      "start": "01:08",
+      "end": "02:12",
+      "seconds": 64.2,
+      "chars": 322
+    },
+    {
+      "page": 3,
+      "title": "内容地图：四条独立的线",
+      "start": "02:12",
+      "end": "03:23",
+      "seconds": 70.4,
+      "chars": 358
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：广义表",
+      "start": "03:23",
+      "end": "04:31",
+      "seconds": 68.8,
+      "chars": 355
+    },
+    {
+      "page": 5,
+      "title": "先跑一遍：句柄池与最优 BST",
+      "start": "04:31",
+      "end": "05:36",
+      "seconds": 65.0,
+      "chars": 329
+    },
+    {
+      "page": 6,
+      "title": "先跑一遍：Trie 与 Patricia",
+      "start": "05:36",
+      "end": "06:43",
+      "seconds": 66.9,
+      "chars": 387
+    },
+    {
+      "page": 7,
+      "title": "十二点一　多维数组",
+      "start": "06:43",
+      "end": "07:02",
+      "seconds": 19.1,
+      "chars": 85
+    },
+    {
+      "page": 8,
+      "title": "多维数组：按某种周游次序排成一条线",
+      "start": "07:02",
+      "end": "08:25",
+      "seconds": 82.8,
+      "chars": 436
+    },
+    {
+      "page": 9,
+      "title": "例：三维数组元素的地址",
+      "start": "08:25",
+      "end": "09:39",
+      "seconds": 74.3,
+      "chars": 414
+    },
+    {
+      "page": 10,
+      "title": "三角矩阵与对称矩阵：只存有用的一半",
+      "start": "09:39",
+      "end": "10:39",
+      "seconds": 59.7,
+      "chars": 361
+    },
+    {
+      "page": 11,
+      "title": "例：4 阶下三角中第 3 行第 1 列落在哪",
+      "start": "10:39",
+      "end": "11:34",
+      "seconds": 55.2,
+      "chars": 303
+    },
+    {
+      "page": 12,
+      "title": "稀疏矩阵：不要再分配整块二维数组",
+      "start": "11:34",
+      "end": "12:48",
+      "seconds": 73.7,
+      "chars": 366
+    },
+    {
+      "page": 13,
+      "title": "三种存法的代价",
+      "start": "12:48",
+      "end": "14:03",
+      "seconds": 74.6,
+      "chars": 394
+    },
+    {
+      "page": 14,
+      "title": "例：十字链表一次更新要维护两条链",
+      "start": "14:03",
+      "end": "15:11",
+      "seconds": 67.9,
+      "chars": 409
+    },
+    {
+      "page": 15,
+      "title": "set：先在行链上定位",
+      "start": "15:11",
+      "end": "16:07",
+      "seconds": 56.2,
+      "chars": 277
+    },
+    {
+      "page": 16,
+      "title": "set：再在列链上定位，两条链同时接上",
+      "start": "16:07",
+      "end": "17:06",
+      "seconds": 58.8,
+      "chars": 297
+    },
+    {
+      "page": 17,
+      "title": "所有权归容器，析构迭代释放",
+      "start": "17:06",
+      "end": "18:06",
+      "seconds": 60.1,
+      "chars": 290
+    },
+    {
+      "page": 18,
+      "title": "十二点二　广义表和存储管理",
+      "start": "18:06",
+      "end": "18:25",
+      "seconds": 19.1,
+      "chars": 86
+    },
+    {
+      "page": 19,
+      "title": "广义表：元素可以是原子，也可以是广义表",
+      "start": "18:25",
+      "end": "19:39",
+      "seconds": 74.1,
+      "chars": 398
+    },
+    {
+      "page": 20,
+      "title": "广义表的分类",
+      "start": "19:39",
+      "end": "20:43",
+      "seconds": 64.2,
+      "chars": 308
+    },
+    {
+      "page": 21,
+      "title": "GenNode 与 cons：头加尾得到新表",
+      "start": "20:43",
+      "end": "21:47",
+      "seconds": 64.2,
+      "chars": 308
+    },
+    {
+      "page": 22,
+      "title": "共享一旦发生，回收就不能再按树递归删除",
+      "start": "21:47",
+      "end": "22:51",
+      "seconds": 63.6,
+      "chars": 307
+    },
+    {
+      "page": 23,
+      "title": "可利用空间表：从全局 avail 链到显式句柄池",
+      "start": "22:51",
+      "end": "24:02",
+      "seconds": 71.1,
+      "chars": 355
+    },
+    {
+      "page": 24,
+      "title": "例：容量为 3 的句柄池",
+      "start": "24:02",
+      "end": "25:07",
+      "seconds": 64.9,
+      "chars": 324
+    },
+    {
+      "page": 25,
+      "title": "ReusableNodePool：构造与 acquire",
+      "start": "25:07",
+      "end": "25:59",
+      "seconds": 52.2,
+      "chars": 262
+    },
+    {
+      "page": 26,
+      "title": "release 与 get：先确认占用，再归还",
+      "start": "25:59",
+      "end": "26:51",
+      "seconds": 51.8,
+      "chars": 250
+    },
+    {
+      "page": 27,
+      "title": "首先、最佳、最差适配",
+      "start": "26:51",
+      "end": "28:09",
+      "seconds": 78.2,
+      "chars": 388
+    },
+    {
+      "page": 28,
+      "title": "例：空闲区 500、200、300、600，请求 212",
+      "start": "28:09",
+      "end": "29:15",
+      "seconds": 66.4,
+      "chars": 338
+    },
+    {
+      "page": 29,
+      "title": "select：三种策略的唯一分歧点",
+      "start": "29:15",
+      "end": "30:13",
+      "seconds": 57.6,
+      "chars": 280
+    },
+    {
+      "page": 30,
+      "title": "释放块 M：与相邻空闲块合并",
+      "start": "30:13",
+      "end": "31:22",
+      "seconds": 68.7,
+      "chars": 338
+    },
+    {
+      "page": 31,
+      "title": "allocate：挑块，够大就分裂",
+      "start": "31:22",
+      "end": "32:21",
+      "seconds": 59.1,
+      "chars": 282
+    },
+    {
+      "page": 32,
+      "title": "release 与 coalesce：先合右，再合左",
+      "start": "32:21",
+      "end": "33:21",
+      "seconds": 59.9,
+      "chars": 287
+    },
+    {
+      "page": 33,
+      "title": "分配失败时：拒绝、压缩，或回收",
+      "start": "33:21",
+      "end": "34:29",
+      "seconds": 68.6,
+      "chars": 338
+    },
+    {
+      "page": 34,
+      "title": "例：标记清除走一遍",
+      "start": "34:29",
+      "end": "35:41",
+      "seconds": 71.9,
+      "chars": 361
+    },
+    {
+      "page": 35,
+      "title": "collect：标记加清除，标记用显式栈",
+      "start": "35:41",
+      "end": "36:38",
+      "seconds": 57.2,
+      "chars": 274
+    },
+    {
+      "page": 36,
+      "title": "十二点三　Trie 结构和 Patricia 树",
+      "start": "36:38",
+      "end": "36:58",
+      "seconds": 19.6,
+      "chars": 110
+    },
+    {
+      "page": 37,
+      "title": "BST 与 Trie 分属两种分解",
+      "start": "36:58",
+      "end": "38:12",
+      "seconds": 73.8,
+      "chars": 395
+    },
+    {
+      "page": 38,
+      "title": "二叉 Trie：按数值区间对半分",
+      "start": "38:12",
+      "end": "39:24",
+      "seconds": 71.7,
+      "chars": 380
+    },
+    {
+      "page": 39,
+      "title": "字母 Trie：公共前缀 ca 只存一次",
+      "start": "39:24",
+      "end": "40:39",
+      "seconds": 75.5,
+      "chars": 397
+    },
+    {
+      "page": 40,
+      "title": "Trie::insert：沿途建结点，并维护 passing",
+      "start": "40:39",
+      "end": "41:40",
+      "seconds": 61.1,
+      "chars": 310
+    },
+    {
+      "page": 41,
+      "title": "最长前缀匹配：随手记住最近的词尾",
+      "start": "41:40",
+      "end": "42:43",
+      "seconds": 63.2,
+      "chars": 331
+    },
+    {
+      "page": 42,
+      "title": "Patricia：把只有一个孩子的结点压缩掉",
+      "start": "42:43",
+      "end": "43:54",
+      "seconds": 70.5,
+      "chars": 384
+    },
+    {
+      "page": 43,
+      "title": "两块基石：按位取值、第一次不同在第几位",
+      "start": "43:54",
+      "end": "44:57",
+      "seconds": 63.3,
+      "chars": 356
+    },
+    {
+      "page": 44,
+      "title": "例：'a' 与 'c' 第一次不同在第 6 位",
+      "start": "44:57",
+      "end": "46:00",
+      "seconds": 62.6,
+      "chars": 342
+    },
+    {
+      "page": 45,
+      "title": "Patricia 树插入：沿位下降，求首个不同位",
+      "start": "46:00",
+      "end": "47:02",
+      "seconds": 61.8,
+      "chars": 318
+    },
+    {
+      "page": 46,
+      "title": "Patricia 树插入：从根重走，插到位号递增处",
+      "start": "47:02",
+      "end": "48:00",
+      "seconds": 57.8,
+      "chars": 298
+    },
+    {
+      "page": 47,
+      "title": "12.4　改进的二叉搜索树",
+      "start": "48:00",
+      "end": "48:22",
+      "seconds": 22.6,
+      "chars": 109
+    },
+    {
+      "page": 48,
+      "title": "同一批关键码，插入次序不同，BST 就不同",
+      "start": "48:22",
+      "end": "49:20",
+      "seconds": 57.4,
+      "chars": 314
+    },
+    {
+      "page": 49,
+      "title": "扩充二叉树与带权平均比较次数",
+      "start": "49:20",
+      "end": "50:16",
+      "seconds": 56.6,
+      "chars": 306
+    },
+    {
+      "page": 50,
+      "title": "等权时：形状尽量平衡",
+      "start": "50:16",
+      "end": "51:30",
+      "seconds": 73.4,
+      "chars": 414
+    },
+    {
+      "page": 51,
+      "title": "不等权时：最佳的形状未必最平衡",
+      "start": "51:30",
+      "end": "52:34",
+      "seconds": 64.7,
+      "chars": 350
+    },
+    {
+      "page": 52,
+      "title": "动态规划：最佳 BST 的子树也是最佳 BST",
+      "start": "52:34",
+      "end": "53:51",
+      "seconds": 76.9,
+      "chars": 391
+    },
+    {
+      "page": 53,
+      "title": "optimal_bst 代码：校验权数，初始化空区间",
+      "start": "53:51",
+      "end": "54:44",
+      "seconds": 53.3,
+      "chars": 288
+    },
+    {
+      "page": 54,
+      "title": "按区间长度递增，枚举每个根",
+      "start": "54:44",
+      "end": "55:41",
+      "seconds": 56.2,
+      "chars": 292
+    },
+    {
+      "page": 55,
+      "title": "逐层核算：最后一格怎样得到 57",
+      "start": "55:41",
+      "end": "57:00",
+      "seconds": 79.3,
+      "chars": 419
+    },
+    {
+      "page": 56,
+      "title": "AVL 树：左右子树高度最多差 1",
+      "start": "57:00",
+      "end": "58:11",
+      "seconds": 71.2,
+      "chars": 379
+    },
+    {
+      "page": 57,
+      "title": "平衡因子与四种失衡",
+      "start": "58:11",
+      "end": "59:25",
+      "seconds": 73.9,
+      "chars": 382
+    },
+    {
+      "page": 58,
+      "title": "旋转为什么一定对：7 个部分排成数组",
+      "start": "59:25",
+      "end": "1:00:34",
+      "seconds": 68.6,
+      "chars": 348
+    },
+    {
+      "page": 59,
+      "title": "四种情形的最小输入：旋转单元测试",
+      "start": "1:00:34",
+      "end": "1:01:35",
+      "seconds": 61.0,
+      "chars": 303
+    },
+    {
+      "page": 60,
+      "title": "代码：高度、平衡因子与两种单旋转",
+      "start": "1:01:35",
+      "end": "1:02:19",
+      "seconds": 44.1,
+      "chars": 219
+    },
+    {
+      "page": 61,
+      "title": "insert：自底向上回溯，按表选旋转",
+      "start": "1:02:19",
+      "end": "1:03:19",
+      "seconds": 60.2,
+      "chars": 295
+    },
+    {
+      "page": 62,
+      "title": "删除：可能一路向上每层都要转",
+      "start": "1:03:19",
+      "end": "1:04:24",
+      "seconds": 65.4,
+      "chars": 338
+    },
+    {
+      "page": 63,
+      "title": "最瘦的 AVL 树与高度上界",
+      "start": "1:04:24",
+      "end": "1:05:34",
+      "seconds": 69.8,
+      "chars": 388
+    },
+    {
+      "page": 64,
+      "title": "伸展树：访问后把结点展开到根",
+      "start": "1:05:34",
+      "end": "1:06:44",
+      "seconds": 69.4,
+      "chars": 361
+    },
+    {
+      "page": 65,
+      "title": "一字形与之字形",
+      "start": "1:06:44",
+      "end": "1:07:52",
+      "seconds": 68.6,
+      "chars": 345
+    },
+    {
+      "page": 66,
+      "title": "检索后展开到根：a 从第 7 层升到根",
+      "start": "1:07:52",
+      "end": "1:08:59",
+      "seconds": 66.4,
+      "chars": 323
+    },
+    {
+      "page": 67,
+      "title": "splay 代码：把 key 旋到根",
+      "start": "1:08:59",
+      "end": "1:09:55",
+      "seconds": 56.1,
+      "chars": 263
+    },
+    {
+      "page": 68,
+      "title": "均摊不等于每次都快；半伸展",
+      "start": "1:09:55",
+      "end": "1:10:54",
+      "seconds": 59.6,
+      "chars": 298
+    },
+    {
+      "page": 69,
+      "title": "三种改进的 BST 对照",
+      "start": "1:10:54",
+      "end": "1:12:09",
+      "seconds": 75.2,
+      "chars": 379
+    },
+    {
+      "page": 70,
+      "title": "12.5　区间查询（补充）",
+      "start": "1:12:09",
+      "end": "1:12:26",
+      "seconds": 16.8,
+      "chars": 75
+    },
+    {
+      "page": 71,
+      "title": "前缀和：查询快，修改慢",
+      "start": "1:12:26",
+      "end": "1:13:36",
+      "seconds": 69.8,
+      "chars": 373
+    },
+    {
+      "page": 72,
+      "title": "树状数组：C[i] 管 lowbit(i) 个元素",
+      "start": "1:13:36",
+      "end": "1:15:00",
+      "seconds": 83.7,
+      "chars": 487
+    },
+    {
+      "page": 73,
+      "title": "树状数组代码：上行与回退",
+      "start": "1:15:00",
+      "end": "1:16:07",
+      "seconds": 67.1,
+      "chars": 359
+    },
+    {
+      "page": 74,
+      "title": "离散化加树状数组数逆序对",
+      "start": "1:16:07",
+      "end": "1:17:14",
+      "seconds": 67.5,
+      "chars": 359
+    },
+    {
+      "page": 75,
+      "title": "迭代线段树：2n 个格子",
+      "start": "1:17:14",
+      "end": "1:18:20",
+      "seconds": 66.1,
+      "chars": 328
+    },
+    {
+      "page": 76,
+      "title": "递归线段树与 Lazy 标记",
+      "start": "1:18:20",
+      "end": "1:19:37",
+      "seconds": 77.0,
+      "chars": 406
+    },
+    {
+      "page": 77,
+      "title": "课后练习（节选）",
+      "start": "1:19:37",
+      "end": "1:20:41",
+      "seconds": 63.4,
+      "chars": 323
+    },
+    {
+      "page": 78,
+      "title": "附录 A　编程练习",
+      "start": "1:20:41",
+      "end": "1:21:02",
+      "seconds": 21.5,
+      "chars": 104
+    },
+    {
+      "page": 79,
+      "title": "OJ 23555　三元组矩阵乘法",
+      "start": "1:21:02",
+      "end": "1:21:59",
+      "seconds": 56.5,
+      "chars": 315
+    },
+    {
+      "page": 80,
+      "title": "OJ 04089　电话号码",
+      "start": "1:21:59",
+      "end": "1:22:58",
+      "seconds": 59.7,
+      "chars": 319
+    },
+    {
+      "page": 81,
+      "title": "OJ 02797　最短前缀",
+      "start": "1:22:58",
+      "end": "1:23:52",
+      "seconds": 53.2,
+      "chars": 313
+    },
+    {
+      "page": 82,
+      "title": "LeetCode 421　最大异或值",
+      "start": "1:23:52",
+      "end": "1:24:58",
+      "seconds": 66.5,
+      "chars": 350
+    },
+    {
+      "page": 83,
+      "title": "OJ 27625 / 27626　AVL 树的结点数与层数",
+      "start": "1:24:58",
+      "end": "1:26:07",
+      "seconds": 68.9,
+      "chars": 384
+    },
+    {
+      "page": 84,
+      "title": "LeetCode 1382　将二叉搜索树变平衡",
+      "start": "1:26:07",
+      "end": "1:27:09",
+      "seconds": 62.4,
+      "chars": 310
+    },
+    {
+      "page": 85,
+      "title": "LeetCode 307　区域和检索，数组可修改",
+      "start": "1:27:09",
+      "end": "1:28:06",
+      "seconds": 56.2,
+      "chars": 305
+    },
+    {
+      "page": 86,
+      "title": "OJ 27018　康托展开",
+      "start": "1:28:06",
+      "end": "1:29:12",
+      "seconds": 66.3,
+      "chars": 365
+    },
+    {
+      "page": 87,
+      "title": "本章小结",
+      "start": "1:29:12",
+      "end": "1:30:27",
+      "seconds": 75.2,
+      "chars": 367
+    }
+  ]
+}

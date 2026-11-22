@@ -201,7 +201,7 @@ def synth(sections, audio_dir):
                     r = subprocess.run([EDGE_TTS, '--voice', VOICE, '--rate', RATE,
                                         '--text', spoken, '--write-media', str(mp3),
                                         '--write-subtitles', str(sub)],
-                                       capture_output=True, timeout=180)
+                                       capture_output=True, timeout=90)
                 except subprocess.TimeoutExpired:
                     r = None
                 if r is not None and r.returncode == 0 and tts_complete(mp3, sub, spoken):

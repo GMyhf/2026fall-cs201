@@ -1,0 +1,657 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:27:23",
+  "source_pptx_sha256": "1b4a927d6e04f97dd80206ed3de43bf157091acf823e6db775d5a89659083953",
+  "source_script_sha256": "d1c522e93915849c54be726bd9fd04c25ebbfd1b6215c9547ba1fbc084fdccce",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第十章　检索",
+      "start": "00:00",
+      "end": "01:08",
+      "seconds": 67.5,
+      "chars": 336
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "01:08",
+      "end": "02:14",
+      "seconds": 66.6,
+      "chars": 332
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "02:14",
+      "end": "03:18",
+      "seconds": 63.8,
+      "chars": 313
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：观察线性探测",
+      "start": "03:18",
+      "end": "04:22",
+      "seconds": 63.7,
+      "chars": 329
+    },
+    {
+      "page": 5,
+      "title": "删掉 1 之后：墓碑让 6 仍然找得到",
+      "start": "04:22",
+      "end": "05:27",
+      "seconds": 65.0,
+      "chars": 350
+    },
+    {
+      "page": 6,
+      "title": "检索与平均检索长度 ASL",
+      "start": "05:27",
+      "end": "06:38",
+      "seconds": 71.3,
+      "chars": 352
+    },
+    {
+      "page": 7,
+      "title": "10.1 基于线性表的检索",
+      "start": "06:38",
+      "end": "06:55",
+      "seconds": 16.6,
+      "chars": 86
+    },
+    {
+      "page": 8,
+      "title": "顺序检索：从头比到尾",
+      "start": "06:55",
+      "end": "08:03",
+      "seconds": 68.5,
+      "chars": 356
+    },
+    {
+      "page": 9,
+      "title": "sequential_search 的实现",
+      "start": "08:03",
+      "end": "08:58",
+      "seconds": 55.2,
+      "chars": 287
+    },
+    {
+      "page": 10,
+      "title": "监视哨：让循环只测一个条件",
+      "start": "08:58",
+      "end": "10:07",
+      "seconds": 69.1,
+      "chars": 350
+    },
+    {
+      "page": 11,
+      "title": "有序表：先确定范围，再逐步缩小",
+      "start": "10:07",
+      "end": "11:14",
+      "seconds": 66.8,
+      "chars": 341
+    },
+    {
+      "page": 12,
+      "title": "binary_search：半开区间",
+      "start": "11:14",
+      "end": "12:19",
+      "seconds": 65.3,
+      "chars": 370
+    },
+    {
+      "page": 13,
+      "title": "为什么用半开区间",
+      "start": "12:19",
+      "end": "13:26",
+      "seconds": 66.8,
+      "chars": 378
+    },
+    {
+      "page": 14,
+      "title": "逐步手算：查 18 与查 14",
+      "start": "13:26",
+      "end": "14:39",
+      "seconds": 72.8,
+      "chars": 396
+    },
+    {
+      "page": 15,
+      "title": "图 10.1：原书例，查 18",
+      "start": "14:39",
+      "end": "15:51",
+      "seconds": 71.9,
+      "chars": 388
+    },
+    {
+      "page": 16,
+      "title": "图 10.2：决策树",
+      "start": "15:51",
+      "end": "16:59",
+      "seconds": 68.0,
+      "chars": 348
+    },
+    {
+      "page": 17,
+      "title": "代价推导：最大检索长度",
+      "start": "16:59",
+      "end": "18:11",
+      "seconds": 72.6,
+      "chars": 443
+    },
+    {
+      "page": 18,
+      "title": "两条硬约束",
+      "start": "18:11",
+      "end": "19:06",
+      "seconds": 54.8,
+      "chars": 264
+    },
+    {
+      "page": 19,
+      "title": "Python 的 bisect",
+      "start": "19:06",
+      "end": "20:12",
+      "seconds": 66.1,
+      "chars": 419
+    },
+    {
+      "page": 20,
+      "title": "分块检索：块间有序，块内无序",
+      "start": "20:12",
+      "end": "21:15",
+      "seconds": 63.1,
+      "chars": 329
+    },
+    {
+      "page": 21,
+      "title": "图 10.3：查 44 与查 23",
+      "start": "21:15",
+      "end": "22:27",
+      "seconds": 71.8,
+      "chars": 375
+    },
+    {
+      "page": 22,
+      "title": "分块的 ASL：根号 n 时最小",
+      "start": "22:27",
+      "end": "23:37",
+      "seconds": 69.5,
+      "chars": 400
+    },
+    {
+      "page": 23,
+      "title": "分块的优缺点与三种检索对比",
+      "start": "23:37",
+      "end": "24:41",
+      "seconds": 64.0,
+      "chars": 312
+    },
+    {
+      "page": 24,
+      "title": "教学版：本章四件东西",
+      "start": "24:41",
+      "end": "25:39",
+      "seconds": 58.1,
+      "chars": 299
+    },
+    {
+      "page": 25,
+      "title": "10.2 集合的检索",
+      "start": "25:39",
+      "end": "25:53",
+      "seconds": 14.2,
+      "chars": 67
+    },
+    {
+      "page": 26,
+      "title": "集合：确定的、相异的对象",
+      "start": "25:53",
+      "end": "27:09",
+      "seconds": 76.3,
+      "chars": 377
+    },
+    {
+      "page": 27,
+      "title": "「x 属于 S」是一个命题",
+      "start": "27:09",
+      "end": "28:13",
+      "seconds": 64.0,
+      "chars": 321
+    },
+    {
+      "page": 28,
+      "title": "计算机中的集合",
+      "start": "28:13",
+      "end": "29:24",
+      "seconds": 71.3,
+      "chars": 359
+    },
+    {
+      "page": 29,
+      "title": "IntSet（上）：都落到顺序检索",
+      "start": "29:24",
+      "end": "30:16",
+      "seconds": 51.5,
+      "chars": 285
+    },
+    {
+      "page": 30,
+      "title": "IntSet（下）：交与包含",
+      "start": "30:16",
+      "end": "31:11",
+      "seconds": 55.4,
+      "chars": 313
+    },
+    {
+      "page": 31,
+      "title": "位向量：交并差就是按位运算",
+      "start": "31:11",
+      "end": "32:22",
+      "seconds": 70.6,
+      "chars": 359
+    },
+    {
+      "page": 32,
+      "title": "例 10.1：0 到 15 之间的奇素数",
+      "start": "32:22",
+      "end": "33:28",
+      "seconds": 65.8,
+      "chars": 331
+    },
+    {
+      "page": 33,
+      "title": "10.3 散列方法",
+      "start": "33:28",
+      "end": "33:45",
+      "seconds": 17.3,
+      "chars": 73
+    },
+    {
+      "page": 34,
+      "title": "能不能不比较，直接算出地址",
+      "start": "33:45",
+      "end": "34:50",
+      "seconds": 65.1,
+      "chars": 335
+    },
+    {
+      "page": 35,
+      "title": "例 10.2：冲突是怎么来的",
+      "start": "34:50",
+      "end": "35:55",
+      "seconds": 64.8,
+      "chars": 388
+    },
+    {
+      "page": 36,
+      "title": "负载因子、冲突与同义词",
+      "start": "35:55",
+      "end": "37:04",
+      "seconds": 69.0,
+      "chars": 346
+    },
+    {
+      "page": 37,
+      "title": "三条原则与除余法",
+      "start": "37:04",
+      "end": "38:15",
+      "seconds": 70.5,
+      "chars": 358
+    },
+    {
+      "page": 38,
+      "title": "乘余取整法与平方取中法",
+      "start": "38:15",
+      "end": "39:22",
+      "seconds": 67.0,
+      "chars": 361
+    },
+    {
+      "page": 39,
+      "title": "数字分析法与基数转换法",
+      "start": "39:22",
+      "end": "40:40",
+      "seconds": 78.7,
+      "chars": 394
+    },
+    {
+      "page": 40,
+      "title": "折叠法：ISBN 构造 4 位地址",
+      "start": "40:40",
+      "end": "41:54",
+      "seconds": 73.4,
+      "chars": 367
+    },
+    {
+      "page": 41,
+      "title": "ELFhash：字符串散列",
+      "start": "41:54",
+      "end": "42:57",
+      "seconds": 63.7,
+      "chars": 346
+    },
+    {
+      "page": 42,
+      "title": "elf_hash：逐字节读无符号字符",
+      "start": "42:57",
+      "end": "44:13",
+      "seconds": 75.5,
+      "chars": 411
+    },
+    {
+      "page": 43,
+      "title": "字符串散列：从字符相加到 ELFhash",
+      "start": "44:13",
+      "end": "45:26",
+      "seconds": 73.4,
+      "chars": 410
+    },
+    {
+      "page": 44,
+      "title": "怎样评价一个散列函数",
+      "start": "45:26",
+      "end": "46:28",
+      "seconds": 62.1,
+      "chars": 302
+    },
+    {
+      "page": 45,
+      "title": "开散列：冲突的关键码存到主表之外",
+      "start": "46:28",
+      "end": "47:39",
+      "seconds": 70.2,
+      "chars": 355
+    },
+    {
+      "page": 46,
+      "title": "链长、装载因子大于 1，以及桶式散列",
+      "start": "47:39",
+      "end": "48:51",
+      "seconds": 72.6,
+      "chars": 369
+    },
+    {
+      "page": 47,
+      "title": "例：拉链法造表并求 ASL",
+      "start": "48:51",
+      "end": "50:07",
+      "seconds": 76.1,
+      "chars": 441
+    },
+    {
+      "page": 48,
+      "title": "闭散列：靠探查序列找空位",
+      "start": "50:07",
+      "end": "51:10",
+      "seconds": 63.0,
+      "chars": 315
+    },
+    {
+      "page": 49,
+      "title": "线性探查与聚集",
+      "start": "51:10",
+      "end": "52:16",
+      "seconds": 65.6,
+      "chars": 363
+    },
+    {
+      "page": 50,
+      "title": "改进线性探查、二次探查与随机探查",
+      "start": "52:16",
+      "end": "53:24",
+      "seconds": 68.1,
+      "chars": 348
+    },
+    {
+      "page": 51,
+      "title": "双散列探查：步长也由关键码决定",
+      "start": "53:24",
+      "end": "54:37",
+      "seconds": 73.0,
+      "chars": 393
+    },
+    {
+      "page": 52,
+      "title": "四种探查怎么选：看聚集",
+      "start": "54:37",
+      "end": "55:41",
+      "seconds": 63.9,
+      "chars": 304
+    },
+    {
+      "page": 53,
+      "title": "同一个 38，三种探查各放到哪",
+      "start": "55:41",
+      "end": "56:56",
+      "seconds": 75.5,
+      "chars": 427
+    },
+    {
+      "page": 54,
+      "title": "删除：不能把槽直接标成空",
+      "start": "56:56",
+      "end": "58:05",
+      "seconds": 68.4,
+      "chars": 369
+    },
+    {
+      "page": 55,
+      "title": "三种状态：空、占用、墓碑",
+      "start": "58:05",
+      "end": "59:07",
+      "seconds": 61.9,
+      "chars": 321
+    },
+    {
+      "page": 56,
+      "title": "插入：回收墓碑，但不能一看到墓碑就停",
+      "start": "59:07",
+      "end": "1:00:13",
+      "seconds": 66.8,
+      "chars": 346
+    },
+    {
+      "page": 57,
+      "title": "字典：用散列实现的二元组集合",
+      "start": "1:00:13",
+      "end": "1:01:20",
+      "seconds": 66.8,
+      "chars": 334
+    },
+    {
+      "page": 58,
+      "title": "三种槽状态、构造与 insert",
+      "start": "1:01:20",
+      "end": "1:02:16",
+      "seconds": 56.0,
+      "chars": 274
+    },
+    {
+      "page": 59,
+      "title": "erase 标墓碑；slot_at 让测试看见每一格",
+      "start": "1:02:16",
+      "end": "1:03:18",
+      "seconds": 61.3,
+      "chars": 327
+    },
+    {
+      "page": 60,
+      "title": "home 与 find_slot：遇空停，遇墓碑走",
+      "start": "1:03:18",
+      "end": "1:04:16",
+      "seconds": 58.5,
+      "chars": 300
+    },
+    {
+      "page": 61,
+      "title": "insertion_slot：记住路上第一个墓碑",
+      "start": "1:04:16",
+      "end": "1:05:17",
+      "seconds": 60.6,
+      "chars": 306
+    },
+    {
+      "page": 62,
+      "title": "三条具名断言守住墓碑语义",
+      "start": "1:05:17",
+      "end": "1:06:24",
+      "seconds": 67.6,
+      "chars": 370
+    },
+    {
+      "page": 63,
+      "title": "Python 版 HashTable",
+      "start": "1:06:24",
+      "end": "1:07:24",
+      "seconds": 59.6,
+      "chars": 322
+    },
+    {
+      "page": 64,
+      "title": "衡量的是什么：成功检索与不成功检索",
+      "start": "1:07:24",
+      "end": "1:08:36",
+      "seconds": 71.8,
+      "chars": 371
+    },
+    {
+      "page": 65,
+      "title": "三种冲突解决策略的期望检索长度",
+      "start": "1:08:36",
+      "end": "1:09:36",
+      "seconds": 60.0,
+      "chars": 314
+    },
+    {
+      "page": 66,
+      "title": "0.5 是一条经验阈值",
+      "start": "1:09:36",
+      "end": "1:10:57",
+      "seconds": 81.5,
+      "chars": 431
+    },
+    {
+      "page": 67,
+      "title": "阿尔法超过阈值就扩表",
+      "start": "1:10:57",
+      "end": "1:12:11",
+      "seconds": 74.2,
+      "chars": 382
+    },
+    {
+      "page": 68,
+      "title": "散列方法的应用",
+      "start": "1:12:11",
+      "end": "1:13:19",
+      "seconds": 67.2,
+      "chars": 371
+    },
+    {
+      "page": 69,
+      "title": "什么时候不该用散列",
+      "start": "1:13:19",
+      "end": "1:14:17",
+      "seconds": 58.8,
+      "chars": 295
+    },
+    {
+      "page": 70,
+      "title": "OJ 17968 线性探查与 OJ 17975 二次探查",
+      "start": "1:14:17",
+      "end": "1:15:28",
+      "seconds": 70.3,
+      "chars": 369
+    },
+    {
+      "page": 71,
+      "title": "几道代表性习题",
+      "start": "1:15:28",
+      "end": "1:16:32",
+      "seconds": 64.7,
+      "chars": 357
+    },
+    {
+      "page": 72,
+      "title": "附录 A　编程练习",
+      "start": "1:16:32",
+      "end": "1:16:44",
+      "seconds": 11.2,
+      "chars": 49
+    },
+    {
+      "page": 73,
+      "title": "LC34：两次二分夹出半开区间",
+      "start": "1:16:44",
+      "end": "1:17:58",
+      "seconds": 74.0,
+      "chars": 401
+    },
+    {
+      "page": 74,
+      "title": "LC33：搜索旋转排序数组",
+      "start": "1:17:58",
+      "end": "1:19:04",
+      "seconds": 66.9,
+      "chars": 341
+    },
+    {
+      "page": 75,
+      "title": "LC240：从右上角出发",
+      "start": "1:19:04",
+      "end": "1:20:08",
+      "seconds": 63.6,
+      "chars": 320
+    },
+    {
+      "page": 76,
+      "title": "OJ 08210 河中跳房子：二分答案",
+      "start": "1:20:08",
+      "end": "1:21:13",
+      "seconds": 65.4,
+      "chars": 345
+    },
+    {
+      "page": 77,
+      "title": "OJ 01019 Number Sequence：两级定位",
+      "start": "1:21:13",
+      "end": "1:22:25",
+      "seconds": 71.5,
+      "chars": 381
+    },
+    {
+      "page": 78,
+      "title": "OJ 27141 完美的爱：前缀和加散列表",
+      "start": "1:22:25",
+      "end": "1:23:39",
+      "seconds": 74.0,
+      "chars": 384
+    },
+    {
+      "page": 79,
+      "title": "LC146 LRU 缓存",
+      "start": "1:23:39",
+      "end": "1:24:51",
+      "seconds": 71.6,
+      "chars": 370
+    },
+    {
+      "page": 80,
+      "title": "LC3488：散列分组加组内二分",
+      "start": "1:24:51",
+      "end": "1:26:07",
+      "seconds": 76.4,
+      "chars": 408
+    },
+    {
+      "page": 81,
+      "title": "本章小结",
+      "start": "1:26:07",
+      "end": "1:27:23",
+      "seconds": 75.5,
+      "chars": 364
+    }
+  ]
+}

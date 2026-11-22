@@ -1,0 +1,705 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:32:30",
+  "source_pptx_sha256": "c895bb3da50f97db8b0df07993af5caf6fb83b98d05b28aff885c2bc5511be16",
+  "source_script_sha256": "1741b2f8bd3debada32f3dc9b11dc4618734634aab4cb5ae2120329ba84cceb1",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第八章　内部排序",
+      "start": "00:00",
+      "end": "00:51",
+      "seconds": 50.7,
+      "chars": 256
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "00:51",
+      "end": "01:53",
+      "seconds": 62.4,
+      "chars": 304
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "01:53",
+      "end": "02:58",
+      "seconds": 64.5,
+      "chars": 316
+    },
+    {
+      "page": 4,
+      "title": "同一组数据，交给四种手写排序",
+      "start": "02:58",
+      "end": "04:06",
+      "seconds": 68.5,
+      "chars": 322
+    },
+    {
+      "page": 5,
+      "title": "8.1 排序问题的基本概念",
+      "start": "04:06",
+      "end": "04:20",
+      "seconds": 13.9,
+      "chars": 61
+    },
+    {
+      "page": 6,
+      "title": "术语先约定清楚",
+      "start": "04:20",
+      "end": "05:33",
+      "seconds": 73.1,
+      "chars": 356
+    },
+    {
+      "page": 7,
+      "title": "稳定：相同排序码的记录，排序后相对次序不变",
+      "start": "05:33",
+      "end": "06:47",
+      "seconds": 73.5,
+      "chars": 363
+    },
+    {
+      "page": 8,
+      "title": "怎么衡量代价：比较次数加移动次数",
+      "start": "06:47",
+      "end": "07:55",
+      "seconds": 68.9,
+      "chars": 344
+    },
+    {
+      "page": 9,
+      "title": "本章的分类，以及一张先记住的总表",
+      "start": "07:55",
+      "end": "09:09",
+      "seconds": 73.8,
+      "chars": 373
+    },
+    {
+      "page": 10,
+      "title": "8.2 插入排序",
+      "start": "09:09",
+      "end": "09:23",
+      "seconds": 13.8,
+      "chars": 65
+    },
+    {
+      "page": 11,
+      "title": "直接插入：线性搜索找位置，边比边挪",
+      "start": "09:23",
+      "end": "10:29",
+      "seconds": 66.2,
+      "chars": 327
+    },
+    {
+      "page": 12,
+      "title": "insertion_sort 与逐趟结果",
+      "start": "10:29",
+      "end": "11:38",
+      "seconds": 68.7,
+      "chars": 338
+    },
+    {
+      "page": 13,
+      "title": "Python 版：同一策略，边界条件的代价不同",
+      "start": "11:38",
+      "end": "12:39",
+      "seconds": 61.5,
+      "chars": 341
+    },
+    {
+      "page": 14,
+      "title": "最好线性、最坏平方；平均要靠逆置来数",
+      "start": "12:39",
+      "end": "14:05",
+      "seconds": 85.5,
+      "chars": 457
+    },
+    {
+      "page": 15,
+      "title": "Shell 排序：先跨大步，最后一趟再细排",
+      "start": "14:05",
+      "end": "15:13",
+      "seconds": 68.2,
+      "chars": 350
+    },
+    {
+      "page": 16,
+      "title": "八个数：间距四、二、一，一步跨四格",
+      "start": "15:13",
+      "end": "16:36",
+      "seconds": 82.8,
+      "chars": 405
+    },
+    {
+      "page": 17,
+      "title": "shell_sort：把插入排序里的 1 换成 gap",
+      "start": "16:36",
+      "end": "17:25",
+      "seconds": 48.8,
+      "chars": 256
+    },
+    {
+      "page": 18,
+      "title": "为什么除以 2 递减效果有限；换增量能换来质变",
+      "start": "17:25",
+      "end": "18:49",
+      "seconds": 84.5,
+      "chars": 438
+    },
+    {
+      "page": 19,
+      "title": "8.3 选择排序",
+      "start": "18:49",
+      "end": "19:03",
+      "seconds": 13.7,
+      "chars": 61
+    },
+    {
+      "page": 20,
+      "title": "直接选择：选出第 i 小，一次交换到位",
+      "start": "19:03",
+      "end": "20:08",
+      "seconds": 65.2,
+      "chars": 328
+    },
+    {
+      "page": 21,
+      "title": "逐轮结果：i=3 那一轮就看得出不稳定",
+      "start": "20:08",
+      "end": "21:16",
+      "seconds": 67.6,
+      "chars": 326
+    },
+    {
+      "page": 22,
+      "title": "堆排序：用最大堆代替线性扫描来选最大",
+      "start": "21:16",
+      "end": "22:26",
+      "seconds": 69.8,
+      "chars": 367
+    },
+    {
+      "page": 23,
+      "title": "sift_down 与 heap_sort：全手写，不委托标准库",
+      "start": "22:26",
+      "end": "23:17",
+      "seconds": 51.3,
+      "chars": 245
+    },
+    {
+      "page": 24,
+      "title": "heap_sort 逐步：建堆 4 次筛选，排序 7 趟",
+      "start": "23:17",
+      "end": "24:35",
+      "seconds": 78.0,
+      "chars": 377
+    },
+    {
+      "page": 25,
+      "title": "8.4 交换排序",
+      "start": "24:35",
+      "end": "24:50",
+      "seconds": 15.4,
+      "chars": 66
+    },
+    {
+      "page": 26,
+      "title": "冒泡：只比较相邻两个，逆序就交换",
+      "start": "24:50",
+      "end": "25:50",
+      "seconds": 59.5,
+      "chars": 296
+    },
+    {
+      "page": 27,
+      "title": "bubble_sort：本趟无交换即结束",
+      "start": "25:50",
+      "end": "27:06",
+      "seconds": 75.7,
+      "chars": 372
+    },
+    {
+      "page": 28,
+      "title": "快速排序：分、治，不用合",
+      "start": "27:06",
+      "end": "28:15",
+      "seconds": 69.1,
+      "chars": 353
+    },
+    {
+      "page": 29,
+      "title": "轴值怎么选，影响很大",
+      "start": "28:15",
+      "end": "29:24",
+      "seconds": 69.8,
+      "chars": 346
+    },
+    {
+      "page": 30,
+      "title": "图 8.7：两端交替找空闲位置，把逆置记录移过去",
+      "start": "29:24",
+      "end": "30:47",
+      "seconds": 82.9,
+      "chars": 429
+    },
+    {
+      "page": 31,
+      "title": "本书的 partition：末元素当轴，一趟扫描",
+      "start": "30:47",
+      "end": "31:47",
+      "seconds": 59.5,
+      "chars": 284
+    },
+    {
+      "page": 32,
+      "title": "partition 手算：demo 数据，轴为 1",
+      "start": "31:47",
+      "end": "33:02",
+      "seconds": 74.8,
+      "chars": 325
+    },
+    {
+      "page": 33,
+      "title": "双指针分割：首元素当轴，两头各找一个逆置就交换",
+      "start": "33:02",
+      "end": "34:18",
+      "seconds": 75.9,
+      "chars": 398
+    },
+    {
+      "page": 34,
+      "title": "quick_sort 加 partition：双指针版",
+      "start": "34:18",
+      "end": "35:29",
+      "seconds": 71.9,
+      "chars": 404
+    },
+    {
+      "page": 35,
+      "title": "列表推导版：三行写完，但不是原地排序",
+      "start": "35:29",
+      "end": "36:51",
+      "seconds": 81.5,
+      "chars": 397
+    },
+    {
+      "page": 36,
+      "title": "quick_sort_range 与三种情况的代价",
+      "start": "36:51",
+      "end": "38:00",
+      "seconds": 69.2,
+      "chars": 381
+    },
+    {
+      "page": 37,
+      "title": "同一个缺陷：Python 里真的崩，C++ 里只是慢",
+      "start": "38:00",
+      "end": "38:49",
+      "seconds": 49.0,
+      "chars": 263
+    },
+    {
+      "page": 38,
+      "title": "两处对策：短侧递归加小区间插入",
+      "start": "38:49",
+      "end": "39:51",
+      "seconds": 61.5,
+      "chars": 304
+    },
+    {
+      "page": 39,
+      "title": "两处优化管的是栈深与常数，管不了最坏时间",
+      "start": "39:51",
+      "end": "40:44",
+      "seconds": 53.5,
+      "chars": 258
+    },
+    {
+      "page": 40,
+      "title": "二叉搜索树排序：插入就是分割，中序就是收集",
+      "start": "40:44",
+      "end": "41:57",
+      "seconds": 73.0,
+      "chars": 349
+    },
+    {
+      "page": 41,
+      "title": "8.5 归并排序",
+      "start": "41:57",
+      "end": "42:11",
+      "seconds": 13.5,
+      "chars": 57
+    },
+    {
+      "page": 42,
+      "title": "归并排序：分得随意，合得用心",
+      "start": "42:11",
+      "end": "43:31",
+      "seconds": 80.0,
+      "chars": 426
+    },
+    {
+      "page": 43,
+      "title": "merge_ranges / merge_sort_range / merge_sort",
+      "start": "43:31",
+      "end": "44:34",
+      "seconds": 63.6,
+      "chars": 301
+    },
+    {
+      "page": 44,
+      "title": "最后一次合并：两段各四个元素",
+      "start": "44:34",
+      "end": "46:08",
+      "seconds": 93.6,
+      "chars": 449
+    },
+    {
+      "page": 45,
+      "title": "归并排序的两处优化",
+      "start": "46:08",
+      "end": "47:19",
+      "seconds": 70.7,
+      "chars": 353
+    },
+    {
+      "page": 46,
+      "title": "归并还能怎么改进；什么时候选它",
+      "start": "47:19",
+      "end": "48:27",
+      "seconds": 68.4,
+      "chars": 352
+    },
+    {
+      "page": 47,
+      "title": "逆序对计数：在合并里多写一句",
+      "start": "48:27",
+      "end": "49:45",
+      "seconds": 78.4,
+      "chars": 393
+    },
+    {
+      "page": 48,
+      "title": "带计数的合并",
+      "start": "49:45",
+      "end": "50:37",
+      "seconds": 51.2,
+      "chars": 269
+    },
+    {
+      "page": 49,
+      "title": "计数不顺手排序；结果必须 64 位",
+      "start": "50:37",
+      "end": "51:46",
+      "seconds": 69.3,
+      "chars": 373
+    },
+    {
+      "page": 50,
+      "title": "变形题与另一条路",
+      "start": "51:46",
+      "end": "53:04",
+      "seconds": 78.2,
+      "chars": 416
+    },
+    {
+      "page": 51,
+      "title": "OJ 02299 Ultra-QuickSort",
+      "start": "53:04",
+      "end": "54:06",
+      "seconds": 61.6,
+      "chars": 304
+    },
+    {
+      "page": 52,
+      "title": "分配排序和索引排序",
+      "start": "54:06",
+      "end": "54:22",
+      "seconds": 16.2,
+      "chars": 73
+    },
+    {
+      "page": 53,
+      "title": "跳出比较模型",
+      "start": "54:22",
+      "end": "55:13",
+      "seconds": 50.9,
+      "chars": 269
+    },
+    {
+      "page": 54,
+      "title": "桶式排序：先数一遍，把计数累加成位置",
+      "start": "55:13",
+      "end": "56:26",
+      "seconds": 73.3,
+      "chars": 348
+    },
+    {
+      "page": 55,
+      "title": "计数排序：与原书不同的三处",
+      "start": "56:26",
+      "end": "57:30",
+      "seconds": 63.4,
+      "chars": 316
+    },
+    {
+      "page": 56,
+      "title": "桶式排序只在 m 较小时才有实际意义",
+      "start": "57:30",
+      "end": "58:45",
+      "seconds": 75.5,
+      "chars": 407
+    },
+    {
+      "page": 57,
+      "title": "另一种桶排序：按区间分桶，桶内再排",
+      "start": "58:45",
+      "end": "1:00:04",
+      "seconds": 79.1,
+      "chars": 407
+    },
+    {
+      "page": 58,
+      "title": "基数排序：MSD 与 LSD",
+      "start": "1:00:04",
+      "end": "1:01:28",
+      "seconds": 83.4,
+      "chars": 397
+    },
+    {
+      "page": 59,
+      "title": "LSD 走一遍",
+      "start": "1:01:28",
+      "end": "1:02:42",
+      "seconds": 74.1,
+      "chars": 364
+    },
+    {
+      "page": 60,
+      "title": "按字节 4 趟，翻转符号位",
+      "start": "1:02:42",
+      "end": "1:03:47",
+      "seconds": 64.9,
+      "chars": 332
+    },
+    {
+      "page": 61,
+      "title": "Python 版：没有最高位",
+      "start": "1:03:47",
+      "end": "1:04:41",
+      "seconds": 54.4,
+      "chars": 289
+    },
+    {
+      "page": 62,
+      "title": "显式的桶：固定容量队列",
+      "start": "1:04:41",
+      "end": "1:05:33",
+      "seconds": 51.6,
+      "chars": 258
+    },
+    {
+      "page": 63,
+      "title": "push 进 256 个桶，按桶号依次 pop",
+      "start": "1:05:33",
+      "end": "1:06:21",
+      "seconds": 48.2,
+      "chars": 238
+    },
+    {
+      "page": 64,
+      "title": "基数排序到底是不是线性的？",
+      "start": "1:06:21",
+      "end": "1:07:39",
+      "seconds": 77.9,
+      "chars": 429
+    },
+    {
+      "page": 65,
+      "title": "索引排序：记录一个都不动，动的是索引",
+      "start": "1:07:39",
+      "end": "1:08:54",
+      "seconds": 74.8,
+      "chars": 366
+    },
+    {
+      "page": 66,
+      "title": "排的是索引，不是记录",
+      "start": "1:08:54",
+      "end": "1:09:40",
+      "seconds": 46.7,
+      "chars": 230
+    },
+    {
+      "page": 67,
+      "title": "沿置换环整理",
+      "start": "1:09:40",
+      "end": "1:10:56",
+      "seconds": 75.4,
+      "chars": 358
+    },
+    {
+      "page": 68,
+      "title": "排序算法的时间代价",
+      "start": "1:10:56",
+      "end": "1:11:09",
+      "seconds": 13.7,
+      "chars": 72
+    },
+    {
+      "page": 69,
+      "title": "三种 n 平方排序：差别在对输入形态的反应",
+      "start": "1:11:09",
+      "end": "1:12:21",
+      "seconds": 71.6,
+      "chars": 378
+    },
+    {
+      "page": 70,
+      "title": "量出来的数量级",
+      "start": "1:12:21",
+      "end": "1:13:27",
+      "seconds": 66.0,
+      "chars": 326
+    },
+    {
+      "page": 71,
+      "title": "对数据分布的敏感性；标准库的排序是怎么拼的",
+      "start": "1:13:27",
+      "end": "1:14:46",
+      "seconds": 79.0,
+      "chars": 421
+    },
+    {
+      "page": 72,
+      "title": "Python 的 Timsort：插入加归并，稳定",
+      "start": "1:14:46",
+      "end": "1:16:06",
+      "seconds": 80.1,
+      "chars": 456
+    },
+    {
+      "page": 73,
+      "title": "判定树：比较排序的下限",
+      "start": "1:16:06",
+      "end": "1:17:24",
+      "seconds": 77.8,
+      "chars": 420
+    },
+    {
+      "page": 74,
+      "title": "手写 Python 排序的五个坑",
+      "start": "1:17:24",
+      "end": "1:18:41",
+      "seconds": 77.1,
+      "chars": 394
+    },
+    {
+      "page": 75,
+      "title": "九种内排序放在一张表里",
+      "start": "1:18:41",
+      "end": "1:19:40",
+      "seconds": 58.8,
+      "chars": 319
+    },
+    {
+      "page": 76,
+      "title": "怎么选",
+      "start": "1:19:40",
+      "end": "1:20:46",
+      "seconds": 66.6,
+      "chars": 335
+    },
+    {
+      "page": 77,
+      "title": "课后练习",
+      "start": "1:20:46",
+      "end": "1:21:56",
+      "seconds": 69.7,
+      "chars": 354
+    },
+    {
+      "page": 78,
+      "title": "附录 A 编程练习",
+      "start": "1:21:56",
+      "end": "1:22:13",
+      "seconds": 16.8,
+      "chars": 84
+    },
+    {
+      "page": 79,
+      "title": "OJ 15265 Shell 排序",
+      "start": "1:22:13",
+      "end": "1:23:37",
+      "seconds": 83.8,
+      "chars": 439
+    },
+    {
+      "page": 80,
+      "title": "LeetCode 75 颜色分类",
+      "start": "1:23:37",
+      "end": "1:24:40",
+      "seconds": 63.6,
+      "chars": 326
+    },
+    {
+      "page": 81,
+      "title": "LeetCode 215 第 K 个最大元素",
+      "start": "1:24:40",
+      "end": "1:25:46",
+      "seconds": 65.8,
+      "chars": 365
+    },
+    {
+      "page": 82,
+      "title": "LeetCode 148 排序链表",
+      "start": "1:25:46",
+      "end": "1:26:55",
+      "seconds": 68.3,
+      "chars": 337
+    },
+    {
+      "page": 83,
+      "title": "OJ 20018 蚂蚁王国的越野跑",
+      "start": "1:26:55",
+      "end": "1:27:55",
+      "seconds": 60.8,
+      "chars": 316
+    },
+    {
+      "page": 84,
+      "title": "LeetCode 23 合并 K 个升序链表",
+      "start": "1:27:55",
+      "end": "1:28:56",
+      "seconds": 60.5,
+      "chars": 337
+    },
+    {
+      "page": 85,
+      "title": "OJ 31202 这也是逆序对？",
+      "start": "1:28:56",
+      "end": "1:30:13",
+      "seconds": 76.7,
+      "chars": 396
+    },
+    {
+      "page": 86,
+      "title": "OJ 27300 模型整理",
+      "start": "1:30:13",
+      "end": "1:31:21",
+      "seconds": 68.5,
+      "chars": 373
+    },
+    {
+      "page": 87,
+      "title": "本章小结",
+      "start": "1:31:21",
+      "end": "1:32:30",
+      "seconds": 69.2,
+      "chars": 333
+    }
+  ]
+}

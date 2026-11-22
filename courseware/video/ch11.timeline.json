@@ -1,0 +1,633 @@
+{
+  "voice": "zh-CN-YunyangNeural",
+  "rate": "+0%",
+  "total": "1:11:54",
+  "source_pptx_sha256": "268a244687eae8e14da635c0df216626da9a632a46105e45a9aec212b3677c7a",
+  "source_script_sha256": "030af1be0dbf566d166b20d38a344791ff3b5b0c6851188a399cfb32511bba9a",
+  "sections": [
+    {
+      "page": 1,
+      "title": "第十一章　索引技术",
+      "start": "00:00",
+      "end": "00:51",
+      "seconds": 51.1,
+      "chars": 253
+    },
+    {
+      "page": 2,
+      "title": "本章要回答三个问题",
+      "start": "00:51",
+      "end": "01:58",
+      "seconds": 66.6,
+      "chars": 331
+    },
+    {
+      "page": 3,
+      "title": "内容地图",
+      "start": "01:58",
+      "end": "03:03",
+      "seconds": 65.1,
+      "chars": 315
+    },
+    {
+      "page": 4,
+      "title": "先跑一遍：一千条记录建稀疏索引",
+      "start": "03:03",
+      "end": "04:00",
+      "seconds": 57.1,
+      "chars": 282
+    },
+    {
+      "page": 5,
+      "title": "先跑一遍：索引页放六十四项，换成稠密索引",
+      "start": "04:00",
+      "end": "04:56",
+      "seconds": 56.3,
+      "chars": 275
+    },
+    {
+      "page": 6,
+      "title": "三行输出，三个结论",
+      "start": "04:56",
+      "end": "05:55",
+      "seconds": 58.9,
+      "chars": 287
+    },
+    {
+      "page": 7,
+      "title": "第一部分　线性索引",
+      "start": "05:55",
+      "end": "06:15",
+      "seconds": 19.7,
+      "chars": 89
+    },
+    {
+      "page": 8,
+      "title": "先查一张小表，再按位置读记录",
+      "start": "06:15",
+      "end": "07:38",
+      "seconds": 82.8,
+      "chars": 403
+    },
+    {
+      "page": 9,
+      "title": "索引也放不下：多级索引",
+      "start": "07:38",
+      "end": "08:41",
+      "seconds": 63.7,
+      "chars": 321
+    },
+    {
+      "page": 10,
+      "title": "从一千条记录算出四层索引",
+      "start": "08:41",
+      "end": "09:50",
+      "seconds": 68.9,
+      "chars": 336
+    },
+    {
+      "page": 11,
+      "title": "两级索引最多能管多少条记录",
+      "start": "09:50",
+      "end": "11:14",
+      "seconds": 83.7,
+      "chars": 431
+    },
+    {
+      "page": 12,
+      "title": "find：逐层读索引页",
+      "start": "11:14",
+      "end": "12:17",
+      "seconds": 63.2,
+      "chars": 314
+    },
+    {
+      "page": 13,
+      "title": "底层：稠密与稀疏分道扬镳",
+      "start": "12:17",
+      "end": "13:13",
+      "seconds": 56.1,
+      "chars": 291
+    },
+    {
+      "page": 14,
+      "title": "第二部分　静态索引：多分树",
+      "start": "13:13",
+      "end": "13:30",
+      "seconds": 17.3,
+      "chars": 78
+    },
+    {
+      "page": 15,
+      "title": "多分树降低的是高度",
+      "start": "13:30",
+      "end": "14:29",
+      "seconds": 58.9,
+      "chars": 303
+    },
+    {
+      "page": 16,
+      "title": "扇出是算出来的",
+      "start": "14:29",
+      "end": "15:34",
+      "seconds": 64.4,
+      "chars": 329
+    },
+    {
+      "page": 17,
+      "title": "批量装入：按页填满，自底向上建层",
+      "start": "15:34",
+      "end": "16:35",
+      "seconds": 61.5,
+      "chars": 302
+    },
+    {
+      "page": 18,
+      "title": "一次建好、很少改",
+      "start": "16:35",
+      "end": "17:33",
+      "seconds": 58.1,
+      "chars": 264
+    },
+    {
+      "page": 19,
+      "title": "第三部分　倒排索引",
+      "start": "17:33",
+      "end": "17:51",
+      "seconds": 17.9,
+      "chars": 79
+    },
+    {
+      "page": 20,
+      "title": "按属性值检索记录：倒排",
+      "start": "17:51",
+      "end": "19:06",
+      "seconds": 75.2,
+      "chars": 363
+    },
+    {
+      "page": 21,
+      "title": "词索引与全文索引",
+      "start": "19:06",
+      "end": "20:15",
+      "seconds": 68.4,
+      "chars": 345
+    },
+    {
+      "page": 22,
+      "title": "先跑一遍：交、并、差与短语查询",
+      "start": "20:15",
+      "end": "21:21",
+      "seconds": 66.1,
+      "chars": 346
+    },
+    {
+      "page": 23,
+      "title": "两个指针怎样求交",
+      "start": "21:21",
+      "end": "22:39",
+      "seconds": 77.5,
+      "chars": 382
+    },
+    {
+      "page": 24,
+      "title": "intersect：归并一遍",
+      "start": "22:39",
+      "end": "23:28",
+      "seconds": 50.0,
+      "chars": 246
+    },
+    {
+      "page": 25,
+      "title": "OJ 04093：先交、后差",
+      "start": "23:28",
+      "end": "24:41",
+      "seconds": 72.3,
+      "chars": 355
+    },
+    {
+      "page": 26,
+      "title": "短语查询要存位置",
+      "start": "24:41",
+      "end": "25:42",
+      "seconds": 61.6,
+      "chars": 332
+    },
+    {
+      "page": 27,
+      "title": "phrase_query：先求交，再看位置",
+      "start": "25:42",
+      "end": "26:31",
+      "seconds": 48.4,
+      "chars": 252
+    },
+    {
+      "page": 28,
+      "title": "第四部分　动态索引：B 树与 B+ 树",
+      "start": "26:31",
+      "end": "26:52",
+      "seconds": 20.9,
+      "chars": 99
+    },
+    {
+      "page": 29,
+      "title": "为什么外存索引必须用平衡的多分树",
+      "start": "26:52",
+      "end": "28:02",
+      "seconds": 70.5,
+      "chars": 375
+    },
+    {
+      "page": 30,
+      "title": "m 阶 B 树的定义",
+      "start": "28:02",
+      "end": "29:14",
+      "seconds": 72.2,
+      "chars": 379
+    },
+    {
+      "page": 31,
+      "title": "B 树的结点",
+      "start": "29:14",
+      "end": "30:15",
+      "seconds": 60.7,
+      "chars": 318
+    },
+    {
+      "page": 32,
+      "title": "检索要算访外次数",
+      "start": "30:15",
+      "end": "31:37",
+      "seconds": 82.0,
+      "chars": 433
+    },
+    {
+      "page": 33,
+      "title": "插入与分裂",
+      "start": "31:37",
+      "end": "32:54",
+      "seconds": 77.3,
+      "chars": 375
+    },
+    {
+      "page": 34,
+      "title": "插入示例：14、55，再插入 19",
+      "start": "32:54",
+      "end": "34:06",
+      "seconds": 72.1,
+      "chars": 355
+    },
+    {
+      "page": 35,
+      "title": "两个为什么",
+      "start": "34:06",
+      "end": "35:10",
+      "seconds": 63.5,
+      "chars": 312
+    },
+    {
+      "page": 36,
+      "title": "删除：交换、删除、借、合并",
+      "start": "35:10",
+      "end": "36:40",
+      "seconds": 90.0,
+      "chars": 426
+    },
+    {
+      "page": 37,
+      "title": "删除示例：5 阶 B 树删除 120、150",
+      "start": "36:40",
+      "end": "38:13",
+      "seconds": 93.4,
+      "chars": 467
+    },
+    {
+      "page": 38,
+      "title": "删除的访外次数：4h 减 2",
+      "start": "38:13",
+      "end": "39:30",
+      "seconds": 76.5,
+      "chars": 381
+    },
+    {
+      "page": 39,
+      "title": "B+ 树：关键码全在叶上",
+      "start": "39:30",
+      "end": "40:45",
+      "seconds": 75.0,
+      "chars": 393
+    },
+    {
+      "page": 40,
+      "title": "原书的约定与本章的约定",
+      "start": "40:45",
+      "end": "41:40",
+      "seconds": 55.1,
+      "chars": 287
+    },
+    {
+      "page": 41,
+      "title": "本章的 3 阶 B+ 树",
+      "start": "41:40",
+      "end": "42:41",
+      "seconds": 60.7,
+      "chars": 325
+    },
+    {
+      "page": 42,
+      "title": "插入 60：叶裂、根裂、树长高",
+      "start": "42:41",
+      "end": "43:43",
+      "seconds": 62.3,
+      "chars": 319
+    },
+    {
+      "page": 43,
+      "title": "叶分裂：分界码复写上推",
+      "start": "43:43",
+      "end": "44:27",
+      "seconds": 44.0,
+      "chars": 225
+    },
+    {
+      "page": 44,
+      "title": "内部分裂：中位数上移",
+      "start": "44:27",
+      "end": "45:10",
+      "seconds": 43.3,
+      "chars": 237
+    },
+    {
+      "page": 45,
+      "title": "先跑一遍：批量装入，再插入 60、65",
+      "start": "45:10",
+      "end": "45:56",
+      "seconds": 45.4,
+      "chars": 224
+    },
+    {
+      "page": 46,
+      "title": "先跑一遍：点查询、范围扫描、删除",
+      "start": "45:56",
+      "end": "46:44",
+      "seconds": 48.8,
+      "chars": 253
+    },
+    {
+      "page": 47,
+      "title": "范围扫描：沿叶链横着走",
+      "start": "46:44",
+      "end": "47:28",
+      "seconds": 43.4,
+      "chars": 242
+    },
+    {
+      "page": 48,
+      "title": "删除：借关键码与合并",
+      "start": "47:28",
+      "end": "48:28",
+      "seconds": 60.2,
+      "chars": 305
+    },
+    {
+      "page": 49,
+      "title": "混合型 B+ 树",
+      "start": "48:28",
+      "end": "49:19",
+      "seconds": 51.3,
+      "chars": 270
+    },
+    {
+      "page": 50,
+      "title": "B 树与 B+ 树：三句话记住区别",
+      "start": "49:19",
+      "end": "50:12",
+      "seconds": 52.2,
+      "chars": 249
+    },
+    {
+      "page": 51,
+      "title": "B 树的性能分析",
+      "start": "50:12",
+      "end": "51:12",
+      "seconds": 60.2,
+      "chars": 341
+    },
+    {
+      "page": 52,
+      "title": "全章最值得记住的一笔账",
+      "start": "51:12",
+      "end": "52:04",
+      "seconds": 52.6,
+      "chars": 274
+    },
+    {
+      "page": 53,
+      "title": "4 层 B+ 树能存多少记录",
+      "start": "52:04",
+      "end": "52:48",
+      "seconds": 43.1,
+      "chars": 255
+    },
+    {
+      "page": 54,
+      "title": "动态索引与静态索引的比较",
+      "start": "52:48",
+      "end": "53:45",
+      "seconds": 57.0,
+      "chars": 265
+    },
+    {
+      "page": 55,
+      "title": "第五部分：位索引技术",
+      "start": "53:45",
+      "end": "53:57",
+      "seconds": 12.2,
+      "chars": 55
+    },
+    {
+      "page": 56,
+      "title": "位图索引",
+      "start": "53:57",
+      "end": "54:50",
+      "seconds": 52.8,
+      "chars": 259
+    },
+    {
+      "page": 57,
+      "title": "一个数据域等于一组位向量",
+      "start": "54:50",
+      "end": "55:27",
+      "seconds": 37.3,
+      "chars": 190
+    },
+    {
+      "page": 58,
+      "title": "手算 State 等于 NY 且 Class 等于 A",
+      "start": "55:27",
+      "end": "56:16",
+      "seconds": 49.3,
+      "chars": 254
+    },
+    {
+      "page": 59,
+      "title": "先跑一遍：200 条记录的是否及格",
+      "start": "56:16",
+      "end": "56:59",
+      "seconds": 42.8,
+      "chars": 230
+    },
+    {
+      "page": 60,
+      "title": "先跑一遍：游程压缩与签名粗筛",
+      "start": "56:59",
+      "end": "57:37",
+      "seconds": 37.9,
+      "chars": 201
+    },
+    {
+      "page": 61,
+      "title": "查询只是逐字的按位运算",
+      "start": "57:37",
+      "end": "58:19",
+      "seconds": 41.7,
+      "chars": 221
+    },
+    {
+      "page": 62,
+      "title": "游程压缩与签名文件的局限",
+      "start": "58:19",
+      "end": "59:08",
+      "seconds": 49.3,
+      "chars": 237
+    },
+    {
+      "page": 63,
+      "title": "红黑树：内存里的近似平衡树",
+      "start": "59:08",
+      "end": "1:00:00",
+      "seconds": 52.1,
+      "chars": 269
+    },
+    {
+      "page": 64,
+      "title": "红黑树插入：叔父为黑时旋转",
+      "start": "1:00:00",
+      "end": "1:00:51",
+      "seconds": 51.2,
+      "chars": 258
+    },
+    {
+      "page": 65,
+      "title": "红黑树插入：叔父也红时换色",
+      "start": "1:00:51",
+      "end": "1:01:40",
+      "seconds": 48.8,
+      "chars": 259
+    },
+    {
+      "page": 66,
+      "title": "红黑树删除：双黑结点",
+      "start": "1:01:40",
+      "end": "1:02:32",
+      "seconds": 51.7,
+      "chars": 256
+    },
+    {
+      "page": 67,
+      "title": "各种索引怎么选",
+      "start": "1:02:32",
+      "end": "1:03:17",
+      "seconds": 45.7,
+      "chars": 224
+    },
+    {
+      "page": 68,
+      "title": "课后练习：动手算一算",
+      "start": "1:03:17",
+      "end": "1:04:21",
+      "seconds": 63.4,
+      "chars": 350
+    },
+    {
+      "page": 69,
+      "title": "附录 A：编程练习",
+      "start": "1:04:21",
+      "end": "1:04:33",
+      "seconds": 12.4,
+      "chars": 64
+    },
+    {
+      "page": 70,
+      "title": "LeetCode 74：搜索二维矩阵",
+      "start": "1:04:33",
+      "end": "1:05:20",
+      "seconds": 47.2,
+      "chars": 248
+    },
+    {
+      "page": 71,
+      "title": "LeetCode 981：基于时间的键值存储",
+      "start": "1:05:20",
+      "end": "1:06:04",
+      "seconds": 43.6,
+      "chars": 242
+    },
+    {
+      "page": 72,
+      "title": "OJ 06640：倒排索引",
+      "start": "1:06:04",
+      "end": "1:06:48",
+      "seconds": 44.0,
+      "chars": 253
+    },
+    {
+      "page": 73,
+      "title": "OJ 31193：倒排文档",
+      "start": "1:06:48",
+      "end": "1:07:35",
+      "seconds": 46.8,
+      "chars": 240
+    },
+    {
+      "page": 74,
+      "title": "OJ 04088：集合运算",
+      "start": "1:07:35",
+      "end": "1:08:28",
+      "seconds": 53.7,
+      "chars": 258
+    },
+    {
+      "page": 75,
+      "title": "LeetCode 2080：区间内查询数字的频率",
+      "start": "1:08:28",
+      "end": "1:09:15",
+      "seconds": 46.1,
+      "chars": 258
+    },
+    {
+      "page": 76,
+      "title": "LeetCode 729：我的日程安排表",
+      "start": "1:09:15",
+      "end": "1:10:04",
+      "seconds": 49.4,
+      "chars": 267
+    },
+    {
+      "page": 77,
+      "title": "OJ 30061：春游集合",
+      "start": "1:10:04",
+      "end": "1:10:56",
+      "seconds": 52.5,
+      "chars": 274
+    },
+    {
+      "page": 78,
+      "title": "本章小结",
+      "start": "1:10:56",
+      "end": "1:11:54",
+      "seconds": 57.5,
+      "chars": 271
+    }
+  ]
+}
