@@ -12,6 +12,8 @@
 
 - **知识点动画短片**（3B1B 风格，按周次排列，页面内直接播放）：https://infomall.zhengmao.ltd/cs201-anim/ ；两门课总入口 https://infomall.zhengmao.ltd/anim/
 
+- **课件讲解视频**（逐页配音讲解，带逐句字幕，页面内可按页跳转、下载）：第七章 图 https://infomall.zhengmao.ltd/cs201-anim/slides/ch07/ （1:44:19）；720p [courseware/video/ch07-preview.mp4](courseware/video/ch07-preview.mp4)，1080p 在 [Releases](https://github.com/GMyhf/2026fall-cs201/releases/tag/slides-film-2026fall)；字幕 [ch07.srt](courseware/video/ch07.srt)，讲稿 [ch07_narration.md](courseware/video/ch07_narration.md)，合成脚本 `courseware/make_video.py`
+
 - **核心教材**：以课件为主，辅以以下参考书目：
 
   - 数据结构与算法：Python 讲算法，C++ 讲实现，https://gmyhf.github.io/dsa-modernization/
