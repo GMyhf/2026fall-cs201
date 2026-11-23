@@ -41,9 +41,13 @@ http://cs101.openjudge.cn/practice/31202/
 
 
 
+## 31806:带禁用词的字符串构造
 
+http://cs101.openjudge.cn/practice/31806/
 
+## 31807:哈夫曼树 I
 
+http://cs101.openjudge.cn/practice/31807/
 
 
 
@@ -75,9 +79,19 @@ http://cs101.openjudge.cn/practice/21509/
 >
 > http://dsa.openjudge.cn/2024final/E/
 
+## 31808:宇宙文明冲突计数
+
+http://cs101.openjudge.cn/practice/31808/
 
 
 
+OJ 平台不支持特判，公开版需你确认唯一输出规则——P 含 1 时输出最长合法 T，全为 0 时输出 S 后追加 a，无解输出 -1。
+
+我加在自己的jensen平台了。
+
+## 1000007: 匹配
+
+https://jensen.zhengmao.ltd/practice/1000007/
 
 
 
@@ -109,7 +123,9 @@ http://cs101.openjudge.cn/practice/27351/
 >
 > http://dsa.openjudge.cn/2023final/2/
 
+## 31809:回文子序列
 
+http://cs101.openjudge.cn/practice/31809/
 
 
 
@@ -144,4 +160,16 @@ http://cs101.openjudge.cn/practice/02804/
 > http://dsa.openjudge.cn/2022final1/5/
 
 
+
+## 31810:循环串
+
+http://cs101.openjudge.cn/practice/31810/
+
+## 31811:最小完全图
+
+http://cs101.openjudge.cn/practice/31811/
+
+## 31812:平衡二叉树
+
+http://cs101.openjudge.cn/practice/31812/
 
