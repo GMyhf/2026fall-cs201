@@ -1,9 +1,9 @@
 {
   "voice": "zh-CN-YunyangNeural",
   "rate": "+0%",
-  "total": "1:44:19",
-  "source_pptx_sha256": "8f935bf04257ddd010d68592f9756fd19355848bd4f0c1fd4af1db9d56d3bc27",
-  "source_script_sha256": "d56b16a0f4ca9be38d6866f7c75eb149fadce84e0c5f0283e1928aca518dae9c",
+  "total": "1:44:41",
+  "source_pptx_sha256": "1f77a41544a2c9b71e0d8b7324c0eb0bd7b8107e5dd4ddc062b87abf67fab175",
+  "source_script_sha256": "f2c578e63cadbcc38b6dd6c4497a4750d6d4c0f9242959cc11ee65e151a86ba8",
   "sections": [
     {
       "page": 1,
@@ -81,695 +81,695 @@
       "page": 10,
       "title": "带权图、边数范围、完全图",
       "start": "09:07",
-      "end": "10:15",
-      "seconds": 67.9,
-      "chars": 333
+      "end": "10:22",
+      "seconds": 74.4,
+      "chars": 358
     },
     {
       "page": 11,
       "title": "子图、邻接、度",
-      "start": "10:15",
-      "end": "11:20",
+      "start": "10:22",
+      "end": "11:27",
       "seconds": 64.9,
       "chars": 328
     },
     {
       "page": 12,
       "title": "路径、回路与连通分量",
-      "start": "11:20",
-      "end": "12:28",
+      "start": "11:27",
+      "end": "12:35",
       "seconds": 67.9,
       "chars": 341
     },
     {
       "page": 13,
       "title": "有向图：强连通与弱连通",
-      "start": "12:28",
-      "end": "13:37",
+      "start": "12:35",
+      "end": "13:43",
       "seconds": 68.6,
       "chars": 377
     },
     {
       "page": 14,
       "title": "生成树、自由树与网络",
-      "start": "13:37",
-      "end": "14:48",
+      "start": "13:43",
+      "end": "14:55",
       "seconds": 71.3,
       "chars": 350
     },
     {
       "page": 15,
       "title": "先分清题目：前提决定算法",
-      "start": "14:48",
-      "end": "15:56",
+      "start": "14:55",
+      "end": "16:02",
       "seconds": 68.0,
       "chars": 359
     },
     {
       "page": 16,
       "title": "Part 2：图的抽象数据类型",
-      "start": "15:56",
-      "end": "16:09",
+      "start": "16:02",
+      "end": "16:16",
       "seconds": 13.4,
       "chars": 60
     },
     {
       "page": 17,
       "title": "图的顶点之间本来没有次序",
-      "start": "16:09",
-      "end": "17:16",
+      "start": "16:16",
+      "end": "17:22",
       "seconds": 66.4,
       "chars": 336
     },
     {
       "page": 18,
       "title": "原书把运算列成一个抽象类",
-      "start": "17:16",
-      "end": "18:24",
+      "start": "17:22",
+      "end": "18:31",
       "seconds": 68.6,
       "chars": 372
     },
     {
       "page": 19,
       "title": "基类实现为什么不能照抄",
-      "start": "18:24",
-      "end": "19:33",
+      "start": "18:31",
+      "end": "19:39",
       "seconds": 68.4,
       "chars": 359
     },
     {
       "page": 20,
       "title": "原书运算到本书写法",
-      "start": "19:33",
-      "end": "20:38",
+      "start": "19:39",
+      "end": "20:45",
       "seconds": 65.5,
       "chars": 344
     },
     {
       "page": 21,
       "title": "有环、不连通是可预期的结果",
-      "start": "20:38",
-      "end": "21:51",
+      "start": "20:45",
+      "end": "21:58",
       "seconds": 72.8,
       "chars": 376
     },
     {
       "page": 22,
       "title": "Part 3：图的存储结构",
-      "start": "21:51",
-      "end": "22:03",
+      "start": "21:58",
+      "end": "22:10",
       "seconds": 12.0,
       "chars": 49
     },
     {
       "page": 23,
       "title": "相邻矩阵：不带权",
-      "start": "22:03",
-      "end": "23:07",
+      "start": "22:10",
+      "end": "23:14",
       "seconds": 64.3,
       "chars": 349
     },
     {
       "page": 24,
       "title": "相邻矩阵：带权图",
-      "start": "23:07",
-      "end": "24:23",
+      "start": "23:14",
+      "end": "24:29",
       "seconds": 75.4,
       "chars": 403
     },
     {
       "page": 25,
       "title": "Graph：构造与 add_edge",
-      "start": "24:23",
-      "end": "25:32",
+      "start": "24:29",
+      "end": "25:38",
       "seconds": 69.1,
       "chars": 397
     },
     {
       "page": 26,
       "title": "邻接表",
-      "start": "25:32",
-      "end": "26:43",
+      "start": "25:38",
+      "end": "26:49",
       "seconds": 70.8,
       "chars": 393
     },
     {
       "page": 27,
       "title": "逆邻接表",
-      "start": "26:43",
-      "end": "27:43",
+      "start": "26:49",
+      "end": "27:50",
       "seconds": 60.7,
       "chars": 320
     },
     {
       "page": 28,
       "title": "代价对照",
-      "start": "27:43",
-      "end": "28:55",
+      "start": "27:50",
+      "end": "29:02",
       "seconds": 71.6,
       "chars": 373
     },
     {
       "page": 29,
       "title": "neighbors、weight 与两个计数器",
-      "start": "28:55",
-      "end": "29:56",
+      "start": "29:02",
+      "end": "30:03",
       "seconds": 61.3,
       "chars": 366
     },
     {
       "page": 30,
       "title": "周游：矩阵扫整行，邻接表只走边表",
-      "start": "29:56",
-      "end": "30:54",
+      "start": "30:03",
+      "end": "31:01",
       "seconds": 57.9,
       "chars": 307
     },
     {
       "page": 31,
       "title": "实测：差三百多倍与约一千倍",
-      "start": "30:54",
-      "end": "32:02",
+      "start": "31:01",
+      "end": "32:09",
       "seconds": 68.1,
       "chars": 370
     },
     {
       "page": 32,
       "title": "Dijkstra 最小堆版",
-      "start": "32:02",
-      "end": "33:12",
+      "start": "32:09",
+      "end": "33:18",
       "seconds": 69.7,
       "chars": 358
     },
     {
       "page": 33,
       "title": "十字链表",
-      "start": "33:12",
-      "end": "34:21",
+      "start": "33:18",
+      "end": "34:28",
       "seconds": 69.2,
       "chars": 368
     },
     {
       "page": 34,
       "title": "原书式教学实现",
-      "start": "34:21",
-      "end": "35:36",
+      "start": "34:28",
+      "end": "35:43",
       "seconds": 75.0,
       "chars": 370
     },
     {
       "page": 35,
       "title": "把一条弧拆开看",
-      "start": "35:36",
-      "end": "36:40",
+      "start": "35:43",
+      "end": "36:46",
       "seconds": 63.8,
       "chars": 400
     },
     {
       "page": 36,
       "title": "现代实现：所有权集中",
-      "start": "36:40",
-      "end": "37:39",
+      "start": "36:46",
+      "end": "37:46",
       "seconds": 59.4,
       "chars": 311
     },
     {
       "page": 37,
       "title": "remove_edge：两条链各摘一次",
-      "start": "37:39",
-      "end": "38:42",
+      "start": "37:46",
+      "end": "38:48",
       "seconds": 62.2,
       "chars": 341
     },
     {
       "page": 38,
       "title": "Part 4　图的周游",
-      "start": "38:42",
-      "end": "38:57",
+      "start": "38:48",
+      "end": "39:03",
       "seconds": 15.1,
       "chars": 70
     },
     {
       "page": 39,
       "title": "深度优先周游 DFS",
-      "start": "38:57",
-      "end": "40:14",
+      "start": "39:03",
+      "end": "40:21",
       "seconds": 77.5,
       "chars": 414
     },
     {
       "page": 40,
       "title": "dfs 与 visit_depth_first",
-      "start": "40:14",
-      "end": "41:17",
+      "start": "40:21",
+      "end": "41:24",
       "seconds": 62.9,
       "chars": 346
     },
     {
       "page": 41,
       "title": "DFS 关键要点",
-      "start": "41:17",
-      "end": "42:20",
+      "start": "41:24",
+      "end": "42:26",
       "seconds": 62.5,
       "chars": 311
     },
     {
       "page": 42,
       "title": "广度优先周游 BFS",
-      "start": "42:20",
-      "end": "43:34",
+      "start": "42:26",
+      "end": "43:41",
       "seconds": 74.7,
       "chars": 383
     },
     {
       "page": 43,
       "title": "bfs：入队时就标记",
-      "start": "43:34",
-      "end": "44:40",
+      "start": "43:41",
+      "end": "44:46",
       "seconds": 65.7,
       "chars": 365
     },
     {
       "page": 44,
       "title": "有向无环图与拓扑序列",
-      "start": "44:40",
-      "end": "45:55",
+      "start": "44:46",
+      "end": "46:02",
       "seconds": 75.2,
       "chars": 387
     },
     {
       "page": 45,
       "title": "方法：反复摘掉入度为 0 的顶点",
-      "start": "45:55",
-      "end": "47:03",
+      "start": "46:02",
+      "end": "47:09",
       "seconds": 67.8,
       "chars": 342
     },
     {
       "page": 46,
       "title": "topological_sort：入度表加队列",
-      "start": "47:03",
-      "end": "48:08",
+      "start": "47:09",
+      "end": "48:14",
       "seconds": 65.0,
       "chars": 338
     },
     {
       "page": 47,
       "title": "拓扑排序手算 trace",
-      "start": "48:08",
-      "end": "49:35",
+      "start": "48:14",
+      "end": "49:42",
       "seconds": 87.2,
       "chars": 470
     },
     {
       "page": 48,
       "title": "判环：先看是无向图还是有向图",
-      "start": "49:35",
-      "end": "50:48",
+      "start": "49:42",
+      "end": "50:55",
       "seconds": 73.1,
       "chars": 393
     },
     {
       "page": 49,
       "title": "环检测·无向图：并查集",
-      "start": "50:48",
-      "end": "51:56",
+      "start": "50:55",
+      "end": "52:03",
       "seconds": 68.1,
       "chars": 358
     },
     {
       "page": 50,
       "title": "环检测·无向图：DFS 加 parent",
-      "start": "51:56",
-      "end": "53:09",
-      "seconds": 73.0,
-      "chars": 397
+      "start": "52:03",
+      "end": "53:31",
+      "seconds": 88.4,
+      "chars": 487
     },
     {
       "page": 51,
       "title": "环检测·有向图：三色染色",
-      "start": "53:09",
-      "end": "54:24",
+      "start": "53:31",
+      "end": "54:46",
       "seconds": 74.3,
       "chars": 367
     },
     {
       "page": 52,
       "title": "has_cycle_directed：进门染灰，出门染黑",
-      "start": "54:24",
-      "end": "55:29",
+      "start": "54:46",
+      "end": "55:51",
       "seconds": 65.6,
       "chars": 351
     },
     {
       "page": 53,
       "title": "DFS 拓扑排序：按结束时间递减",
-      "start": "55:29",
-      "end": "56:58",
+      "start": "55:51",
+      "end": "57:20",
       "seconds": 89.0,
       "chars": 470
     },
     {
       "page": 54,
       "title": "dfs_topo_sort：三色标记加结束顺序取逆",
-      "start": "56:58",
-      "end": "58:10",
+      "start": "57:20",
+      "end": "58:32",
       "seconds": 72.1,
       "chars": 347
     },
     {
       "page": 55,
       "title": "Kosaraju：两次 DFS 求强连通分量",
-      "start": "58:10",
-      "end": "59:28",
+      "start": "58:32",
+      "end": "59:50",
       "seconds": 77.9,
       "chars": 372
     },
     {
       "page": 56,
       "title": "kosaraju：G 上压栈，G 转置上分块",
-      "start": "59:28",
-      "end": "1:00:37",
+      "start": "59:50",
+      "end": "1:00:59",
       "seconds": 68.8,
       "chars": 372
     },
     {
       "page": 57,
       "title": "Tarjan：一次 DFS 找 SCC 的根",
-      "start": "1:00:37",
-      "end": "1:02:04",
+      "start": "1:00:59",
+      "end": "1:02:26",
       "seconds": 87.2,
       "chars": 484
     },
     {
       "page": 58,
       "title": "Tarjan 手算 trace",
-      "start": "1:02:04",
-      "end": "1:03:25",
+      "start": "1:02:26",
+      "end": "1:03:47",
       "seconds": 80.4,
       "chars": 408
     },
     {
       "page": 59,
       "title": "tarjan：访问即入栈，low 等于 dfn 时整块弹出",
-      "start": "1:03:25",
-      "end": "1:04:36",
+      "start": "1:03:47",
+      "end": "1:04:58",
       "seconds": 71.3,
       "chars": 391
     },
     {
       "page": 60,
       "title": "关键路径：AOE 网上的最长路径",
-      "start": "1:04:36",
-      "end": "1:05:52",
+      "start": "1:04:58",
+      "end": "1:06:14",
       "seconds": 76.2,
       "chars": 389
     },
     {
       "page": 61,
       "title": "关键路径手算 trace",
-      "start": "1:05:52",
-      "end": "1:07:08",
+      "start": "1:06:14",
+      "end": "1:07:30",
       "seconds": 75.7,
       "chars": 364
     },
     {
       "page": 62,
       "title": "critical_path：一次 Kahn 加倒扫",
-      "start": "1:07:08",
-      "end": "1:08:25",
+      "start": "1:07:30",
+      "end": "1:08:46",
       "seconds": 76.7,
       "chars": 411
     },
     {
       "page": 63,
       "title": "Part 5　最短路径",
-      "start": "1:08:25",
-      "end": "1:08:44",
+      "start": "1:08:46",
+      "end": "1:09:05",
       "seconds": 18.9,
       "chars": 104
     },
     {
       "page": 64,
       "title": "Dijkstra：按路径长度递增产生最短路径",
-      "start": "1:08:44",
-      "end": "1:09:54",
+      "start": "1:09:05",
+      "end": "1:10:16",
       "seconds": 70.6,
       "chars": 387
     },
     {
       "page": 65,
       "title": "Dijkstra 手算 trace",
-      "start": "1:09:54",
-      "end": "1:11:11",
+      "start": "1:10:16",
+      "end": "1:11:33",
       "seconds": 76.9,
       "chars": 399
     },
     {
       "page": 66,
       "title": "为什么边权必须非负",
-      "start": "1:11:11",
-      "end": "1:12:20",
+      "start": "1:11:33",
+      "end": "1:12:42",
       "seconds": 68.7,
       "chars": 366
     },
     {
       "page": 67,
       "title": "dijkstra：矩阵版，V 的平方",
-      "start": "1:12:20",
-      "end": "1:13:23",
+      "start": "1:12:42",
+      "end": "1:13:45",
       "seconds": 63.4,
       "chars": 357
     },
     {
       "page": 68,
       "title": "dijkstra_tree：只在松弛成功时改前驱",
-      "start": "1:13:23",
-      "end": "1:14:21",
+      "start": "1:13:45",
+      "end": "1:14:43",
       "seconds": 57.7,
       "chars": 292
     },
     {
       "page": 69,
       "title": "shortest_path：从汇点倒着走回源点",
-      "start": "1:14:21",
-      "end": "1:15:37",
+      "start": "1:14:43",
+      "end": "1:15:59",
       "seconds": 76.0,
       "chars": 358
     },
     {
       "page": 70,
       "title": "Floyd：典型的动态规划",
-      "start": "1:15:37",
-      "end": "1:16:43",
+      "start": "1:15:59",
+      "end": "1:17:05",
       "seconds": 65.9,
       "chars": 351
     },
     {
       "page": 71,
       "title": "Floyd 手算 trace",
-      "start": "1:16:43",
-      "end": "1:17:43",
+      "start": "1:17:05",
+      "end": "1:18:05",
       "seconds": 60.5,
       "chars": 319
     },
     {
       "page": 72,
       "title": "floyd：中转点必须在最外层",
-      "start": "1:17:43",
-      "end": "1:18:43",
+      "start": "1:18:05",
+      "end": "1:19:05",
       "seconds": 60.0,
       "chars": 314
     },
     {
       "page": 73,
       "title": "有负权边时 Dijkstra 会算错",
-      "start": "1:18:43",
-      "end": "1:20:02",
+      "start": "1:19:05",
+      "end": "1:20:24",
       "seconds": 78.6,
       "chars": 436
     },
     {
       "page": 74,
       "title": "Bellman-Ford 手算",
-      "start": "1:20:02",
-      "end": "1:21:27",
+      "start": "1:20:24",
+      "end": "1:21:49",
       "seconds": 85.5,
       "chars": 446
     },
     {
       "page": 75,
       "title": "bellman_ford 的 Python 实现",
-      "start": "1:21:27",
-      "end": "1:22:44",
+      "start": "1:21:49",
+      "end": "1:23:05",
       "seconds": 76.3,
       "chars": 427
     },
     {
       "page": 76,
       "title": "Part 6　最小生成树",
-      "start": "1:22:44",
-      "end": "1:22:57",
+      "start": "1:23:05",
+      "end": "1:23:19",
       "seconds": 13.2,
       "chars": 64
     },
     {
       "page": 77,
       "title": "最小生成树与 MST 性质",
-      "start": "1:22:57",
-      "end": "1:24:10",
+      "start": "1:23:19",
+      "end": "1:24:31",
       "seconds": 72.7,
       "chars": 404
     },
     {
       "page": 78,
       "title": "Prim 算法",
-      "start": "1:24:10",
-      "end": "1:25:25",
+      "start": "1:24:31",
+      "end": "1:25:47",
       "seconds": 75.7,
       "chars": 421
     },
     {
       "page": 79,
       "title": "Prim 在图 7.23 上的六个步骤",
-      "start": "1:25:25",
-      "end": "1:26:19",
+      "start": "1:25:47",
+      "end": "1:26:41",
       "seconds": 54.1,
       "chars": 318
     },
     {
       "page": 80,
       "title": "Prim 手算：distance 表",
-      "start": "1:26:19",
-      "end": "1:27:32",
+      "start": "1:26:41",
+      "end": "1:27:53",
       "seconds": 72.1,
       "chars": 427
     },
     {
       "page": 81,
       "title": "prim 的 C++ 实现",
-      "start": "1:27:32",
-      "end": "1:28:32",
+      "start": "1:27:53",
+      "end": "1:28:54",
       "seconds": 60.2,
       "chars": 356
     },
     {
       "page": 82,
       "title": "Kruskal 算法",
-      "start": "1:28:32",
-      "end": "1:29:32",
+      "start": "1:28:54",
+      "end": "1:29:54",
       "seconds": 60.0,
       "chars": 317
     },
     {
       "page": 83,
       "title": "Kruskal 在图 7.25 上的步骤",
-      "start": "1:29:32",
-      "end": "1:30:45",
+      "start": "1:29:54",
+      "end": "1:31:06",
       "seconds": 72.8,
       "chars": 435
     },
     {
       "page": 84,
       "title": "kruskal 的 C++ 实现：排序加并查集",
-      "start": "1:30:45",
-      "end": "1:31:41",
+      "start": "1:31:06",
+      "end": "1:32:03",
       "seconds": 56.1,
       "chars": 298
     },
     {
       "page": 85,
       "title": "Prim 与 Kruskal 对照；最短路树不等于最小生成树",
-      "start": "1:31:41",
-      "end": "1:32:48",
+      "start": "1:32:03",
+      "end": "1:33:10",
       "seconds": 67.1,
       "chars": 368
     },
     {
       "page": 86,
       "title": "课后想一想",
-      "start": "1:32:48",
-      "end": "1:33:53",
+      "start": "1:33:10",
+      "end": "1:34:15",
       "seconds": 65.0,
       "chars": 334
     },
     {
       "page": 87,
       "title": "附录 A　编程练习",
-      "start": "1:33:53",
-      "end": "1:34:06",
+      "start": "1:34:15",
+      "end": "1:34:27",
       "seconds": 12.7,
       "chars": 54
     },
     {
       "page": 88,
       "title": "OJ 28046 词梯",
-      "start": "1:34:06",
-      "end": "1:35:12",
+      "start": "1:34:27",
+      "end": "1:35:34",
       "seconds": 66.8,
       "chars": 362
     },
     {
       "page": 89,
       "title": "OJ 28050 骑士周游",
-      "start": "1:35:12",
-      "end": "1:36:22",
+      "start": "1:35:34",
+      "end": "1:36:44",
       "seconds": 70.0,
       "chars": 390
     },
     {
       "page": 90,
       "title": "OJ 04084 拓扑排序",
-      "start": "1:36:22",
-      "end": "1:37:31",
+      "start": "1:36:44",
+      "end": "1:37:53",
       "seconds": 68.7,
       "chars": 373
     },
     {
       "page": 91,
       "title": "OJ 02186 Popular Cows",
-      "start": "1:37:31",
-      "end": "1:38:35",
+      "start": "1:37:53",
+      "end": "1:38:57",
       "seconds": 64.4,
       "chars": 345
     },
     {
       "page": 92,
       "title": "OJ 03424 Candies",
-      "start": "1:38:35",
-      "end": "1:39:49",
+      "start": "1:38:57",
+      "end": "1:40:11",
       "seconds": 73.7,
       "chars": 433
     },
     {
       "page": 93,
       "title": "OJ 01860 Currency Exchange",
-      "start": "1:39:49",
-      "end": "1:40:57",
+      "start": "1:40:11",
+      "end": "1:41:19",
       "seconds": 67.9,
       "chars": 380
     },
     {
       "page": 94,
       "title": "OJ 05443 兔子与樱花",
-      "start": "1:40:57",
-      "end": "1:41:57",
+      "start": "1:41:19",
+      "end": "1:42:19",
       "seconds": 60.2,
       "chars": 351
     },
     {
       "page": 95,
       "title": "OJ 01258 Agri-Net",
-      "start": "1:41:57",
-      "end": "1:43:03",
+      "start": "1:42:19",
+      "end": "1:43:25",
       "seconds": 66.1,
       "chars": 373
     },
     {
       "page": 96,
       "title": "本章小结",
-      "start": "1:43:03",
-      "end": "1:44:19",
+      "start": "1:43:25",
+      "end": "1:44:41",
       "seconds": 75.8,
       "chars": 424
     }
