@@ -1,5 +1,5 @@
 ## 2026fall 数算（DS Algo）每日选作
-*Updated 2026-11-11 15:02 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
+*Updated 2026-11-27 22:11 GMT+8*  *Compiled by Hongfei Yan (2026 Fall)*  
 https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.md
 
 题解，https://fuynaloft.github.io/sol101/ ✅
@@ -15,6 +15,7 @@ https://github.com/GMyhf/2026fall-cs201/blob/main/DSA_problem_list_at_2026fall.m
 | 日期       | 问题编号与名称                 | 标签                                 | 难度 | 链接                                             |
 | ---------- | ------------------------------ | ------------------------------------ | ---- | ------------------------------------------------ |
 |  |       |       | Medium |          |
+| 1127 | 30868:upstairs     | 同余最短路       | Tough | http://cs101.openjudge.cn/practice/30868          |
 | 1126 | M1882. 使用服务器处理任务      | heap       | Medium | https://leetcode.cn/problems/process-tasks-using-servers/          |
 | 1125 | M02524:宗教信仰      | dsu      | Medium | http://cs101.openjudge.cn/pctbook/M02524/         |
 | 1124 | 01703:发现它，抓住它 | dsu      | Medium | http://cs101.openjudge.cn/practice/01703/         |
